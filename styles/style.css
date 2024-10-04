@@ -1,1 +1,17 @@
 
+#bustalking {
+    border-radius: 5%;
+}
+
+#welcome {
+    margin: 10% auto;
+}
+
+#welcometitle {
+    font-size: 50pt;
+}
+
+.lead {
+    text-align: justify;
+    margin-bottom: 5%;
+}
