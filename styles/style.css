@@ -23,3 +23,15 @@ body {
 .cta-content {
     padding-left: 100px;
 }
+
+#navtitle {
+    font-weight: 700;
+    font-style: italic;
+    padding-left: 3%;
+}
+#navbar {
+    background-color: rgba(201, 237, 237, 0.707);
+}
+.nav-item {
+    font-weight: 700;
+}
