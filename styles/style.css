@@ -15,3 +15,11 @@
     text-align: justify;
     margin-bottom: 5%;
 }
+
+body {
+    padding-bottom: 120px;
+}
+
+.cta-content {
+    padding-left: 100px;
+}
