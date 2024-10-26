@@ -2,8 +2,8 @@
 <html lang="en">
 
 <head>
-    <title>My BCIT Project</title>
-    <meta name="comp1800 template" content="My 1800 App">
+    <title>Commute Buddy</title>
+    <meta name="comp1800 commute buddy" content="My 1800 App">
 
     <!-- Required meta tags -->
     <meta charset="utf-8">
@@ -19,9 +19,19 @@
 
     <!-- Other libraries go here -->
 
+        <!-------------------------------------------------------->
+    <!-- Firebase 8 Library related CSS, JS, JQuery go here -->
+    <!-------------------------------------------------------->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/ui/4.8.1/firebase-ui-auth.js"></script> 
+    <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/4.8.1/firebase-ui-auth.css" />
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+
     <!-- Link to styles of your own -->
     <link rel="stylesheet" href="./styles/style.css">
-    <!-- <link rel="stylesheet" href="./styles/style.css"> -->
 
 </head>
 
@@ -69,8 +79,9 @@
                     into shared experiences. Alleviate isolation by connecting with like-minded commuters, building
                     trust before you meet. Make your journey meaningful — start connecting today!</p>
                 <div class="d-grid gap-2 d-md-flex justify-content-md-start">
-                    <button type="button" class="btn btn-primary btn-lg px-4 me-md-2">Sign up</button>
-                    <button type="button" class="btn btn-outline-secondary btn-lg px-4">Login in</button>
+                    <!-- <button type="button" class="btn btn-primary btn-lg px-4 me-md-2">Sign up</button> -->
+                    <!-- <button type="button" class="btn btn-outline-secondary btn-lg px-4">Login in</button> -->
+                    <a href="login.html" class="btn btn-warning" role="button">Log in</a>
                 </div>
             </div>
         </div>
