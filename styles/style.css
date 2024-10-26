@@ -63,3 +63,26 @@ body {
     height: 50px;
     width: auto;
 }
+
+.fixed-bottom{
+    height: 8%;
+    padding-left: 40px;
+    padding-right: 40px;
+}
+
+.material-symbols-outlined{
+    font-size: 40px;
+}
+
+#bus-info{
+    margin: 30px auto;
+    height: 75vh;
+    width: 80vw;
+    background-color: lightgray;
+    border-radius: 20px;
+}
+
+.card{
+    margin: 0 auto;
+    border-radius: 10px;
+}
