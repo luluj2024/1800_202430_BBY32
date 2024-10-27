@@ -82,8 +82,10 @@
                     trust before you meet. Make your journey meaningful — start connecting today!</p>
                 <div class="d-grid gap-2 d-md-flex justify-content-md-start">
                     <button type="button" class="btn btn-primary btn-lg px-4 me-md-2" id="signup-btn">Sign up</button>
-                    <div id="signup-container">
-                        
+                    <div id="signup-container" style="display: none;">
+                        <div class="signup-content"><h1>Lets Login!</h1></div>
+                        <div id="firebaseui-auth-container"></div>
+                        <div id="loader">Loading...</div>
                     </div>
                     <button type="button" class="btn btn-outline-secondary btn-lg px-4">Login in</button>
                 </div>
@@ -203,16 +205,15 @@
     <script>
         document.getElementById('signup-btn').addEventListener('click',
         function() {
-        var signupContainer = document.getElementById('signup-container'); var signupBox = document.createElement('div');
+        var signupContainer = document.getElementById('signup-container'); 
         var closeButton = document.createElement('span');
-        signupBox.className = 'signup-box';
-        signupBox.innerHTML = '<div class="signup-content"><h1>Lets Login!</h1></div><div id="firebaseui-auth-container"></div><div id="loader">Loading...</div>';
+        signupContainer.style = ''
         closeButton.className = 'close-btn';
         closeButton.innerHTML = '&times;';
-        signupBox.appendChild(closeButton);
-        signupContainer.appendChild(signupBox);
+        signupContainer.appendChild(closeButton);
         closeButton.addEventListener('click', function() {
-        signupContainer.removeChild(signupBox);
+        signupContainer.removeChild(closeButton);
+        signupContainer.style = 'display: none;'
         });
         });
     </script>
