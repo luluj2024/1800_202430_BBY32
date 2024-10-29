@@ -1,0 +1,17 @@
+html, body, body * {
+  margin: 0;
+  padding: 0;
+}
+
+.navbar-brand {
+  display: flex;
+}
+
+img[alt="logo"] {
+  width: 40px;
+  border-radius: 5px;
+}
+
+.navbar-collapse {
+  text-align: right !important;
+}

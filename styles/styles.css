@@ -98,7 +98,7 @@ body {
 
 #bus-info{
     margin: 30px auto;
-    height: 75vh;
+    height: 100%;
     width: 80vw;
     background-color: lightgray;
     border-radius: 20px;
@@ -108,3 +108,10 @@ body {
     margin: 0 auto;
     border-radius: 10px;
 }
+
+.huh {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+}
+
