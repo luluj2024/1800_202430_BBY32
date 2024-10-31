@@ -79,30 +79,6 @@ nav svg {
   display: none;
 }
 
-/* .welcome-container {
-  color: var(--color-1);
-  width: 80%;
-  margin: 20px auto;
-  display: grid;
-  grid-template-columns: 50% 50%;
-  align-items: center;
-}
-
-.welcome-content-container {
-  display: grid;
-  grid-template-rows: auto 1fr auto;
-  row-gap: 2rem;
-}
-
-.welcome-title {
-  font-size: 3rem;
-  font-weight: bold;
-}
-
-.welcome-content {
-  margin: auto 0;
-} */
-
 @media only screen and (max-width: 992px) {
   nav .home-link {
     margin: 0;
