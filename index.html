@@ -59,8 +59,8 @@
                 </label>
 
                 <a class="home-link" href="index.html">Home</a>
-                <a href="about.html">About</a>
-                <a href="about.html#contact-us">Contact Us</a>
+                <a href="#">About</a>
+                <a href="#">Contact Us</a>
                 <a class="signup-btn" href="#">Login</a>
             </div>
         </nav>
@@ -74,33 +74,37 @@
 
     <!-- Welcome Banner -->
     <div class="container bg-secondary-subtle p-5">
-        <div class="container-fluid">
-            <div class="row g-3">
-                <div class="col-lg-6 d-flex flex-column justify-content-between">
-                    <h1 class="display-4 fw-bold">Commute Buddy!</h1>
-                    <p class="lead">
-                        Commute Buddy is the social transportation app that turns your long-distance
-                        commutes into shared experiences. Alleviate isolation by connecting with like-minded commuters
-                        and building trust before you meet. Make your journey meaningful — start connecting today!
-                    </p>
-                    <button class="btn btn-lg btn-primary signup-btn" type="button">Log In</button>
+        <div class="container-lg">
+            <div class="row justify-content-center g-3">
+                <div class="col-lg-6">
+                    <div class="d-flex flex-column justify-content-between">
+                        <h1 class="display-4 fw-bold">Commute Buddy!</h1>
+                        <p class="lead">
+                            Commute Buddy is the social transportation app that turns your long-distance
+                            commutes into shared experiences. Alleviate isolation by connecting with like-minded
+                            commuters
+                            and building trust before you meet. Make your journey meaningful — start connecting today!
+                        </p>
+                        <button class="btn btn-lg btn-primary signup-btn" type="button">Log In</button>
+                    </div>
                 </div>
                 <div class="col-lg-6">
-                    <img src="./images/bustalking.jpg" class="d-block mx-lg-auto img-fluid"
+                    <img src="./images/bustalking.jpg" class="mx-lg-auto img-fluid"
                         alt="Two people talking during a commute" width="700" height="500" loading="lazy"
                         id="bustalking">
                 </div>
             </div>
         </div>
 
+        <!-- Call To Action -->
         <div class="container-fluid col-xxl-8 px-4 py-5" id="cta">
-            <div class="row flex-lg-row align-items-center g-5">
-                <div class="col-10 col-sm-8 col-lg-6">
-                    <img src="./images/Call-To-Action-Image.png" class="d-block mx-lg-auto img-fluid rounded"
-                        alt="People connecting during a commute" width="700" height="500" loading="lazy">
+            <div class="row g-3">
+                <div class="col-lg-6">
+                    <img src="./images/cta-main-image.png" class="mx-lg-auto img-fluid"
+                        alt="People Connecting During A Commute">
                 </div>
                 <div class="col-lg-6">
-                    <h2 class="display-4 fw-bold lh-1 mb-3">Sign Up To Begin Connecting</h2>
+                    <h2 class="display-4 fw-bold">Sign Up And Begin Connecting</h2>
                     <p class="lead">Turn Your Commute Into A Journey Of New Connections</p>
                     <div class="features-list d-flex flex-column gap-4">
                         <div class="feature-item d-flex align-items-start">
@@ -145,17 +149,15 @@
                             <h4 class="mb-0">Combat Isolation: Boost Your Mood!</h4>
                         </div>
                     </div>
-                    <div class="text-start mt-4">
-                        <button class="btn btn-lg btn-primary signup-btn" type="button" style="width: auto;">Become A
-                            Buddy</button>
-                    </div>
+                    <button class="btn btn-lg btn-primary signup-btn mt-3" type="button" style="width: auto;">
+                        Become A Buddy
+                    </button>
                 </div>
             </div>
         </div>
     </div>
-    <!---------------------------------------------->
+   
     <!-- Your own JavaScript functions go here    -->
-    <!---------------------------------------------->
     <script src="./scripts/firebaseAPI_BBY32.js"></script>
     <script src="./scripts/script.js"></script>
     <script src="./scripts/authentication.js"></script>
