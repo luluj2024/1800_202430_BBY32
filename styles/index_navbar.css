@@ -27,10 +27,6 @@ nav {
   margin-right: auto; 
 }
 
-.navigation-brand a {
-  padding: 0;
-}
-
 .navigation-brand img {
   height: 60px; 
   width: auto;  

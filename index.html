@@ -32,14 +32,12 @@
     <link rel="stylesheet" href="styles/index_navbar.css">
 </head>
 
-<body class="bg-primary">
+<body>
     <header>
         <nav>
             <div class="navigation-brand">
-                <a href="#">
-                    <img src="./images/icons/logo.png" alt="Brand Logo" />
-                    <p>Commute Buddy</p>
-                </a>
+                <img src="./images/icons/logo.png" alt="Brand Logo" />
+                <p>Commute Buddy</p>
             </div>
 
             <input type="checkbox" id="sidebar-active">
@@ -74,10 +72,11 @@
         <div id="loader">Loading...</div>
     </div>
 
-    <div class="container bg-secondary p-5">
+    <!-- Welcome Banner -->
+    <div class="container bg-secondary-subtle p-5">
         <div class="container-fluid">
-            <div class="row">
-                <div class="col d-flex flex-column justify-content-between">
+            <div class="row g-3">
+                <div class="col-lg-6 d-flex flex-column justify-content-between">
                     <h1 class="display-4 fw-bold">Commute Buddy!</h1>
                     <p class="lead">
                         Commute Buddy is the social transportation app that turns your long-distance
@@ -86,15 +85,13 @@
                     </p>
                     <button class="btn btn-lg btn-primary signup-btn" type="button">Log In</button>
                 </div>
-                <div class="col-10 col-sm-8 col-lg-6">
+                <div class="col-lg-6">
                     <img src="./images/bustalking.jpg" class="d-block mx-lg-auto img-fluid"
                         alt="Two people talking during a commute" width="700" height="500" loading="lazy"
                         id="bustalking">
                 </div>
             </div>
         </div>
-
-
 
         <div class="container-fluid col-xxl-8 px-4 py-5" id="cta">
             <div class="row flex-lg-row align-items-center g-5">
