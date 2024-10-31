@@ -1,14 +1,6 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Edu+AU+VIC+WA+NT+Guides:wght@400..700&display=swap');
 
-:root {
-    --heading-color: #1c2240;
-}
-
-.title {
-    color: var(--heading-color) !important; 
-}
-
 #bustalking {
     border-radius: 5%;
 }
@@ -41,9 +33,7 @@
     z-index: 51;
 }
 
-.btn-warning {
-    background-color: rgb(81, 81, 214);
-    color: white;
+.btn-primary {
     font-weight: bold;
     width: 30%;
     border: 0;
