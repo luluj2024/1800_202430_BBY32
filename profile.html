@@ -33,7 +33,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
 
   <!-- Link to styles of your own -->
-  <link rel="stylesheet" href="./styles/styles.css">
+  <link rel="stylesheet" href="./styles/profile.css">
 
 </head>
 
@@ -44,53 +44,55 @@
   <!------------------------------>
   <!-- Stuff for body goes here -->
 
-  <!--Searchbox-->
-
-  <!--Bus info-->
-  <div id="bus-info">
-    <div class="huh">
-      <h5>Edit</h5>
-      <h5>Add a friend...</h5>
-    </div>
-    <br>
-    <div class="card" style="width: 80%;">
-      <div class="card-body">
-        <h5 class="card-title">Friend #1</h5>
-        <p class="card-text">How do you do?</p>
-        <a href="#" class="btn btn-primary">Chat...</a>
-      </div>
-    </div><br>
-    <div class="card" style="width: 80%;">
-      <div class="card-body">
-        <h5 class="card-title">Friend #2</h5>
-        <p class="card-text">Hey, I just had a quick question...</p>
-        <a href="#" class="btn btn-primary">Chat...</a>
-      </div>
-    </div><br>
-    <div class="card" style="width: 80%;">
-      <div class="card-body">
-        <h5 class="card-title">Friend #3</h5>
-        <p class="card-text">It was nice meeting you...</p>
-        <a href="#" class="btn btn-primary">Chat...</a>
-      </div>
-    </div>
+  <!--Top Part-->
+  <div class="top-part">
+    <a href="main.html"><span class="material-symbols-outlined">arrow_back</span></a>
+    <p id="edit">Edit Profile</p>
+    <!-- need to write to the database -->
+    <button type="submit">Save</button>
   </div>
 
-  <nav class="navbar fixed-bottom bg-body-tertiary">
-    <div class="container-fluid">
-      <span class="material-symbols-outlined"><a href="main.html">location_on</a></span>
-      <span class="material-symbols-outlined"><a href="chat-menu.html">forum</a></span>
-      <span class="material-symbols-outlined"><a href="#">star</a></span>
-      <span class="material-symbols-outlined"><a href="#">newsmode</a></span>
+  <!-- profile info -->
+  <div class="profile-info">
+    <div class="icon">
+      <img src="./images/profile.png" alt="">
+      <input type="file">
     </div>
-  </nav>
+    <div class="form-container">
+      <div class="form-group">
+        <label for="full-name">Full name</label>
+        <!-- placeholder should be got from the database -->
+        <input type="text" id="full-name" placeholder="name-goes-here">
+      </div>
+      <div class="form-group">
+        <label for="email">Email (used for login)</label>
+        <div class="email-container">
+          <!-- placeholder should be got from the database -->
+          <input type="text" id="full-name" placeholder="email-goes-here">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="phone">Phone</label>
+        <input type="tel" id="phone" placeholder="Type here">
+      </div>
+      <div class="form-group">
+        <label for="birthday">Birthday</label>
+        <input type="date" id="birthday" placeholder="Type here">
+      </div>
+      <div class="form-group">
+        <label for="about-me">About me</label>
+        <textarea name="" id="" ></textarea>
+      </div>
+    </div>
+
+  </div>
 
   <!---------------------------------------------->
   <!-- Your own JavaScript functions go here    -->
   <!---------------------------------------------->
 
   <!-- Link to scripts of your own -->
-  <!-- <script src="./scripts/script.js"></script> -->
+  <script src="./scripts/profile.js"></script>
 </body>
 
 </html>
