@@ -20,11 +20,12 @@
 
 .close-btn {
     position: absolute;
-    top: 20px;
-    right: 20px;
+    margin-top: -20px;
+    top: 5px;
+    right: 10px;
     font-size: 50px;
     font-weight: bolder;
-    color: red;
+    color: azure;
     cursor: pointer;
     z-index: 51;
 }
@@ -32,6 +33,7 @@
 .btn-primary {
     font-weight: bold;
     width: 30%;
+    margin-top: 2vh;
     border: 0;
     font-size: 1.2rem;
 }
@@ -67,5 +69,3 @@
     margin: 0 auto;
     border-radius: 10px;
 }
-
-
