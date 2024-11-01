@@ -10,8 +10,6 @@ var uiConfig = {
         db.collection("users").doc(user.uid).set({         
           name: user.displayName,                    
           email: user.email,                         
-          country: "Canada",                          
-          school: "BCIT",
           favorite_routes: [],
           friends: []         
         }).then(function () {
