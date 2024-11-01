@@ -28,6 +28,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
 
     <!-- Link to styles of your own -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="styles/styles.css">
     <link rel="stylesheet" href="styles/index_navbar.css">
 </head>
@@ -66,7 +67,7 @@
         </nav>
     </header>
 
-    <!-- Login Button: Hidden -->
+    <!-- Login Container -->
     <div id="signup-container" class="d-none">
         <div id="firebaseui-auth-container"></div>
         <div id="loader">Loading...</div>
@@ -89,7 +90,7 @@
                     </div>
                 </div>
                 <div class="col-lg-6">
-                    <img src="./images/bustalking.jpg" class="mx-lg-auto img-fluid"
+                    <img src="./images/bustalking.jpg" class="mx-lg-auto img-fluid rounded"
                         alt="Two people talking during a commute" width="700" height="500" loading="lazy"
                         id="bustalking">
                 </div>
@@ -159,8 +160,12 @@
    
     <!-- Your own JavaScript functions go here    -->
     <script src="./scripts/firebaseAPI_BBY32.js"></script>
-    <script src="./scripts/script.js"></script>
     <script src="./scripts/authentication.js"></script>
+    <script src="./scripts/script.js"></script>
+
+    <script>
+        logout();       //make sure user is logged out
+    </script>
 </body>
 
 </html>
