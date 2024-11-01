@@ -4,14 +4,7 @@ var ui = new firebaseui.auth.AuthUI(firebase.auth());
 var uiConfig = {
   callbacks: {
     signInSuccessWithAuthResult: function (authResult, redirectUrl) {
-      // User successfully signed in.
-      // Return type determines whether we continue the redirect automatically
-      // or whether we leave that to developer to handle.
       // If the user is a "brand new" user, then create a new "user" in your own database.
-      // Assign this user with the name and email provided.
-      // Before this works, you must enable "Firestore" from the firebase console.
-      // The Firestore rules must allow the user to write. 
-      //------------------------------------------------------------------------------------------
       var user = authResult.user;                            
       if (authResult.additionalUserInfo.isNewUser) {        
         db.collection("users").doc(user.uid).set({         
