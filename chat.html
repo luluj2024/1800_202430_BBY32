@@ -30,6 +30,31 @@
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
 
   <!-- Link to styles of your own -->
+
+
+</head>
+
+<body>
+
+  <!------------------------------>
+  <!-- Your HTML Layout go here -->
+  <!------------------------------>
+  <!-- Stuff for body goes here -->
+
+  <!--Top Part-->
+  <div class="top-part">
+    <a href="main.html"><span class="material-symbols-outlined">arrow_back</span></a>
+    <p id="edit">Edit Profile</p>
+    <!-- need to write to the database -->
+    <button type="submit">Save</button>
+  </div>
+
+  <!-- profile info -->
+  <div class="profile-info">
+    <div class="icon">
+      <img src="./images/profile.png" alt="">
+      <input type="file">
+========
   <link rel="stylesheet" href="./styles/styles.css">
   <link rel="stylesheet" href="./styles/chat-menu-styles.css">
 </head>
@@ -91,8 +116,36 @@
       <span class="material-symbols-outlined"><a href="chat.html">forum</a></span>
       <span class="material-symbols-outlined"><a href="#">star</a></span>
       <span class="material-symbols-outlined"><a href="#">newsmode</a></span>
+>>>>>>>> 94fa357771ff541ed6ec8bbb9714fc1e1f60286c:chat.html
     </div>
-  </nav>
+    <div class="form-container">
+      <div class="form-group">
+        <label for="full-name">Full name</label>
+        <!-- placeholder should be got from the database -->
+        <input type="text" id="full-name" placeholder="name-goes-here">
+      </div>
+      <div class="form-group">
+        <label for="email">Email (used for login)</label>
+        <div class="email-container">
+          <!-- placeholder should be got from the database -->
+          <input type="text" id="full-name" placeholder="email-goes-here">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="phone">Phone</label>
+        <input type="tel" id="phone" placeholder="Type here">
+      </div>
+      <div class="form-group">
+        <label for="birthday">Birthday</label>
+        <input type="date" id="birthday" placeholder="Type here">
+      </div>
+      <div class="form-group">
+        <label for="about-me">About me</label>
+        <textarea name="" id="" ></textarea>
+      </div>
+    </div>
+
+  </div>
 
   <!---------------------------------------------->
   <!-- Your own JavaScript functions go here    -->
@@ -102,6 +155,7 @@
   <script src="./scripts/firebaseAPI_BBY32.js"></script>
   <script src="./scripts/script.js"></script>
   <script src="./scripts/chat_scripts.js"></script>
+  <script src="./scripts/profile.js"></script>
 </body>
 
 </html>
