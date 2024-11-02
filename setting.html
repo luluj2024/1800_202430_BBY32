@@ -48,16 +48,17 @@
   <div class="top-part">
     <a href="main.html"><span class="material-symbols-outlined">arrow_back</span></a>
     <p id="edit">Edit Profile</p>
-    <!-- need to write to the database -->
-    <button type="submit">Save</button>
+    <button type="submit" id="save-button">Save</button>
   </div>
 
   <!-- profile info -->
   <div class="profile-info">
     <div class="icon">
-      <img src="./images/profile.png" alt="">
-      <input type="file">
+        <img id="profile-photo-preview" src="./images/profile.png" alt="Profile Photo">
+        <input type="file" id="profile-photo-upload" accept="image/*" style="display: none;">
+        <button type="button" id="upload-button">Change Photo</button>
     </div>
+</div>
     <div class="form-container">
       <div class="form-group">
         <label for="full-name">Full name</label>
@@ -66,7 +67,7 @@
       <div class="form-group">
         <label for="email">Email (used for login)</label>
         <div class="email-container">
-          <input type="text" id="full-name" placeholder="Loading...">
+          <input type="text" id="email" placeholder="Loading...">
         </div>
       </div>
       <div class="form-group">
@@ -79,7 +80,7 @@
       </div>
       <div class="form-group">
         <label for="about-me">About me</label>
-        <textarea name="" id="" placeholder="Loading..."></textarea>
+        <textarea name="" id="about-me" placeholder="Loading..."></textarea>
       </div>
     </div>
 
@@ -90,7 +91,9 @@
   <!---------------------------------------------->
 
   <!-- Link to scripts of your own -->
+  <script src="./scripts/firebaseAPI_BBY32.js"></script>
   <script src="./scripts/setting.js"></script>
+  <!-- <script src="./scripts/authentication.js"></script> -->
 </body>
 
 </html>

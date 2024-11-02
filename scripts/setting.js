@@ -1,50 +1,81 @@
 function insertFormInfoFromFirestore() {
     firebase.auth().onAuthStateChanged(user => {
         if (user) {
-            console.log(user.uid); 
-            currentUser = db.collection("users").doc(user.uid); 
-            currentUser.get().then(userDoc => {
-                let userName = userDoc.data().name;
-                let userEmail = userDoc.data().email;
-                let userPhone = userDoc.data().phone;
-                let userBOD = userDoc.data().birthday;
-                let userDescription = user.data().description;
-                console.log(userName);
-                document.getElementById("full-name").value = userName || "";
-                document.getElementById("email").value = userEmail || "";
-                document.getElementById("phone").value = userPhone || "";
-                document.getElementById("birthday").value = userBOD || "";
-                document.getElementById("about-me").value = userDescription || "";
-            })
+            const currentUserRef = db.collection("users").doc(user.uid);
+            currentUserRef.get().then(userDoc => {
+                if (userDoc.exists) {
+                    const userData = userDoc.data();
+                    document.getElementById("full-name").value = userData.name || "";
+                    document.getElementById("email").value = userData.email || "";
+                    document.getElementById("phone").value = userData.phone || "";
+                    document.getElementById("birthday").value = userData.birthday || "2024-11-02";
+                    document.getElementById("about-me").value = userData.description || "";
+
+                    if (userData.profilePhotoBase64) {
+                        document.getElementById("profile-photo-preview").src = userData.profilePhotoBase64;
+                    }
+                }
+            }).catch(error => {
+                console.error("Error getting user document:", error);
+            });
         } else {
-            console.log("No user is logged in."); 
+            console.log("No user is logged in.");
         }
-    })
+    });
 }
 
 insertFormInfoFromFirestore();
 
+let profilePhotoBase64 = ""; 
 
-function saveUserInfo() {
-    const userInfo = {
-        fullName: document.getElementById('full-name').value,
-        email: document.getElementById('email').value,
-        phone: document.getElementById('phone').value,
-        birthday: document.getElementById('birthday').value,
-        aboutMe: document.getElementById('about-me').value
+document.getElementById("upload-button").addEventListener("click", () => {
+    document.getElementById("profile-photo-upload").click();
+});
+
+document.getElementById("profile-photo-upload").addEventListener("change", (event) => {
+    const profilePhotoFile = event.target.files[0];
+    if (profilePhotoFile) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            profilePhotoBase64 = e.target.result; 
+            document.getElementById("profile-photo-preview").src = profilePhotoBase64; 
+        };
+        reader.readAsDataURL(profilePhotoFile);
+    }
+});
+
+async function saveUserInfo(event) {
+    event.preventDefault();
+
+    const user = firebase.auth().currentUser;
+    
+    if (!user) {
+        console.log("No user is logged in.");
+        window.location.href = "main.html";
+        return;
+    }
+
+    const userId = user.uid;
+    const currentUserRef = db.collection("users").doc(userId);
+
+    const updatedUserInfo = {
+        name: document.getElementById("full-name").value,
+        email: document.getElementById("email").value,
+        phone: document.getElementById("phone").value,
+        birthday: document.getElementById("birthday").value,
+        description: document.getElementById("about-me").value,
+        profilePhotoBase64: profilePhotoBase64 
     };
 
-    fetch('/api/updateUserInfo', { // 假设这是更新用户数据的API
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(userInfo)
-    })
-    .then(response => {
-        if (response.ok) {
-            alert("User information saved successfully.");
-        } else {
-            alert("Failed to save user information.");
-        }
-    })
-    .catch(error => console.error('Error updating user data:', error));
+    try {
+        await currentUserRef.update(updatedUserInfo);
+        alert("User information and profile photo updated successfully.");
+    } catch (error) {
+        console.error("Error updating user information:", error);
+        alert("Failed to update user information.");
+    }
 }
+
+document.getElementById("save-button").addEventListener("click", saveUserInfo);
+
+
