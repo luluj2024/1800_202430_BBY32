@@ -3,7 +3,7 @@
 
 <head>
   <title>Commute Buddy</title>
-  <meta name="COMP1800 Commute Buddy" content="My 1800 App">
+  <meta name="comp1800 commute buddy" content="My 1800 App">
 
   <!-- Required meta tags -->
   <meta charset="utf-8">
@@ -33,7 +33,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
 
   <!-- Link to styles of your own -->
-  <link rel="stylesheet" href="./styles/styles.css">
+  <link rel="stylesheet" href="./styles/profile.css">
 
 </head>
 
@@ -44,62 +44,53 @@
   <!------------------------------>
   <!-- Stuff for body goes here -->
 
-  <!--Searchbox-->
-  <nav class="navbar bg-body-tertiary">
-    <div class="container-fluid">
-      <form class="d-flex justify-content-center w-100" role="search">
-        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-        <button class="btn btn-outline-success" type="submit">Search</button>
-        <a href="profile.html"><img src="./images/profile.jpg" alt="profile" class="profile-logo ms-auto"></a>
-      </form>
-    </div>
-  </nav>
-
-  <!--Bus info-->
-  <div id="bus-info">
-    <br>
-    <div class="card" style="width: 80%;">
-      <div class="card-body">
-        <h5 class="card-title">Bus 129</h5>
-        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's
-          content.</p>
-        <a href="#" class="btn btn-primary">Go somewhere</a>
-      </div>
-    </div><br>
-    <div class="card" style="width: 80%;">
-      <div class="card-body">
-        <h5 class="card-title">Bus 129</h5>
-        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's
-          content.</p>
-        <a href="#" class="btn btn-primary">Go somewhere</a>
-      </div>
-    </div><br>
-    <div class="card" style="width: 80%;">
-      <div class="card-body">
-        <h5 class="card-title">Bus 129</h5>
-        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's
-          content.</p>
-        <a href="#" class="btn btn-primary">Go somewhere</a>
-      </div>
-    </div><br>
+  <!--Top Part-->
+  <div class="top-part">
+    <a href="main.html"><span class="material-symbols-outlined">arrow_back</span></a>
+    <p id="edit">Edit Profile</p>
+    <!-- need to write to the database -->
+    <button type="submit">Save</button>
   </div>
 
-  <!--Navbar-->
-  <nav class="navbar fixed-bottom bg-body-tertiary">
-    <div class="container-fluid">
-      <span class="material-symbols-outlined"><a href="main.html">location_on</a></span>
-      <span class="material-symbols-outlined"><a href="chat.html">forum</a></span>
-      <span class="material-symbols-outlined"><a href="#">star</a></span>
-      <span class="material-symbols-outlined"><a href="#">newsmode</a></span>
+  <!-- profile info -->
+  <div class="profile-info">
+    <div class="icon">
+      <img src="./images/profile.png" alt="">
+      <input type="file">
     </div>
-  </nav>
+    <div class="form-container">
+      <div class="form-group">
+        <label for="full-name">Full name</label>
+        <input type="text" id="full-name" placeholder="Loading...">
+      </div>
+      <div class="form-group">
+        <label for="email">Email (used for login)</label>
+        <div class="email-container">
+          <input type="text" id="full-name" placeholder="Loading...">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="phone">Phone</label>
+        <input type="tel" id="phone" placeholder="Loading...">
+      </div>
+      <div class="form-group">
+        <label for="birthday">Birthday</label>
+        <input type="date" id="birthday" placeholder="Loading...">
+      </div>
+      <div class="form-group">
+        <label for="about-me">About me</label>
+        <textarea name="" id="" placeholder="Loading..."></textarea>
+      </div>
+    </div>
+
+  </div>
 
   <!---------------------------------------------->
   <!-- Your own JavaScript functions go here    -->
   <!---------------------------------------------->
 
   <!-- Link to scripts of your own -->
-  <!-- <script src="./scripts/script.js"></script> -->
+  <script src="./scripts/setting.js"></script>
 </body>
 
 </html>

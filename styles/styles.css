@@ -1,49 +1,10 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Edu+AU+VIC+WA+NT+Guides:wght@400..700&display=swap');
 
-
-#bustalking {
-    border-radius: 5%;
-}
-
-#welcome {
-    margin: 10% auto;
-}
-
 #welcometitle {
     font-size: 50pt;
 }
 
-.nav-link{
-    color: white;
-}
-
-.lead {
-    text-align: justify;
-    margin-bottom: 5%;
-}
-
-body {
-    padding-bottom: 120px;
-}
-
-.cta-content {
-    padding-left: 100px;
-}
-
-#navtitle {
-    font-family: "Edu AU VIC WA NT Guides", cursive;
-    color: white;
-    font-weight: 700;
-    font-style: italic;
-    padding-left: 3%;
-}
-#navbar {
-    background-image: linear-gradient(145deg, rgb(112, 112, 168),rgb(86, 86, 193));
-}
-.nav-item {
-    font-weight: 700;
-}
 #signup-container {
     position: fixed;
     top: 0;
@@ -56,26 +17,26 @@ body {
     align-items: center;
     z-index: 50;
 }
+
 .close-btn {
     position: absolute;
-    top: 20px;
-    right: 20px;
+    margin-top: -20px;
+    top: 5px;
+    right: 10px;
     font-size: 50px;
     font-weight: bolder;
-    color: red;
+    color: azure;
     cursor: pointer;
     z-index: 51;
 }
 
-.btn-warning {
-    background-color: rgb(81, 81, 214);
-    color: white;
+.btn-primary {
     font-weight: bold;
     width: 30%;
+    margin-top: 2vh;
     border: 0;
     font-size: 1.2rem;
 }
-
 
 .form-control {
     width: 80vw;
@@ -108,10 +69,3 @@ body {
     margin: 0 auto;
     border-radius: 10px;
 }
-
-.huh {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px;
-}
-

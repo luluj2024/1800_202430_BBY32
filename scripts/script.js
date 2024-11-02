@@ -10,20 +10,27 @@ function logout() {
   });
 }
 
-document.getElementById('signup-btn').addEventListener('click',
-  function () {
-    var signupContainer = document.getElementById('signup-container');
-    var closeButton = document.createElement('span');
-    var body = document.getElementById('core');
-    signupContainer.style = ''
-    closeButton.className = 'close-btn';
-    closeButton.innerHTML = '&times;';
-    signupContainer.appendChild(closeButton);
-    body.style = 'overflow: hidden;'
+// Function to show the signup container
+function showSignupContainer() {
+  var signupContainer = document.getElementById('signup-container');
+  var closeButton = document.createElement('span');
+  var body = document.body;
 
-    closeButton.addEventListener('click', function () {
+  signupContainer.classList.remove('d-none');
+  closeButton.className = 'close-btn';
+  closeButton.innerHTML = '&times;';
+  signupContainer.appendChild(closeButton);
+  body.style.overflow = 'hidden'; 
+
+  closeButton.addEventListener('click', function () {
       signupContainer.removeChild(closeButton);
-      signupContainer.style = 'display: none;'
-      body.style = 'overflow: none;'
-    });
+      signupContainer.classList.add('d-none');
+      body.style.overflow = ''; 
   });
+}
+
+// Event listener for the "Become A Commute Buddy" button
+document.querySelectorAll('.signup-btn').forEach(function(button) {
+  button.addEventListener('click', showSignupContainer);
+});
+
