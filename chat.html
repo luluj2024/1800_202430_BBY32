@@ -12,7 +12,7 @@
   <!-- Bootstrap Library CSS JS CDN  -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+  <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
     crossorigin="anonymous"></script>
 
@@ -30,122 +30,48 @@
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
 
   <!-- Link to styles of your own -->
-
-
 </head>
 
 <body>
+  <header>
+    <nav class="navbar navbar-expand navbar-light bg-light w-100">
+      <div class="container-fluid">
+        <ul class="navbar-nav flex-row justify-content-between w-100">
+          <li class="nav-item">
+            <a class="nav-link" href="#">Edit</a>
+          </li>
+          <li class="nav-item">
+            <a id="addFriends" class="nav-link" href="#">Add Friends</a>
+          </li>
+          <li class="nav-item">
+            <a id="friendsList" class="nav-link" href="#">Friends List</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </header>
 
-  <!------------------------------>
-  <!-- Your HTML Layout go here -->
-  <!------------------------------>
-  <!-- Stuff for body goes here -->
-
-  <!--Top Part-->
-  <div class="top-part">
-    <a href="main.html"><span class="material-symbols-outlined">arrow_back</span></a>
-    <p id="edit">Edit Profile</p>
-    <!-- need to write to the database -->
-    <button type="submit">Save</button>
-  </div>
-
-  <!-- profile info -->
-  <div class="profile-info">
-    <div class="icon">
-      <img src="./images/profile.png" alt="">
-      <input type="file">
-========
-  <link rel="stylesheet" href="./styles/styles.css">
-  <link rel="stylesheet" href="./styles/chat-menu-styles.css">
-</head>
-
-<body>
   <template id="friend-template">
     <div class="card">
       <div class="card-body">
         <h5 class="card-title"></h5>
-        <p class="d-none"></p>
-        <p class="card-text"></p>
+        <p class="d-none userid"></p>
         <a href="#" class="btn btn-primary"></a>
       </div>
     </div>
   </template>
 
-  <!-- Main Content Container -->
   <div class="container">
-    <!-- <div class="card">
-      <div class="card-body">
-        <h5 class="card-title">Friend #1</h5>
-        <p class="card-text">How do you do?</p>
-        <a href="#" class="btn btn-primary">Chat...</a>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-body">
-        <h5 class="card-title">Friend #2</h5>
-        <p class="card-text">Hey, I just had a quick question...</p>
-        <a href="#" class="btn btn-primary">Chat...</a>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-body">
-        <h5 class="card-title">Friend #3</h5>
-        <p class="card-text">It was nice meeting you...</p>
-        <a href="#" class="btn btn-primary">Chat...</a>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-body">
-        <h5 class="card-title">Friend #4</h5>
-        <p class="card-text">YOLO my boy...</p>
-        <a href="#" class="btn btn-primary">Chat...</a>
-      </div>
-    </div> -->
   </div>
 
-  <div class="main-content">
-    <div class="friendlist">
-      
-    </div>
-    <div class="messages">
-    </div>
-  </div>
   <nav class="navbar fixed-bottom bg-body-tertiary">
     <div class="container-fluid">
       <span class="material-symbols-outlined"><a href="main.html">location_on</a></span>
       <span class="material-symbols-outlined"><a href="chat.html">forum</a></span>
       <span class="material-symbols-outlined"><a href="#">star</a></span>
       <span class="material-symbols-outlined"><a href="#">newsmode</a></span>
->>>>>>>> 94fa357771ff541ed6ec8bbb9714fc1e1f60286c:chat.html
     </div>
-    <div class="form-container">
-      <div class="form-group">
-        <label for="full-name">Full name</label>
-        <!-- placeholder should be got from the database -->
-        <input type="text" id="full-name" placeholder="name-goes-here">
-      </div>
-      <div class="form-group">
-        <label for="email">Email (used for login)</label>
-        <div class="email-container">
-          <!-- placeholder should be got from the database -->
-          <input type="text" id="full-name" placeholder="email-goes-here">
-        </div>
-      </div>
-      <div class="form-group">
-        <label for="phone">Phone</label>
-        <input type="tel" id="phone" placeholder="Type here">
-      </div>
-      <div class="form-group">
-        <label for="birthday">Birthday</label>
-        <input type="date" id="birthday" placeholder="Type here">
-      </div>
-      <div class="form-group">
-        <label for="about-me">About me</label>
-        <textarea name="" id="" ></textarea>
-      </div>
-    </div>
-
-  </div>
+  </nav>
 
   <!---------------------------------------------->
   <!-- Your own JavaScript functions go here    -->
@@ -153,9 +79,7 @@
 
   <!-- Link to scripts of your own -->
   <script src="./scripts/firebaseAPI_BBY32.js"></script>
-  <script src="./scripts/script.js"></script>
   <script src="./scripts/chat_scripts.js"></script>
-  <script src="./scripts/profile.js"></script>
 </body>
 
 </html>
