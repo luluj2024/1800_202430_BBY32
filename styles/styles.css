@@ -63,9 +63,15 @@
     width: 80vw;
     background-color: lightgray;
     border-radius: 20px;
+    padding-top: 20px;
+}
+
+#bus-info a {
+    display: inline;
 }
 
 .card{
     margin: 0 auto;
     border-radius: 10px;
+
 }
