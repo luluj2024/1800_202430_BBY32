@@ -29,7 +29,7 @@ function displaySimilarRoutes() {
             routeList.forEach(routeId => {
                 console.log(routeId.data().bus);
                 console.log(searchbar.value);
-                if (relatedRoutes(searchbar.value, routeId.data().bus)) {
+                if (relatedRoutes(searchbar.value, routeId.data().bus, routeId.data().name)) {
                     outputCards(container, busTemplate, routeId);
                 }
             })
@@ -41,12 +41,27 @@ function displaySimilarRoutes() {
 }
 
 
-function relatedRoutes(search, result) {
+function relatedRoutes(search, result, result2) {
     result += '';
-
+    result2 += '';
     for (let i = 0; i < search.length; i++) {
-        if (search[i] != result[i]) {
-            console.log(search + " fail " + result);
+        if (i >= result.length && i >= result2.length) {
+            return false;
+        }
+        else if (i >= result.length) {
+            if (search[i] != result2[i]) {
+                console.log("fail");
+                return false;
+            }
+        }
+        else if (i >= result2.length) {
+            if (search[i] != result[i]) {
+                console.log("fail");
+                return false;
+            }
+        }
+        else if (search[i] != result[i] && search[i].toLowerCase() != result2[i].toLowerCase()) {
+            console.log("fail");
             return false;
         }
     }
