@@ -56,40 +56,29 @@
   </nav>
 
   <!--Bus info-->
-  <div id="bus-info">
-    <br>
-    <div class="card" style="width: 80%;">
-      <div class="card-body">
-        <h5 class="card-title">Bus 129</h5>
-        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's
-          content.</p>
-        <a href="#" class="btn btn-primary">Go somewhere</a>
+  <template id="bus-template">
+      <div class="card" style="width: 80%;">
+        <div class="card-body">
+          <h4 class="card-title"></h5>
+          <h5 class="card-time"></h6>
+          <p class="card-text"></p>
+          <a href="#" class="btn btn-primary">Go somewhere</a>
+        </div>
       </div>
-    </div><br>
-    <div class="card" style="width: 80%;">
-      <div class="card-body">
-        <h5 class="card-title">Bus 129</h5>
-        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's
-          content.</p>
-        <a href="#" class="btn btn-primary">Go somewhere</a>
-      </div>
-    </div><br>
-    <div class="card" style="width: 80%;">
-      <div class="card-body">
-        <h5 class="card-title">Bus 129</h5>
-        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's
-          content.</p>
-        <a href="#" class="btn btn-primary">Go somewhere</a>
-      </div>
-    </div><br>
+      <br>
+  </template>
+
+  <div id="bus-info"> 
   </div>
+
+
 
   <!--Navbar-->
   <nav class="navbar fixed-bottom bg-body-tertiary">
     <div class="container-fluid">
       <span class="material-symbols-outlined"><a href="main.html">location_on</a></span>
       <span class="material-symbols-outlined"><a href="chat.html">forum</a></span>
-      <span class="material-symbols-outlined"><a href="#">star</a></span>
+      <span class="material-symbols-outlined"><a href="favorites.html">star</a></span>
       <span class="material-symbols-outlined"><a href="#">newsmode</a></span>
     </div>
   </nav>
@@ -99,7 +88,8 @@
   <!---------------------------------------------->
 
   <!-- Link to scripts of your own -->
-  <!-- <script src="./scripts/script.js"></script> -->
+  <script src="./scripts/firebaseAPI_BBY32.js"></script>
+  <script src="./scripts/main.js"></script>
 </body>
 
 </html>
