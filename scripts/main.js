@@ -33,16 +33,19 @@ function displaySimilarRoutes() {
                     outputCards(container, busTemplate, routeId);
                 }
             })
+            if (!container.hasChildNodes) {
+                container.innerHTML("No bus routes available");
+            }
         })
     }
 }
 
-// currently doesnt work as it says charAt no longer is a function randomly
+
 function relatedRoutes(search, result) {
+    result += '';
+
     for (let i = 0; i < search.length; i++) {
-        console.log(search.charAt(i));
-        console.log(result.charAt(i));
-        if (search.charAt(i) != result.charAt(i)) {
+        if (search[i] != result[i]) {
             console.log(search + " fail " + result);
             return false;
         }
@@ -58,7 +61,6 @@ function outputCards(container, busTemplate, routeId) {
     let busTime = "Start: " + data.start + " End: " + data.end;
     card.querySelector(".card-title").textContent = busTitle;
     card.querySelector(".card-time").textContent = busTime;
-    //   card.querySelector(".card-text").textContent = ;
 
     container.appendChild(card);
 }

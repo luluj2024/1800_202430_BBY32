@@ -66,8 +66,8 @@
     padding-top: 20px;
 }
 
-#bus-info a {
-    display: inline;
+#favbtn {
+    float:right;
 }
 
 .card{
