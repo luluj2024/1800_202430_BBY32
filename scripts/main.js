@@ -13,6 +13,7 @@ function displayAllRoutes() {
 
 displayAllRoutes();
 
+//Only displays routes similar to search query 
 function displaySimilarRoutes() {
     let searchbar = document.getElementById("searchbar");
     console.log(searchbar.value);
@@ -33,9 +34,6 @@ function displaySimilarRoutes() {
                     outputCards(container, busTemplate, routeId);
                 }
             })
-            if (!container.hasChildNodes) {
-                container.innerHTML("No bus routes available");
-            }
         })
     }
 }
@@ -44,12 +42,14 @@ function displaySimilarRoutes() {
 function relatedRoutes(search, result, result2) {
     result += '';
     result2 += '';
+    //Loops through the search and bus#/busName values to see what matches and return it to user
     for (let i = 0; i < search.length; i++) {
+        //Verify I dont attempt to go out of length
         if (i >= result.length && i >= result2.length) {
             return false;
         }
         else if (i >= result.length) {
-            if (search[i] != result2[i]) {
+            if (search[i] != result2[i].toLowerCase()) {
                 console.log("fail");
                 return false;
             }
@@ -69,6 +69,7 @@ function relatedRoutes(search, result, result2) {
     return true;
 }
 
+//Adds valid bus cards to bus route list
 function outputCards(container, busTemplate, routeId) {
     let data = routeId.data();
     let card = busTemplate.content.cloneNode(true);
@@ -79,3 +80,19 @@ function outputCards(container, busTemplate, routeId) {
 
     container.appendChild(card);
 }
+
+
+// Function found at https://www.freecodecamp.org/news/javascript-debounce-example/ and used to prevent multiple function calls in searchbar
+function debounce(func, timeout = 250){
+    let timer;
+    return (...args) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => { func.apply(this, args); }, timeout);
+    };
+  }
+  //delays searchbar inputs to prevent duplication and excessive database calls
+  const processSearch = debounce(() => displaySimilarRoutes());
+  
+  
+  
+  
