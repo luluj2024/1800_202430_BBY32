@@ -35,6 +35,13 @@ function displaySimilarRoutes() {
                 }
             })
         })
+        if (!container.hasChildNodes()) {
+            console.log("It detects!");
+            document.getElementById("status").innerHTML = "<h4>Sorry, your search doesnt match any routes in our database.</h4>";
+        }
+        else {
+            document.getElementById("status").innerHTML = "";
+        }
     }
 }
 

@@ -66,6 +66,11 @@
     padding-top: 20px;
 }
 
+#status h4 {
+    text-align: center;
+    padding: 5%;
+}
+
 #favbtn {
     float:right;
 }
