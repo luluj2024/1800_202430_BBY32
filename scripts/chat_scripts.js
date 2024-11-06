@@ -33,6 +33,28 @@ async function getUserData(userId) {
   return docRef.data();
 }
 
+async function addFriend(buddyId) {
+  let userDocRef = await db.collection("users").doc(currentUserId);
+  let buddyDocRef = await db.collection("users").doc(buddyId);
+  userDocRef.update({
+    friends: firebase.firestore.FieldValue.arrayUnion(buddyId)
+  })
+  buddyDocRef.update({
+    friends: firebase.firestore.FieldValue.arrayUnion(currentUserId)
+  })
+}
+
+async function removeFriend(buddyId) {
+  let userDocRef = await db.collection("users").doc(currentUserId);
+  let buddyDocRef = await db.collection("users").doc(buddyId);
+  userDocRef.update({
+    friends: firebase.firestore.FieldValue.arrayRemove(buddyId)
+  })
+  buddyDocRef.update({
+    friends: firebase.firestore.FieldValue.arrayRemove(currentUserId)
+  })
+}
+
 function displayCurrentBuddies() {
   const buddyTemplate = document.getElementById("buddyTemplate");
   const mainContainer = document.getElementById("mainContainer");
@@ -67,6 +89,7 @@ function displayAllUsers() {
 
           card.querySelector(".btn").addEventListener("click", event => {
             addFriend(buddyId);
+            displayAllUsers();
           })
 
           mainContainer.appendChild(card);
@@ -90,32 +113,11 @@ function editCurrentBuddies() {
 
         card.querySelector(".btn").addEventListener("click", event => {
           removeFriend(buddyId);
+          editCurrentBuddies();
         })
 
         mainContainer.appendChild(card);
       })
     })
-  })
-}
-
-async function addFriend(buddyId) {
-  let userDocRef = await db.collection("users").doc(currentUserId);
-  let buddyDocRef = await db.collection("users").doc(buddyId);
-  userDocRef.update({
-    friends: firebase.firestore.FieldValue.arrayUnion(buddyId)
-  })
-  buddyDocRef.update({
-    friends: firebase.firestore.FieldValue.arrayUnion(currentUserId)
-  })
-}
-
-async function removeFriend(buddyId) {
-  let userDocRef = await db.collection("users").doc(currentUserId);
-  let buddyDocRef = await db.collection("users").doc(buddyId);
-  userDocRef.update({
-    friends: firebase.firestore.FieldValue.arrayRemove(buddyId)
-  })
-  buddyDocRef.update({
-    friends: firebase.firestore.FieldValue.arrayRemove(currentUserId)
   })
 }
