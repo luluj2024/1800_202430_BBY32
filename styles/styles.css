@@ -30,7 +30,7 @@
     z-index: 51;
 }
 
-.btn-primary {
+.btn-primary, .btn-warning {
     font-weight: bold;
     width: 30%;
     margin-top: 2vh;

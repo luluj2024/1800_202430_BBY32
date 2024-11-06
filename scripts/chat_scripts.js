@@ -55,6 +55,16 @@ async function removeFriend(buddyId) {
   })
 }
 
+function friendListTemplateStyling(card, buddyData) {
+  card.querySelector(".card-title").textContent = buddyData.name;
+  const buttonOne = card.getElementById("buddyButtonOne");
+  const buttonTwo = card.getElementById("buddyButtonTwo");
+  buttonOne.textContent = "More Info";
+  buttonOne.classList.toggle("btn-primary");
+  buttonTwo.textContent = "Message";
+  buttonTwo.classList.toggle("btn-primary");
+}
+
 function displayCurrentBuddies() {
   const buddyTemplate = document.getElementById("buddyTemplate");
   const mainContainer = document.getElementById("mainContainer");
@@ -64,7 +74,15 @@ function displayCurrentBuddies() {
     currentBuddies.forEach(buddyId => {
       getUserData(buddyId).then(buddyData => {
         let card = buddyTemplate.content.cloneNode(true);
-        card.querySelector(".card-title").textContent = buddyData.name;
+        // card.querySelector(".card-title").textContent = buddyData.name;
+        // const buttonOne = card.getElementById("buddyButtonOne");
+        // const buttonTwo = card.getElementById("buddyButtonTwo");
+        // buttonOne.textContent = "More Info";
+        // buttonOne.classList.toggle("btn-primary");
+        // buttonTwo.textContent = "Message";
+        // buttonTwo.classList.toggle("btn-primary");
+        friendListTemplateStyling(card, buddyData);
+
         mainContainer.appendChild(card);
       })
     })
@@ -85,7 +103,8 @@ function displayAllUsers() {
         if (buddyId !== currentUserId && !currentBuddies.includes(buddyId)) {
           let card = buddyTemplate.content.cloneNode(true);
           card.querySelector(".card-title").textContent = buddyData.name;
-          card.querySelector(".btn").textContent = "Add Friend";
+          card.querySelector("#buddyButtonOne").textContent = "Add Friend";
+          card.querySelector("#buddyButtonOne").classList.toggle("btn-primary");
 
           card.querySelector(".btn").addEventListener("click", event => {
             addFriend(buddyId);
@@ -109,7 +128,8 @@ function editCurrentBuddies() {
       getUserData(buddyId).then(buddyData => {
         let card = buddyTemplate.content.cloneNode(true);
         card.querySelector(".card-title").textContent = buddyData.name;
-        card.querySelector(".btn").textContent = "Remove";
+        card.querySelector("#buddyButtonOne").textContent = "Remove";
+        card.querySelector("#buddyButtonOne").classList.toggle("btn-warning");
 
         card.querySelector(".btn").addEventListener("click", event => {
           removeFriend(buddyId);
