@@ -1,176 +1,121 @@
 let currentUserId;
 
-// Check user authentication state
-firebase.auth().onAuthStateChanged(function (user) {
+firebase.auth().onAuthStateChanged((user) => {
   if (user) {
-    currentUserId = user.uid; // Store user ID
-    displayAllFriends(); // Display friends initially
-    console.log("Current User ID:", currentUserId);
+    currentUserId = user.uid;
+
+    displayCurrentBuddies();
+
+    document.getElementById("friendsList").addEventListener("click", event => {
+      displayCurrentBuddies();
+    })
+
+    document.getElementById("addFriends").addEventListener("click", event => {
+      displayAllUsers();
+    })
+
+    document.getElementById("edit").addEventListener("click", event => {
+      editCurrentBuddies();
+    })
+
   } else {
-    console.log("No user is signed in.");
+    console.log("No User Logged In");
   }
 });
 
-function displayAllUsersDynamically() {
-  let friendTemplate = document.getElementById("friend-template");
-  let container = document.querySelector(".container");
-  container.innerHTML = ''; // Clear container
+async function getCurrentBuddies(userId) {
+  const docRef = await db.collection("users").doc(userId).get();
+  return docRef.data().friends;
+}
 
-  // Ensure currentUserId is set
-  if (!currentUserId) return;
+async function getUserData(userId) {
+  const docRef = await db.collection("users").doc(userId).get();
+  return docRef.data();
+}
 
-  db.collection("users").doc(currentUserId).get()
-    .then(userData => {
-      let friends = userData.data().friends || []; // Ensure friends is an array
+function displayCurrentBuddies() {
+  const buddyTemplate = document.getElementById("buddyTemplate");
+  const mainContainer = document.getElementById("mainContainer");
+  mainContainer.innerHTML = '';
 
-      db.collection("users").get()
-        .then(allUsers => {
-          allUsers.forEach(user => {
-            let id = user.id;
-            let data = user.data();
+  getCurrentBuddies(currentUserId).then(currentBuddies => {
+    currentBuddies.forEach(buddyId => {
+      getUserData(buddyId).then(buddyData => {
+        let card = buddyTemplate.content.cloneNode(true);
+        card.querySelector(".card-title").textContent = buddyData.name;
+        mainContainer.appendChild(card);
+      })
+    })
+  })
+}
 
-            // Display users who are not the current user and not already friends
-            if (id !== currentUserId && !friends.includes(id)) {
-              let card = friendTemplate.content.cloneNode(true);
+function displayAllUsers() {
+  const buddyTemplate = document.getElementById("buddyTemplate");
+  const mainContainer = document.getElementById("mainContainer");
+  mainContainer.innerHTML = '';
 
-              card.querySelector(".card-title").textContent = data.name;
-              card.querySelector(".userid").textContent = id;
-              let addButton = card.querySelector(".btn-primary");
+  getCurrentBuddies(currentUserId).then(currentBuddies => {
+    db.collection("users").get().then(buddiesRef => {
+      buddiesRef.forEach(buddy => {
+        let buddyId = buddy.id;
+        let buddyData = buddy.data();
 
-              addButton.textContent = "Add Friend";
-              addButton.addEventListener("click", () => addFriend(id));
+        if (buddyId !== currentUserId && !currentBuddies.includes(buddyId)) {
+          let card = buddyTemplate.content.cloneNode(true);
+          card.querySelector(".card-title").textContent = buddyData.name;
+          card.querySelector(".btn").textContent = "Add Friend";
 
-              container.appendChild(card);
-            }
-          });
+          card.querySelector(".btn").addEventListener("click", event => {
+            addFriend(buddyId);
+          })
+
+          mainContainer.appendChild(card);
+        }
+      })
+    })
+  })
+}
+
+function editCurrentBuddies() {
+  const buddyTemplate = document.getElementById("buddyTemplate");
+  const mainContainer = document.getElementById("mainContainer");
+  mainContainer.innerHTML = '';
+
+  getCurrentBuddies(currentUserId).then(currentBuddies => {
+    currentBuddies.forEach(buddyId => {
+      getUserData(buddyId).then(buddyData => {
+        let card = buddyTemplate.content.cloneNode(true);
+        card.querySelector(".card-title").textContent = buddyData.name;
+        card.querySelector(".btn").textContent = "Remove";
+
+        card.querySelector(".btn").addEventListener("click", event => {
+          removeFriend(buddyId);
         })
-        .catch(error => console.error("Error retrieving all users:", error));
+
+        mainContainer.appendChild(card);
+      })
     })
-    .catch(error => console.error("Error retrieving user data:", error));
+  })
 }
 
-function displayAllFriends() {
-  let friendTemplate = document.getElementById("friend-template");
-  let container = document.querySelector(".container");
-  container.innerHTML = ''; // Clear container
-
-  // Ensure currentUserId is set
-  if (!currentUserId) return;
-
-  db.collection("users").doc(currentUserId).get()
-    .then(userData => {
-      let friendList = userData.data().friends || [];
-
-      if (friendList.length === 0) {
-        let card = friendTemplate.content.cloneNode(true);
-        card.querySelector(".card-title").textContent = "NO FRIENDS";
-        container.appendChild(card);
-        return;
-      }
-
-      friendList.forEach(friendId => {
-        db.collection("users").doc(friendId).get()
-          .then(friendData => {
-            let data = friendData.data();
-            let card = friendTemplate.content.cloneNode(true);
-
-            card.querySelector(".card-title").textContent = data.name;
-
-            container.appendChild(card);
-          })
-          .catch(error => console.error("Error fetching friend data:", error));
-      });
-    })
-    .catch(error => console.error("Error retrieving user data:", error));
+async function addFriend(buddyId) {
+  let userDocRef = await db.collection("users").doc(currentUserId);
+  let buddyDocRef = await db.collection("users").doc(buddyId);
+  userDocRef.update({
+    friends: firebase.firestore.FieldValue.arrayUnion(buddyId)
+  })
+  buddyDocRef.update({
+    friends: firebase.firestore.FieldValue.arrayUnion(currentUserId)
+  })
 }
 
-function displayAllFriendsToRemove() {
-  let friendTemplate = document.getElementById("friend-template");
-  let container = document.querySelector(".container");
-  container.innerHTML = ''; // Clear container
-
-  // Ensure currentUserId is set
-  if (!currentUserId) return;
-
-  db.collection("users").doc(currentUserId).get()
-    .then(userData => {
-      let friendList = userData.data().friends || [];
-
-      if (friendList.length === 0) {
-        let card = friendTemplate.content.cloneNode(true);
-        card.querySelector(".card-title").textContent = "NO FRIENDS";
-        container.appendChild(card);
-        return;
-      }
-
-      friendList.forEach(friendId => {
-        db.collection("users").doc(friendId).get()
-          .then(friendData => {
-            let data = friendData.data();
-            let card = friendTemplate.content.cloneNode(true);
-
-            card.querySelector(".card-title").textContent = data.name;
-            let button = card.querySelector(".btn");
-
-            button.classList.remove("btn-primary");
-            button.classList.add("btn-warning");
-            button.textContent = "Remove Friend";
-
-            button.addEventListener("click", () => {
-              removeFriend(friendId)
-                .then(() => displayAllFriendsToRemove()) // Refresh after removal
-                .catch(err => console.error("Error removing friend:", err));
-            });
-
-            container.appendChild(card);
-          })
-          .catch(error => console.error("Error fetching friend data:", error));
-      });
-    })
-    .catch(error => console.error("Error retrieving user data:", error));
+async function removeFriend(buddyId) {
+  let userDocRef = await db.collection("users").doc(currentUserId);
+  let buddyDocRef = await db.collection("users").doc(buddyId);
+  userDocRef.update({
+    friends: firebase.firestore.FieldValue.arrayRemove(buddyId)
+  })
+  buddyDocRef.update({
+    friends: firebase.firestore.FieldValue.arrayRemove(currentUserId)
+  })
 }
-
-function removeFriend(userid) {
-  console.log("Removing friend:", userid);
-
-  const userDoc = db.collection("users").doc(currentUserId);
-
-  return userDoc.get()
-    .then(doc => {
-      const friends = doc.data().friends || [];
-
-      if (friends.includes(userid)) {
-        return userDoc.update({
-          friends: firebase.firestore.FieldValue.arrayRemove(userid)
-        });
-      } else {
-        console.log("User is not a friend.");
-      }
-    })
-    .catch(error => console.error("Error retrieving friends list:", error));
-}
-
-function addFriend(userid) {
-  console.log("Adding friend:", userid);
-
-  const userDoc = db.collection("users").doc(currentUserId);
-
-  return userDoc.get()
-    .then(doc => {
-      const friends = doc.data().friends || [];
-
-      if (!friends.includes(userid)) {
-        return userDoc.update({
-          friends: firebase.firestore.FieldValue.arrayUnion(userid)
-        });
-      } else {
-        console.log("User is already a friend.");
-      }
-    })
-    .catch(error => console.error("Error adding friend:", error));
-}
-
-// Event listeners for buttons
-document.getElementById("addFriends").addEventListener("click", () => displayAllUsersDynamically());
-document.getElementById("friendsList").addEventListener("click", () => displayAllFriends());
-document.getElementById("edit").addEventListener("click", () => displayAllFriendsToRemove());
