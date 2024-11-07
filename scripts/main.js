@@ -1,3 +1,4 @@
+document.getElementById("searchbar").innerHTML = '';
 function displayAllRoutes() {
     let busTemplate = document.getElementById("bus-template");
     let container = document.getElementById("bus-info");
@@ -35,13 +36,14 @@ function displaySimilarRoutes() {
                 }
             })
         })
-        if (!container.hasChildNodes()) {
-            console.log("It detects!");
-            document.getElementById("status").innerHTML = "<h4>Sorry, your search doesnt match any routes in our database.</h4>";
-        }
-        else {
-            document.getElementById("status").innerHTML = "";
-        }
+        // CHecks for empty routes, revist with time
+        // if (routeList.isEmpty) {
+        //     console.log(container.isEmpty);
+        //     document.getElementById("status").innerHTML = "<h4>Sorry, your search doesnt match any routes in our database.</h4>";
+        // }
+        // else {
+        //     document.getElementById("status").innerHTML = "";
+        // }
     }
 }
 
