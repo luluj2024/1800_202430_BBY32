@@ -1,3 +1,12 @@
+let currentUserId;
+
+firebase.auth().onAuthStateChanged((user) => {
+  if (user) {
+    currentUserId = user.uid;
+  }
+})
+
+
 document.getElementById("searchbar").innerHTML = '';
 function displayAllRoutes() {
     let busTemplate = document.getElementById("bus-template");
@@ -84,9 +93,15 @@ function outputCards(container, busTemplate, routeId) {
     let card = busTemplate.content.cloneNode(true);
     let busTitle = "Bus " + data.bus + ": " + data.name;
     let busTime = "Start: " + data.start + " End: " + data.end;
+    // if (data.favorites.length > 2) {
+        
+    // }
     card.querySelector(".card-title").textContent = busTitle;
     card.querySelector(".card-time").textContent = busTime;
-
+    // card.querySelector(".card-fav").textContent = data.favorites[0];
+    card.querySelector("#favbtn").addEventListener("click", event => {
+        favoriteRoute(routeId.id)
+      })
     container.appendChild(card);
 }
 
@@ -101,7 +116,18 @@ function debounce(func, timeout = 250){
   }
   //delays searchbar inputs to prevent duplication and excessive database calls
   const processSearch = debounce(() => displaySimilarRoutes());
-  
-  
-  
+
+  async function favoriteRoute(route) {
+    console.log("entered favorites");
+    console.log(currentUserId);
+    console.log(route);
+    let userDocRef = await db.collection("users").doc(currentUserId);
+    let routeDocRef = await db.collection("Routes").doc(route);
+    userDocRef.update({
+      favorite_routes: firebase.firestore.FieldValue.arrayUnion(route)
+    })
+    routeDocRef.update({
+      favorites: firebase.firestore.FieldValue.arrayUnion(currentUserId)
+    })
+}
   
