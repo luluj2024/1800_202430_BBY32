@@ -99,9 +99,30 @@ function outputCards(container, busTemplate, routeId) {
     card.querySelector(".card-title").textContent = busTitle;
     card.querySelector(".card-time").textContent = busTime;
     // card.querySelector(".card-fav").textContent = data.favorites[0];
-    card.querySelector("#favbtn").addEventListener("click", event => {
-        favoriteRoute(routeId.id)
-      })
+    let curcard = card.querySelector("#favbtn");
+    // console.log(isFavorite(routeId.id));
+    let favCheck = false;
+    db.collection("users").doc(currentUserId).get().then(user => {
+        console.log("isFav?");
+        let favoriteRoutes = user.data().favorite_routes;
+        favCheck = favoriteRoutes.includes(routeId.id);
+        console.log(favCheck);
+        if (favCheck) {
+            console.log("favorite");
+            curcard.style.color = "blue";
+            curcard.addEventListener("click", event => {
+                unfavoriteRoute(routeId.id)
+              })
+        }
+        else {
+            console.log("not favorite");
+            curcard.style.color = "black";
+            curcard.addEventListener("click", event => {
+                favoriteRoute(routeId.id)
+              })
+        }
+    });
+
     container.appendChild(card);
 }
 
@@ -119,8 +140,6 @@ function debounce(func, timeout = 250){
 
   async function favoriteRoute(route) {
     console.log("entered favorites");
-    console.log(currentUserId);
-    console.log(route);
     let userDocRef = await db.collection("users").doc(currentUserId);
     let routeDocRef = await db.collection("Routes").doc(route);
     userDocRef.update({
@@ -130,4 +149,27 @@ function debounce(func, timeout = 250){
       favorites: firebase.firestore.FieldValue.arrayUnion(currentUserId)
     })
 }
-  
+
+async function unfavoriteRoute(route) {
+    console.log("entered unfavorites");
+    let userDocRef = await db.collection("users").doc(currentUserId);
+    let routeDocRef = await db.collection("Routes").doc(route);
+    userDocRef.update({
+      favorite_routes: firebase.firestore.FieldValue.arrayRemove(route)
+    })
+    routeDocRef.update({
+      favorites: firebase.firestore.FieldValue.arrayRemove(currentUserId)
+    })
+}
+
+// let favCheck;
+// async function isFavorite(route) {
+//     db.collection("users").doc(currentUserId).get().then(user => {
+//         console.log("isFav?");
+//         let favoriteRoutes = user.data().favorite_routes;
+        
+//         favCheck = favoriteRoutes.includes(route);
+//         console.log(favCheck);
+//         return favCheck;
+//     });
+// }
