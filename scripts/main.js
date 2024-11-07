@@ -93,25 +93,22 @@ function outputCards(container, busTemplate, routeId) {
     let card = busTemplate.content.cloneNode(true);
     let busTitle = "Bus " + data.bus + ": " + data.name;
     let busTime = "Start: " + data.start + " End: " + data.end;
-    // if (data.favorites.length > 2) {
-        
-    // }
     card.querySelector(".card-title").textContent = busTitle;
     card.querySelector(".card-time").textContent = busTime;
-    // card.querySelector(".card-fav").textContent = data.favorites[0];
     let curcard = card.querySelector("#favbtn");
-    // console.log(isFavorite(routeId.id));
     let favCheck = false;
     db.collection("users").doc(currentUserId).get().then(user => {
         console.log("isFav?");
         let favoriteRoutes = user.data().favorite_routes;
         favCheck = favoriteRoutes.includes(routeId.id);
-        console.log(favCheck);
         if (favCheck) {
             console.log("favorite");
             curcard.style.color = "blue";
             curcard.addEventListener("click", event => {
                 unfavoriteRoute(routeId.id)
+                setTimeout(() => {
+                    location.reload();
+                }, 500); 
               })
         }
         else {
@@ -119,6 +116,9 @@ function outputCards(container, busTemplate, routeId) {
             curcard.style.color = "black";
             curcard.addEventListener("click", event => {
                 favoriteRoute(routeId.id)
+                setTimeout(() => {
+                    location.reload();
+                }, 500); 
               })
         }
     });
@@ -161,15 +161,3 @@ async function unfavoriteRoute(route) {
       favorites: firebase.firestore.FieldValue.arrayRemove(currentUserId)
     })
 }
-
-// let favCheck;
-// async function isFavorite(route) {
-//     db.collection("users").doc(currentUserId).get().then(user => {
-//         console.log("isFav?");
-//         let favoriteRoutes = user.data().favorite_routes;
-        
-//         favCheck = favoriteRoutes.includes(route);
-//         console.log(favCheck);
-//         return favCheck;
-//     });
-// }
