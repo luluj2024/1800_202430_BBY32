@@ -7,7 +7,6 @@ firebase.auth().onAuthStateChanged((user) => {
 })
 
 
-document.getElementById("searchbar").innerHTML = '';
 function displayAllRoutes() {
     let busTemplate = document.getElementById("bus-template");
     let container = document.getElementById("bus-info");
@@ -101,8 +100,8 @@ function outputCards(container, busTemplate, routeId) {
     card.querySelector(".card-title").textContent = busTitle;
     card.querySelector(".card-time").textContent = busTime;
 
-    let curcard = card.querySelector("#favbtn");
-    favBtn(curcard, routeId, container, busTemplate);
+    let curcard = card.querySelector("#cardbtn");
+    favBtn(curcard, routeId);
 
     container.appendChild(card);
 }
@@ -143,7 +142,7 @@ async function unfavoriteRoute(route) {
     })
 }
 
-function favBtn(curcard, routeId, container, busTemplate) {
+function favBtn(curcard, routeId) {
     let favCheck = false;
     db.collection("users").doc(currentUserId).get().then(user => {
         // console.log("isFav?");

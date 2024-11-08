@@ -48,8 +48,8 @@
   <nav class="navbar bg-body-tertiary">
     <div class="container-fluid">
       <form class="d-flex justify-content-center w-100" role="search">
-        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" id="searchbar">
-        <button class="btn btn-outline-success" type="button" id="searchbtn" onclick="displaySimilarRoutes()">Search</button>
+        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" id="searchbar" oninput="processSearch()">
+        <!-- <button class="btn btn-outline-success" type="button" id="searchbtn" onclick="displaySimilarRoutes()">Search</button> -->
         <a href="setting.html"><img src="./images/profile.jpg" alt="profile" class="profile-logo ms-auto"></a>
       </form>
     </div>
@@ -59,17 +59,18 @@
   <template id="bus-template">
       <div class="card" style="width: 80%;">
         <div class="card-body">
-          <button class="material-symbols-outlined" type="button" id="favbtn" onclick="">star</button>
+          <button class="material-symbols-outlined" type="button" id="cardbtn">chat</button>
           <h4 class="card-title"></h5>
-          <h5 class="card-time"></h6>
-
+          <h5 class="card-time"></h5>
+          <h5 class="card-fav"></h5>
+          <h5 class="card-comute"></h5>
+          <button class="material-symbols-outlined" type="button" id="removebtn">close</button>
         </div>
       </div>
-      <br>
   </template>
 
-  <div id="bus-info"> 
-  </div>
+  <div id="status"></div>
+  <div id="bus-info"></div>
 
 
 
@@ -81,10 +82,9 @@
   <!---------------------------------------------->
 
   <!-- Link to scripts of your own -->
-  <script src="./scripts/skeleton.js"></script>
   <script src="./scripts/firebaseAPI_BBY32.js"></script>
-  <script src="./scripts/main.js"></script>
-
+  <script src="./scripts/favorites.js"></script>
+  <script src="./scripts/skeleton.js"></script>
 </body>
 
 </html>
