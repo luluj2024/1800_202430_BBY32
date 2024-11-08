@@ -52,16 +52,39 @@
     </nav>
   </header>
 
+  <br>
+
   <template id="buddyTemplate">
     <div class="card">
       <div class="card-body">
+        <img id="profile-photo" src="./images/profile.png" alt="Profile Photo" style = "width: 100px; height: auto;">
         <h5 class="card-title"></h5>
         <p class="card-text"></p>
         <a id="buddyButtonOne" href="#" class="btn"></a>
         <a id="buddyButtonTwo" href="#" class="btn"></a>
+        <div class="more-info">
+          <table id="table-info" style="display: none;">
+            <tr>
+              <td>Birthday: </td>
+              <td id="birthday"></td>
+            </tr>
+            <tr>
+              <td>Bio:</td>
+              <td id="bio"></td>
+            </tr>
+            <tr>
+              <td>Favorite routes: </td>
+              <td id="favourite-routes"></td>
+            </tr>
+          </table>
+          <!-- <p id="birthday" class="birthday"></p>
+          <p id="bio"></p>
+          <p id="favourite-routes"></p> -->
+        </div>
       </div>
     </div>
   </template>
+
 
   <div id="mainContainer" class="container">
   </div>

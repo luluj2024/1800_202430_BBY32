@@ -23,14 +23,31 @@ firebase.auth().onAuthStateChanged((user) => {
   }
 });
 
+// get user's friends as an array
 async function getCurrentBuddies(userId) {
   const docRef = await db.collection("users").doc(userId).get();
   return docRef.data().friends;
 }
 
+// all user data
 async function getUserData(userId) {
   const docRef = await db.collection("users").doc(userId).get();
   return docRef.data();
+}
+
+async function getFavoriteRoutrNames(favoriteRoutes){
+  if (!favoriteRoutes || favoriteRoutes.length === 0) {
+    return Promise.resolve("No favorite routes.");
+  }
+
+  return Promise.all(favoriteRoutes.map(routeId =>{
+    return db.collection("Routes").doc(routeId).get().data().name;
+  })).then(routeNames => {
+    return routeNames.join(", ");
+  }).catch(error =>{
+    console.log("errors in getting route name", error);
+    return "Error loading routes";
+  })
 }
 
 async function addFriend(buddyId) {
@@ -57,8 +74,8 @@ async function removeFriend(buddyId) {
 
 function friendListTemplateStyling(card, buddyData) {
   card.querySelector(".card-title").textContent = buddyData.name;
-  const buttonOne = card.getElementById("buddyButtonOne");
-  const buttonTwo = card.getElementById("buddyButtonTwo");
+  let buttonOne = card.getElementById("buddyButtonOne");
+  let buttonTwo = card.getElementById("buddyButtonTwo");
   buttonOne.textContent = "More Info";
   buttonOne.classList.toggle("btn-primary");
   buttonTwo.textContent = "Message";
@@ -74,14 +91,37 @@ function displayCurrentBuddies() {
     currentBuddies.forEach(buddyId => {
       getUserData(buddyId).then(buddyData => {
         let card = buddyTemplate.content.cloneNode(true);
-        // card.querySelector(".card-title").textContent = buddyData.name;
-        // const buttonOne = card.getElementById("buddyButtonOne");
-        // const buttonTwo = card.getElementById("buddyButtonTwo");
-        // buttonOne.textContent = "More Info";
-        // buttonOne.classList.toggle("btn-primary");
-        // buttonTwo.textContent = "Message";
-        // buttonTwo.classList.toggle("btn-primary");
+        let birthday = card.getElementById("birthday");
+        let bio = card.getElementById("bio");
+        let favouriteRoutes = card.getElementById("favourite-routes");
+        let isDataVidible = true;
+        let photo = card.getElementById("profile-photo");
+        let table = card.getElementById("table-info");
+
         friendListTemplateStyling(card, buddyData);
+
+        if (buddyData.profilePhotoBase64) {
+          photo.src = buddyData.profilePhotoBase64;
+        }
+
+        card.querySelector("#buddyButtonOne").addEventListener("click", () => {   
+          if (isDataVidible){
+            table.style.display = "table";
+            birthday.innerHTML = buddyData.birthday || "N/A";
+            bio.innerHTML = buddyData.description || "N/A";
+            // console.log(buddyData.favorite_routes);
+            getFavoriteRoutrNames(buddyData.favorite_routes).then(routeNames =>{
+              favouriteRoutes.innerHTML = routeNames;
+            });
+          }   else {
+            table.style.display = "none";
+            birthday.innerHTML = "";
+            bio.innerHTML = ""
+            favouriteRoutes = "";
+          }
+          isDataVidible = !isDataVidible;
+          
+        })
 
         mainContainer.appendChild(card);
       })
@@ -102,9 +142,40 @@ function displayAllUsers() {
 
         if (buddyId !== currentUserId && !currentBuddies.includes(buddyId)) {
           let card = buddyTemplate.content.cloneNode(true);
+          let birthday = card.getElementById("birthday");
+          let bio = card.getElementById("bio");
+          let favouriteRoutes = card.getElementById("favourite-routes");
+          let photo = card.getElementById("profile-photo");
+          let isDataVidible = true;
+          let table = card.getElementById("table-info");
+
           card.querySelector(".card-title").textContent = buddyData.name;
           card.querySelector("#buddyButtonOne").textContent = "Add Friend";
           card.querySelector("#buddyButtonOne").classList.toggle("btn-primary");
+          card.querySelector("#buddyButtonTwo").textContent = "More Info";
+          card.querySelector("#buddyButtonTwo").classList.toggle("btn-primary");
+
+          if (buddyData.profilePhotoBase64) {
+            photo.src = buddyData.profilePhotoBase64;
+          }
+
+          card.querySelector("#buddyButtonTwo").addEventListener("click", () => {
+            if (!isDataVidible){
+              table.style.display = "table";
+              birthday.innerHTML = buddyData.birthday || "N/A";
+              bio.innerHTML = buddyData.description || "N/A";
+              getFavoriteRoutrNames(buddyData.favorite_routes).then(routeNames =>{
+                favouriteRoutes.innerHTML = routeNames;
+              });
+            }  else {
+              table.style.display = "none";
+              birthday.innerHTML = "";
+              bio.innerHTML = "";
+              favouriteRoutes = "";
+            }
+            isDataVidible = !isDataVidible;
+            
+          })
 
           card.querySelector(".btn").addEventListener("click", event => {
             addFriend(buddyId);
@@ -141,3 +212,4 @@ function editCurrentBuddies() {
     })
   })
 }
+

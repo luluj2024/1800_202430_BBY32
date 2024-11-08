@@ -20,6 +20,7 @@ function insertFormInfoFromFirestore() {
             });
         } else {
             console.log("No user is logged in.");
+            window.location.href = "index.html";
         }
     });
 }
@@ -77,5 +78,18 @@ async function saveUserInfo(event) {
 }
 
 document.getElementById("save-button").addEventListener("click", saveUserInfo);
+
+function logout() {
+    firebase.auth().signOut().then(() => {
+        // Sign-out successful.
+        console.log("logging out user");
+      }).catch((error) => {
+        // An error happened.
+      });
+}
+
+document.getElementById("log-out").addEventListener("click", () => {
+    logout();
+})
 
 

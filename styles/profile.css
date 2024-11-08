@@ -93,7 +93,7 @@ button[type="submit"]{
     border: 1px solid #ddd;
   }
 
-  #upload-button{
+  #upload-button, #log-out {
     height: 40px;
     width: 150px;
     border: 0;
@@ -102,4 +102,15 @@ button[type="submit"]{
     background-color: rgb(68, 68, 205);
     color: white; 
   }
+
+  .center-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+  
+
+
 

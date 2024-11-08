@@ -76,7 +76,43 @@
 }
 
 .card{
-    margin: 0 auto;
+    margin: 20px auto;
     border-radius: 10px;
 
 }
+
+#mainContainer{
+    margin-bottom: 100px;
+}
+
+#table-info {
+    width: 80%; 
+    max-width: 600px; 
+    margin-top: 10px;
+    border-collapse: collapse; 
+    background-color: #f9f9f9;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+  }
+  
+  #table-info td {
+    padding: 12px 15px; 
+    border: 1px solid #ddd; 
+  }
+  
+  #table-info tr:nth-child(even) {
+    background-color: #f2f2f2; 
+  }
+  
+  #table-info tr:hover {
+    background-color: #eaeaea; 
+  }
+  
+  #table-info td:first-child {
+    font-weight: bold; 
+    color: #333; 
+  }
+  
+  #table-info td:last-child {
+    color: #555; 
+  }
+  
