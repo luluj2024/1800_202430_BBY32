@@ -1,3 +1,13 @@
+let currentUserId;
+
+firebase.auth().onAuthStateChanged((user) => {
+  if (user) {
+    currentUserId = user.uid;
+  }
+})
+
+
+document.getElementById("searchbar").innerHTML = '';
 function displayAllRoutes() {
     let busTemplate = document.getElementById("bus-template");
     let container = document.getElementById("bus-info");
@@ -35,13 +45,14 @@ function displaySimilarRoutes() {
                 }
             })
         })
-        if (!container.hasChildNodes()) {
-            console.log("It detects!");
-            document.getElementById("status").innerHTML = "<h4>Sorry, your search doesnt match any routes in our database.</h4>";
-        }
-        else {
-            document.getElementById("status").innerHTML = "";
-        }
+        // CHecks for empty routes, revist with time
+        // if (routeList.isEmpty) {
+        //     console.log(container.isEmpty);
+        //     document.getElementById("status").innerHTML = "<h4>Sorry, your search doesnt match any routes in our database.</h4>";
+        // }
+        // else {
+        //     document.getElementById("status").innerHTML = "";
+        // }
     }
 }
 
@@ -84,6 +95,33 @@ function outputCards(container, busTemplate, routeId) {
     let busTime = "Start: " + data.start + " End: " + data.end;
     card.querySelector(".card-title").textContent = busTitle;
     card.querySelector(".card-time").textContent = busTime;
+    let curcard = card.querySelector("#favbtn");
+    let favCheck = false;
+    db.collection("users").doc(currentUserId).get().then(user => {
+        console.log("isFav?");
+        let favoriteRoutes = user.data().favorite_routes;
+        favCheck = favoriteRoutes.includes(routeId.id);
+        if (favCheck) {
+            console.log("favorite");
+            curcard.style.color = "blue";
+            curcard.addEventListener("click", event => {
+                unfavoriteRoute(routeId.id)
+                setTimeout(() => {
+                    location.reload();
+                }, 500); 
+              })
+        }
+        else {
+            console.log("not favorite");
+            curcard.style.color = "black";
+            curcard.addEventListener("click", event => {
+                favoriteRoute(routeId.id)
+                setTimeout(() => {
+                    location.reload();
+                }, 500); 
+              })
+        }
+    });
 
     container.appendChild(card);
 }
@@ -99,7 +137,27 @@ function debounce(func, timeout = 250){
   }
   //delays searchbar inputs to prevent duplication and excessive database calls
   const processSearch = debounce(() => displaySimilarRoutes());
-  
-  
-  
-  
+
+  async function favoriteRoute(route) {
+    console.log("entered favorites");
+    let userDocRef = await db.collection("users").doc(currentUserId);
+    let routeDocRef = await db.collection("Routes").doc(route);
+    userDocRef.update({
+      favorite_routes: firebase.firestore.FieldValue.arrayUnion(route)
+    })
+    routeDocRef.update({
+      favorites: firebase.firestore.FieldValue.arrayUnion(currentUserId)
+    })
+}
+
+async function unfavoriteRoute(route) {
+    console.log("entered unfavorites");
+    let userDocRef = await db.collection("users").doc(currentUserId);
+    let routeDocRef = await db.collection("Routes").doc(route);
+    userDocRef.update({
+      favorite_routes: firebase.firestore.FieldValue.arrayRemove(route)
+    })
+    routeDocRef.update({
+      favorites: firebase.firestore.FieldValue.arrayRemove(currentUserId)
+    })
+}
