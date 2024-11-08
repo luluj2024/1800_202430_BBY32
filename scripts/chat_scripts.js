@@ -23,13 +23,12 @@ firebase.auth().onAuthStateChanged((user) => {
   }
 });
 
-// get user's friends as an array
+
 async function getCurrentBuddies(userId) {
   const docRef = await db.collection("users").doc(userId).get();
   return docRef.data().friends;
 }
 
-// all user data
 async function getUserData(userId) {
   const docRef = await db.collection("users").doc(userId).get();
   return docRef.data();
@@ -146,7 +145,7 @@ function displayAllUsers() {
           let bio = card.getElementById("bio");
           let favouriteRoutes = card.getElementById("favourite-routes");
           let photo = card.getElementById("profile-photo");
-          let isDataVidible = true;
+          let isDataVidible = false;
           let table = card.getElementById("table-info");
 
           card.querySelector(".card-title").textContent = buddyData.name;
