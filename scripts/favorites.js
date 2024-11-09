@@ -3,34 +3,44 @@ let currentUserId;
 firebase.auth().onAuthStateChanged((user) => {
     if (user) {
         currentUserId = user.uid;
+
+        // you have to call it here because firebase 
+        // needs some time to figure out if the user is logged in
+        // once it is it sets the currentUserId, but because javascript is
+        // asynchronous??? or something it goes ahead without "waiting" for it to finish checking
+        displayAllRoutes();
     }
 })
+
 function displayAllRoutes() {
     let busTemplate = document.getElementById("bus-template");
     let container = document.getElementById("bus-info");
-
     container.innerHTML = '';
-    document.getElementById("status").innerHTML = "";
+    document.getElementById("status").innerHTML = '';
+
     let favCheck = false;
     //For SOME reason returns undefined??
+    // db.collection("users").doc(currentUserId).get().then(user => {
+    //     console.log(user);
+    //     console.log(user.data());
+    //     console.log(user.data().favorite_routes);
+    //     let favoriteRoutes = user.data().favorite_routes;
+    //     favCheck = favoriteRoutes.includes(routeId);
+    // })
+    // db.collection("Routes").get().then(routeList => {
+    //     routeList.forEach(routeId => {
+    //         if (favCheck) {
+    //             outputCards(container, busTemplate, routeId);
+    //         }
+    //     })
+    // })
     db.collection("users").doc(currentUserId).get().then(user => {
-        console.log(user);
-        console.log(user.data());
-        console.log(user.data().favorite_routes);
-        let favoriteRoutes = user.data().favorite_routes;
-        favCheck = favoriteRoutes.includes(routeId);
-    })
-    db.collection("Routes").get().then(routeList => {
-        routeList.forEach(routeId => {
-            if (favCheck) {
-                outputCards(container, busTemplate, routeId);
-            }
-        })
+        console.log(user.data().id);
     })
 
 }
 
-displayAllRoutes();
+// displayAllRoutes(); <------------------ You cannot call this here because of the asynchronous nature of javascript or something  
 let searchbar = document.getElementById("searchbar");
 searchbar.value = "";
 //Only displays routes similar to search query 
