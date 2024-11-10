@@ -8,7 +8,9 @@ firebase.auth().onAuthStateChanged((user) => {
         // needs some time to figure out if the user is logged in
         // once it is it sets the currentUserId, but because javascript is
         // asynchronous??? or something it goes ahead without "waiting" for it to finish checking
-        displayAllRoutes();
+        processLoad();
+        let searchbar = document.getElementById("searchbar");
+        searchbar.value = "";
     }
 })
 
@@ -19,30 +21,28 @@ function displayAllRoutes() {
     document.getElementById("status").innerHTML = '';
 
     let favCheck = false;
-    //For SOME reason returns undefined??
-    // db.collection("users").doc(currentUserId).get().then(user => {
-    //     console.log(user);
-    //     console.log(user.data());
-    //     console.log(user.data().favorite_routes);
-    //     let favoriteRoutes = user.data().favorite_routes;
-    //     favCheck = favoriteRoutes.includes(routeId);
-    // })
-    // db.collection("Routes").get().then(routeList => {
-    //     routeList.forEach(routeId => {
-    //         if (favCheck) {
-    //             outputCards(container, busTemplate, routeId);
-    //         }
-    //     })
-    // })
+    
     db.collection("users").doc(currentUserId).get().then(user => {
-        console.log(user.data().id);
+        let favoriteRoutes = user.data().favorite_routes;
+        if (favoriteRoutes.length == 0) {
+                document.getElementById("status").innerHTML = "<h4>Favorite some routes to meet commute buddies!</h4>";
+        }
+        else {
+        db.collection("Routes").get().then(routeList => {
+            routeList.forEach(routeId => {
+                // let favoriteRoutes = user.data().favorite_routes;
+                favCheck = favoriteRoutes.includes(routeId.id);
+                if (favCheck) {
+                    outputCards(container, busTemplate, routeId);
+                }
+            })
+        }) 
+    }
     })
-
 }
 
 // displayAllRoutes(); <------------------ You cannot call this here because of the asynchronous nature of javascript or something  
-let searchbar = document.getElementById("searchbar");
-searchbar.value = "";
+
 //Only displays routes similar to search query 
 function displaySimilarRoutes() {
     searchbar = document.getElementById("searchbar");
@@ -57,30 +57,37 @@ function displaySimilarRoutes() {
         let container = document.getElementById("bus-info");
 
         container.innerHTML = '';
+        let favCheck = false;
         db.collection("users").doc(currentUserId).get().then(user => {
-            db.collection("Routes").get().then(routeList => {
-                routeList.forEach(routeId => {
-                    // console.log(routeId.data().bus);
-                    // console.log(searchbar.value);
-                    let favoriteRoutes = user.id.data().favorite_routes;
-                    let favCheck = favoriteRoutes.includes(routeId.id);
-                    if (favCheck) {
-                        if (relatedRoutes(searchbar.value, routeId.data().bus, routeId.data().name)) {
-                            count += 1;
-                            // console.log(count + "e")
-                            outputCards(container, busTemplate, routeId);
+            let favoriteRoutes = user.data().favorite_routes;
+            if (favoriteRoutes.length == 0) {
+                document.getElementById("status").innerHTML = "<h4>Favorite some routes to meet commute buddies!</h4>";
+            }
+            else {
+                db.collection("Routes").get().then(routeList => {
+                    routeList.forEach(routeId => {
+                        // console.log(routeId.data().bus);
+                        // console.log(searchbar.value);
+    
+                        favCheck = favoriteRoutes.includes(routeId.id);
+                        if (favCheck) {
+                            if (relatedRoutes(searchbar.value.toLowerCase(), routeId.data().bus, routeId.data().name)) {
+                                count += 1;
+                                // console.log(count + "e")
+                                outputCards(container, busTemplate, routeId);
+                            }
                         }
+                    })
+                }).then(() => {
+                    // console.log("final" + count)
+                    if (count == 0) {
+                        document.getElementById("status").innerHTML = "<h4>Sorry, your search doesnt match any routes in your favorites.</h4>";
+                    }
+                    else {
+                        document.getElementById("status").innerHTML = "";
                     }
                 })
-            }).then(() => {
-                // console.log("final" + count)
-                if (count == 0) {
-                    document.getElementById("status").innerHTML = "<h4>Sorry, your search doesnt match any routes in our database.</h4>";
-                }
-                else {
-                    document.getElementById("status").innerHTML = "";
-                }
-            })
+            }
         });
     }
 }
@@ -138,6 +145,8 @@ function debounce(func, timeout = 250) {
 }
 //delays searchbar inputs to prevent duplication and excessive database calls
 const processSearch = debounce(() => displaySimilarRoutes());
+const processLoad = debounce(() => displayAllRoutes());
+
 
 async function unfavoriteRoute(route) {
     // console.log("entered unfavorites");

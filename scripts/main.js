@@ -4,6 +4,9 @@ firebase.auth().onAuthStateChanged((user) => {
   if (user) {
     currentUserId = user.uid;
   }
+  processLoad()
+  let searchbar = document.getElementById("searchbar");
+  searchbar.value = "";
 })
 
 
@@ -21,7 +24,7 @@ function displayAllRoutes() {
     })
 }
 
-displayAllRoutes();
+
 let searchbar = document.getElementById("searchbar");
 searchbar.value = "";
 //Only displays routes similar to search query 
@@ -42,7 +45,7 @@ function displaySimilarRoutes() {
             routeList.forEach(routeId => {
                 // console.log(routeId.data().bus);
                 // console.log(searchbar.value);
-                if (relatedRoutes(searchbar.value, routeId.data().bus, routeId.data().name)) {
+                if (relatedRoutes(searchbar.value.toLowerCase(), routeId.data().bus, routeId.data().name)) {
                     count += 1;
                     // console.log(count + "e")
                     outputCards(container, busTemplate, routeId);
@@ -117,6 +120,8 @@ function debounce(func, timeout = 250){
   }
   //delays searchbar inputs to prevent duplication and excessive database calls
   const processSearch = debounce(() => displaySimilarRoutes());
+  const processLoad = debounce(() => displayAllRoutes());
+
 
   async function favoriteRoute(route) {
     // console.log("entered favorites");
