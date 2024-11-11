@@ -6,7 +6,7 @@ firebase.auth().onAuthStateChanged((user) => {
     currentUserId = user.uid;
   }
   //Calls all routes after delay and initializes searchbar 
-  processLoad()
+  displayAllRoutes()
   let searchbar = document.getElementById("searchbar");
   searchbar.value = "";
 })
@@ -92,6 +92,16 @@ function outputCards(container, busTemplate, routeId) {
     let busTime = "Start: " + data.start + " End: " + data.end;
     card.querySelector(".card-title").textContent = busTitle;
     card.querySelector(".card-time").textContent = busTime;
+    let favCount = data.favorites.length;
+    if (favCount == 0) {
+        card.querySelector(".card-fav").textContent = "Be the first buddy on this route!";
+    }
+    else if (favCount == 1) {
+        card.querySelector(".card-fav").textContent = favCount + " buddy favorited this route!";
+    }
+    else {
+        card.querySelector(".card-fav").textContent = favCount + " buddies favorited this route!";
+    }
 
     let curcard = card.querySelector("#cardbtn");
     favBtn(curcard, routeId);
