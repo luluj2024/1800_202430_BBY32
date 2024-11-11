@@ -23,10 +23,22 @@ firebase.auth().onAuthStateChanged((user) => {
   }
 });
 
+// Get Friends Array from Specific User
+function getFriends(userId) {
+  db.collection("users").doc(userId).get()
+    .then(userDoc => {
+      // Return [] and warning if user doesn't exist
+      if (!userDoc.exists) {
+        console.warn("User ${userId} does not exist.");
+        return [];
+      }
 
-async function getCurrentBuddies(userId) {
-  const docRef = await db.collection("users").doc(userId).get();
-  return docRef.data().friends;
+      return userDoc.data().friends;
+    }).catch(error => {
+      // Return [] and error if user doesn't exist
+      console.error("Error retrieving friends for user ${userId}:", error)
+      return [];
+    })
 }
 
 async function getUserData(userId) {
@@ -34,16 +46,16 @@ async function getUserData(userId) {
   return docRef.data();
 }
 
-async function getFavoriteRoutrNames(favoriteRoutes){
+async function getFavoriteRoutrNames(favoriteRoutes) {
   if (!favoriteRoutes || favoriteRoutes.length === 0) {
     return Promise.resolve("No favorite routes.");
   }
 
-  return Promise.all(favoriteRoutes.map(routeId =>{
+  return Promise.all(favoriteRoutes.map(routeId => {
     return db.collection("Routes").doc(routeId).get().data().name;
   })).then(routeNames => {
     return routeNames.join(", ");
-  }).catch(error =>{
+  }).catch(error => {
     console.log("errors in getting route name", error);
     return "Error loading routes";
   })
@@ -86,7 +98,7 @@ function displayCurrentBuddies() {
   const mainContainer = document.getElementById("mainContainer");
   mainContainer.innerHTML = '';
 
-  getCurrentBuddies(currentUserId).then(currentBuddies => {
+  getFriends(currentUserId).then(currentBuddies => {
     currentBuddies.forEach(buddyId => {
       getUserData(buddyId).then(buddyData => {
         let card = buddyTemplate.content.cloneNode(true);
@@ -103,23 +115,23 @@ function displayCurrentBuddies() {
           photo.src = buddyData.profilePhotoBase64;
         }
 
-        card.querySelector("#buddyButtonOne").addEventListener("click", () => {   
-          if (isDataVidible){
+        card.querySelector("#buddyButtonOne").addEventListener("click", () => {
+          if (isDataVidible) {
             table.style.display = "table";
             birthday.innerHTML = buddyData.birthday || "N/A";
             bio.innerHTML = buddyData.description || "N/A";
             // console.log(buddyData.favorite_routes);
-            getFavoriteRoutrNames(buddyData.favorite_routes).then(routeNames =>{
+            getFavoriteRoutrNames(buddyData.favorite_routes).then(routeNames => {
               favouriteRoutes.innerHTML = routeNames;
             });
-          }   else {
+          } else {
             table.style.display = "none";
             birthday.innerHTML = "";
             bio.innerHTML = ""
             favouriteRoutes = "";
           }
           isDataVidible = !isDataVidible;
-          
+
         })
 
         mainContainer.appendChild(card);
@@ -133,7 +145,7 @@ function displayAllUsers() {
   const mainContainer = document.getElementById("mainContainer");
   mainContainer.innerHTML = '';
 
-  getCurrentBuddies(currentUserId).then(currentBuddies => {
+  getFriends(currentUserId).then(currentBuddies => {
     db.collection("users").get().then(buddiesRef => {
       buddiesRef.forEach(buddy => {
         let buddyId = buddy.id;
@@ -159,21 +171,21 @@ function displayAllUsers() {
           }
 
           card.querySelector("#buddyButtonTwo").addEventListener("click", () => {
-            if (!isDataVidible){
+            if (!isDataVidible) {
               table.style.display = "table";
               birthday.innerHTML = buddyData.birthday || "N/A";
               bio.innerHTML = buddyData.description || "N/A";
-              getFavoriteRoutrNames(buddyData.favorite_routes).then(routeNames =>{
+              getFavoriteRoutrNames(buddyData.favorite_routes).then(routeNames => {
                 favouriteRoutes.innerHTML = routeNames;
               });
-            }  else {
+            } else {
               table.style.display = "none";
               birthday.innerHTML = "";
               bio.innerHTML = "";
               favouriteRoutes = "";
             }
             isDataVidible = !isDataVidible;
-            
+
           })
 
           card.querySelector(".btn").addEventListener("click", event => {
@@ -193,7 +205,7 @@ function editCurrentBuddies() {
   const mainContainer = document.getElementById("mainContainer");
   mainContainer.innerHTML = '';
 
-  getCurrentBuddies(currentUserId).then(currentBuddies => {
+  getFriends(currentUserId).then(currentBuddies => {
     currentBuddies.forEach(buddyId => {
       getUserData(buddyId).then(buddyData => {
         let card = buddyTemplate.content.cloneNode(true);
