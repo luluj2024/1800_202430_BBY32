@@ -117,4 +117,8 @@
   #table-info td:last-child {
     color: #555; 
   }
+
+  a {
+    text-decoration: none;
+  }
   
