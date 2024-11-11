@@ -4,7 +4,7 @@ firebase.auth().onAuthStateChanged((user) => {
   if (user) {
     currentUserId = user.uid;
 
-    displayCurrentBuddies();
+    measureFunctionTime(getCurrentBuddies);
 
     document.getElementById("friendsList").addEventListener("click", event => {
       displayCurrentBuddies();
@@ -23,40 +23,43 @@ firebase.auth().onAuthStateChanged((user) => {
   }
 });
 
-// Get Friends Array for Specific User in the "users" collection
-function getCurrentBuddies(userId) {
-  db.collection("users").doc(userId).get()
-    .then(userDoc => {
-      // Return null and log warning if user doesn't exist
-      if (!userDoc.exists) {
-        console.warn("User ${userId} does not exist.");
-        return null;
-      }
+async function measureFunctionTime(callback) {
+  const start = Date.now();
 
-      return userDoc.data().friends;
-    }).catch(error => {
-      // Return null and log error 
-      console.error("Error retrieving friends for user ${userId}:", error)
-      return null;
-    })
+  await callback(currentUserId);
+
+  const end = Date.now();
+  console.log(`Execution time: ${end - start} ms`);
+}
+
+// Return promise of friends array for specific user in "users" collection
+async function getCurrentBuddies(userId) {
+  try {
+    const userDoc = await db.collection("users").doc(userId).get();
+
+    if (!userDoc.exists) {
+      throw new Error(`User ${userId} does not exist.`);
+    }
+
+    return userDoc.data().friends;
+  } catch (error) {
+    console.error(`Error retrieving friends for user ${userId}:`, error);
+  }
 }
 
 // Get User Data for Specific User in the "users" collection
-function getUserData(userId) {
-  db.collection("users").doc(userId).get()
-    .then(userDoc => {
-      // Return null and log warning if user does not exist
-      if (!userDoc.exists) {
-        console.warn("User ${userId} does not exist.");
-        return null;
-      }
+async function getUserData(userId) {
+  try {
+    const userDoc = await db.collection("users").doc(userId).get();
 
-      return userDoc.data();
-    }).catch(error => {
-      // Return null and log error
-      console.error("Error retrieving user data for user ${userId}", error);
-      return null;
-    })
+    if (!userDoc.exists) {
+      throw new Error(`User ${userId} does not exist.`);
+    }
+
+    return userDoc.data();
+  } catch (error) {
+    console.error(`Error retrieving data for user ${userId}:`, error);
+  }
 }
 
 async function getFavoriteRoutrNames(favoriteRoutes) {
@@ -74,15 +77,22 @@ async function getFavoriteRoutrNames(favoriteRoutes) {
   })
 }
 
-async function addFriend(buddyId) {
-  let userDocRef = await db.collection("users").doc(currentUserId);
-  let buddyDocRef = await db.collection("users").doc(buddyId);
-  userDocRef.update({
-    friends: firebase.firestore.FieldValue.arrayUnion(buddyId)
-  })
-  buddyDocRef.update({
-    friends: firebase.firestore.FieldValue.arrayUnion(currentUserId)
-  })
+// Updates current/other users friend array to include each other
+function addFriend(friendId) {
+  let userDoc = db.collection("users").doc(currentUserId);
+  let friendDoc = db.collection("users").doc(friendId);
+
+  Promise.all([
+    userDoc.update({
+      friends: firebase.firestore.FieldValue.arrayUnion(buddyId)
+    }),
+    friendDoc.update({
+      friends: firebase.firestore.FieldValue.arrayUnion(currentUserId)
+    })
+  ])
+    .catch(error => {
+      console.error("Error adding friend ${friendId}:", error);
+    })
 }
 
 async function removeFriend(buddyId) {
@@ -112,46 +122,46 @@ function displayCurrentBuddies() {
   mainContainer.innerHTML = '';
 
   getCurrentBuddies
-(currentUserId).then(currentBuddies => {
-    currentBuddies.forEach(buddyId => {
-      getUserData(buddyId).then(buddyData => {
-        let card = buddyTemplate.content.cloneNode(true);
-        let birthday = card.getElementById("birthday");
-        let bio = card.getElementById("bio");
-        let favouriteRoutes = card.getElementById("favourite-routes");
-        let isDataVidible = true;
-        let photo = card.getElementById("profile-photo");
-        let table = card.getElementById("table-info");
+    (currentUserId).then(currentBuddies => {
+      currentBuddies.forEach(buddyId => {
+        getUserData(buddyId).then(buddyData => {
+          let card = buddyTemplate.content.cloneNode(true);
+          let birthday = card.getElementById("birthday");
+          let bio = card.getElementById("bio");
+          let favouriteRoutes = card.getElementById("favourite-routes");
+          let isDataVidible = true;
+          let photo = card.getElementById("profile-photo");
+          let table = card.getElementById("table-info");
 
-        friendListTemplateStyling(card, buddyData);
+          friendListTemplateStyling(card, buddyData);
 
-        if (buddyData.profilePhotoBase64) {
-          photo.src = buddyData.profilePhotoBase64;
-        }
-
-        card.querySelector("#buddyButtonOne").addEventListener("click", () => {
-          if (isDataVidible) {
-            table.style.display = "table";
-            birthday.innerHTML = buddyData.birthday || "N/A";
-            bio.innerHTML = buddyData.description || "N/A";
-            // console.log(buddyData.favorite_routes);
-            getFavoriteRoutrNames(buddyData.favorite_routes).then(routeNames => {
-              favouriteRoutes.innerHTML = routeNames;
-            });
-          } else {
-            table.style.display = "none";
-            birthday.innerHTML = "";
-            bio.innerHTML = ""
-            favouriteRoutes = "";
+          if (buddyData.profilePhotoBase64) {
+            photo.src = buddyData.profilePhotoBase64;
           }
-          isDataVidible = !isDataVidible;
 
+          card.querySelector("#buddyButtonOne").addEventListener("click", () => {
+            if (isDataVidible) {
+              table.style.display = "table";
+              birthday.innerHTML = buddyData.birthday || "N/A";
+              bio.innerHTML = buddyData.description || "N/A";
+              // console.log(buddyData.favorite_routes);
+              getFavoriteRoutrNames(buddyData.favorite_routes).then(routeNames => {
+                favouriteRoutes.innerHTML = routeNames;
+              });
+            } else {
+              table.style.display = "none";
+              birthday.innerHTML = "";
+              bio.innerHTML = ""
+              favouriteRoutes = "";
+            }
+            isDataVidible = !isDataVidible;
+
+          })
+
+          mainContainer.appendChild(card);
         })
-
-        mainContainer.appendChild(card);
       })
     })
-  })
 }
 
 function displayAllUsers() {
@@ -160,59 +170,59 @@ function displayAllUsers() {
   mainContainer.innerHTML = '';
 
   getCurrentBuddies
-(currentUserId).then(currentBuddies => {
-    db.collection("users").get().then(buddiesRef => {
-      buddiesRef.forEach(buddy => {
-        let buddyId = buddy.id;
-        let buddyData = buddy.data();
+    (currentUserId).then(currentBuddies => {
+      db.collection("users").get().then(buddiesRef => {
+        buddiesRef.forEach(buddy => {
+          let buddyId = buddy.id;
+          let buddyData = buddy.data();
 
-        if (buddyId !== currentUserId && !currentBuddies.includes(buddyId)) {
-          let card = buddyTemplate.content.cloneNode(true);
-          let birthday = card.getElementById("birthday");
-          let bio = card.getElementById("bio");
-          let favouriteRoutes = card.getElementById("favourite-routes");
-          let photo = card.getElementById("profile-photo");
-          let isDataVidible = false;
-          let table = card.getElementById("table-info");
+          if (buddyId !== currentUserId && !currentBuddies.includes(buddyId)) {
+            let card = buddyTemplate.content.cloneNode(true);
+            let birthday = card.getElementById("birthday");
+            let bio = card.getElementById("bio");
+            let favouriteRoutes = card.getElementById("favourite-routes");
+            let photo = card.getElementById("profile-photo");
+            let isDataVidible = false;
+            let table = card.getElementById("table-info");
 
-          card.querySelector(".card-title").textContent = buddyData.name;
-          card.querySelector("#buddyButtonOne").textContent = "Add Friend";
-          card.querySelector("#buddyButtonOne").classList.toggle("btn-primary");
-          card.querySelector("#buddyButtonTwo").textContent = "More Info";
-          card.querySelector("#buddyButtonTwo").classList.toggle("btn-primary");
+            card.querySelector(".card-title").textContent = buddyData.name;
+            card.querySelector("#buddyButtonOne").textContent = "Add Friend";
+            card.querySelector("#buddyButtonOne").classList.toggle("btn-primary");
+            card.querySelector("#buddyButtonTwo").textContent = "More Info";
+            card.querySelector("#buddyButtonTwo").classList.toggle("btn-primary");
 
-          if (buddyData.profilePhotoBase64) {
-            photo.src = buddyData.profilePhotoBase64;
-          }
-
-          card.querySelector("#buddyButtonTwo").addEventListener("click", () => {
-            if (!isDataVidible) {
-              table.style.display = "table";
-              birthday.innerHTML = buddyData.birthday || "N/A";
-              bio.innerHTML = buddyData.description || "N/A";
-              getFavoriteRoutrNames(buddyData.favorite_routes).then(routeNames => {
-                favouriteRoutes.innerHTML = routeNames;
-              });
-            } else {
-              table.style.display = "none";
-              birthday.innerHTML = "";
-              bio.innerHTML = "";
-              favouriteRoutes = "";
+            if (buddyData.profilePhotoBase64) {
+              photo.src = buddyData.profilePhotoBase64;
             }
-            isDataVidible = !isDataVidible;
 
-          })
+            card.querySelector("#buddyButtonTwo").addEventListener("click", () => {
+              if (!isDataVidible) {
+                table.style.display = "table";
+                birthday.innerHTML = buddyData.birthday || "N/A";
+                bio.innerHTML = buddyData.description || "N/A";
+                getFavoriteRoutrNames(buddyData.favorite_routes).then(routeNames => {
+                  favouriteRoutes.innerHTML = routeNames;
+                });
+              } else {
+                table.style.display = "none";
+                birthday.innerHTML = "";
+                bio.innerHTML = "";
+                favouriteRoutes = "";
+              }
+              isDataVidible = !isDataVidible;
 
-          card.querySelector(".btn").addEventListener("click", event => {
-            addFriend(buddyId);
-            displayAllUsers();
-          })
+            })
 
-          mainContainer.appendChild(card);
-        }
+            card.querySelector(".btn").addEventListener("click", event => {
+              addFriend(buddyId);
+              displayAllUsers();
+            })
+
+            mainContainer.appendChild(card);
+          }
+        })
       })
     })
-  })
 }
 
 function editCurrentBuddies() {
@@ -221,22 +231,22 @@ function editCurrentBuddies() {
   mainContainer.innerHTML = '';
 
   getCurrentBuddies
-(currentUserId).then(currentBuddies => {
-    currentBuddies.forEach(buddyId => {
-      getUserData(buddyId).then(buddyData => {
-        let card = buddyTemplate.content.cloneNode(true);
-        card.querySelector(".card-title").textContent = buddyData.name;
-        card.querySelector("#buddyButtonOne").textContent = "Remove";
-        card.querySelector("#buddyButtonOne").classList.toggle("btn-warning");
+    (currentUserId).then(currentBuddies => {
+      currentBuddies.forEach(buddyId => {
+        getUserData(buddyId).then(buddyData => {
+          let card = buddyTemplate.content.cloneNode(true);
+          card.querySelector(".card-title").textContent = buddyData.name;
+          card.querySelector("#buddyButtonOne").textContent = "Remove";
+          card.querySelector("#buddyButtonOne").classList.toggle("btn-warning");
 
-        card.querySelector(".btn").addEventListener("click", event => {
-          removeFriend(buddyId);
-          editCurrentBuddies();
+          card.querySelector(".btn").addEventListener("click", event => {
+            removeFriend(buddyId);
+            editCurrentBuddies();
+          })
+
+          mainContainer.appendChild(card);
         })
-
-        mainContainer.appendChild(card);
       })
     })
-  })
 }
 
