@@ -6,6 +6,16 @@ firebase.auth().onAuthStateChanged((user) => {
 
     displayCurrentBuddies();
 
+    console.log(currentUserId);
+
+    getUsersWithFriend(currentUserId).then(users => {
+      console.log(users);
+    });
+
+    getUsersWithoutFriend(currentUserId).then(users => {
+      console.log(users);
+    })
+
     document.getElementById("friendsList").addEventListener("click", event => {
       displayCurrentBuddies();
     })
@@ -23,29 +33,30 @@ firebase.auth().onAuthStateChanged((user) => {
   }
 });
 
-/*
-  Returns friends (document field) if the document exists
-  Throws an error if user document doesn't exist
-  All errors are caught and logged
-*/
-async function getCurrentBuddies(userId) {
+async function getUsersWithFriend(userId) {
   try {
-    // Gets user specific document from the "users" collection
-    const userDoc = await db.collection("users").doc(userId).get();
+    const snapshot = await db.collection("users").where("friends", "array-contains", userId).get();
 
-    // Throws error is userDoc doesn't exist 
-    if (!userDoc.exists) {
-      throw new Error(`User ${userId} does not exist.`);
-    }
-
-    return userDoc.data().friends;
+    const users = snapshot.docs.map(doc => doc.data());
+    return users;
   } catch (error) {
-    console.error(`Error retrieving friends for user ${userId}:`, error);
+    console.error(`Error retrieving users with friend ${userId}:`, error);
+  }
+}
+
+async function getUsersWithoutFriend(userId) {
+  try {
+    const snapshot = await db.collection("users").get();
+
+    const users = snapshot.docs.map(doc => doc.data()).filter(user => !user.friends.includes(userId) && user.id !== currentUserId);
+    return users;
+  } catch (error) {
+    console.error(`Error retrieving users with friend ${userId}:`, error);
   }
 }
 
 /* 
-  Returns user data (fields) of specified userId
+  Function returns user data (fields) of specified userId
   Throws an error if user document doesn't exist
   All errors are caught and logged 
 */
@@ -99,12 +110,12 @@ function addFriend(friendId) {
 }
 
 async function removeFriend(buddyId) {
-  let userDocRef = await db.collection("users").doc(currentUserId);
-  let buddyDocRef = await db.collection("users").doc(buddyId);
-  userDocRef.update({
+  let userDoc = await db.collection("users").doc(currentUserId);
+  let buddyDoc = await db.collection("users").doc(buddyId);
+  userDoc.update({
     friends: firebase.firestore.FieldValue.arrayRemove(buddyId)
   })
-  buddyDocRef.update({
+  buddyDoc.update({
     friends: firebase.firestore.FieldValue.arrayRemove(currentUserId)
   })
 }
@@ -124,45 +135,43 @@ function displayCurrentBuddies() {
   const mainContainer = document.getElementById("mainContainer");
   mainContainer.innerHTML = '';
 
-  getCurrentBuddies
-    (currentUserId).then(currentBuddies => {
-      currentBuddies.forEach(buddyId => {
-        getUserData(buddyId).then(buddyData => {
-          let card = buddyTemplate.content.cloneNode(true);
-          let birthday = card.getElementById("birthday");
-          let bio = card.getElementById("bio");
-          let favouriteRoutes = card.getElementById("favourite-routes");
-          let isDataVidible = true;
-          let photo = card.getElementById("profile-photo");
-          let table = card.getElementById("table-info");
+  getUsersWithFriend(currentUserId)
+    .then(users => {
+      users.forEach(user => {
+        let card = buddyTemplate.content.cloneNode(true);
+        let birthday = card.getElementById("birthday");
+        let bio = card.getElementById("bio");
+        let favouriteRoutes = card.getElementById("favourite-routes");
+        let isDataVidible = true;
+        let photo = card.getElementById("profile-photo");
+        let table = card.getElementById("table-info");
 
-          friendListTemplateStyling(card, buddyData);
+        friendListTemplateStyling(card, user);
 
-          if (buddyData.profilePhotoBase64) {
-            photo.src = buddyData.profilePhotoBase64;
+        if (user.profilePhotoBase64) {
+          photo.src = user.profilePhotoBase64;
+        }
+
+        card.querySelector("#buddyButtonOne").addEventListener("click", () => {
+          if (isDataVidible) {
+            table.style.display = "table";
+            birthday.innerHTML = user.birthday || "N/A";
+            bio.innerHTML = user.description || "N/A";
+            // console.log(buddyData.favorite_routes);
+            getFavoriteRoutrNames(user.favorite_routes).then(routeNames => {
+              favouriteRoutes.innerHTML = routeNames;
+            });
+          } else {
+            table.style.display = "none";
+            birthday.innerHTML = "";
+            bio.innerHTML = ""
+            favouriteRoutes = "";
           }
+          isDataVidible = !isDataVidible;
 
-          card.querySelector("#buddyButtonOne").addEventListener("click", () => {
-            if (isDataVidible) {
-              table.style.display = "table";
-              birthday.innerHTML = buddyData.birthday || "N/A";
-              bio.innerHTML = buddyData.description || "N/A";
-              // console.log(buddyData.favorite_routes);
-              getFavoriteRoutrNames(buddyData.favorite_routes).then(routeNames => {
-                favouriteRoutes.innerHTML = routeNames;
-              });
-            } else {
-              table.style.display = "none";
-              birthday.innerHTML = "";
-              bio.innerHTML = ""
-              favouriteRoutes = "";
-            }
-            isDataVidible = !isDataVidible;
-
-          })
-
-          mainContainer.appendChild(card);
         })
+
+        mainContainer.appendChild(card);
       })
     })
 }
