@@ -23,27 +23,40 @@ firebase.auth().onAuthStateChanged((user) => {
   }
 });
 
-// Get Friends Array from Specific User
-function getFriends(userId) {
+// Get Friends Array for Specific User in the "users" collection
+function getCurrentBuddies(userId) {
   db.collection("users").doc(userId).get()
     .then(userDoc => {
-      // Return [] and warning if user doesn't exist
+      // Return null and log warning if user doesn't exist
       if (!userDoc.exists) {
         console.warn("User ${userId} does not exist.");
-        return [];
+        return null;
       }
 
       return userDoc.data().friends;
     }).catch(error => {
-      // Return [] and error if user doesn't exist
+      // Return null and log error 
       console.error("Error retrieving friends for user ${userId}:", error)
-      return [];
+      return null;
     })
 }
 
-async function getUserData(userId) {
-  const docRef = await db.collection("users").doc(userId).get();
-  return docRef.data();
+// Get User Data for Specific User in the "users" collection
+function getUserData(userId) {
+  db.collection("users").doc(userId).get()
+    .then(userDoc => {
+      // Return null and log warning if user does not exist
+      if (!userDoc.exists) {
+        console.warn("User ${userId} does not exist.");
+        return null;
+      }
+
+      return userDoc.data();
+    }).catch(error => {
+      // Return null and log error
+      console.error("Error retrieving user data for user ${userId}", error);
+      return null;
+    })
 }
 
 async function getFavoriteRoutrNames(favoriteRoutes) {
@@ -98,7 +111,8 @@ function displayCurrentBuddies() {
   const mainContainer = document.getElementById("mainContainer");
   mainContainer.innerHTML = '';
 
-  getFriends(currentUserId).then(currentBuddies => {
+  getCurrentBuddies
+(currentUserId).then(currentBuddies => {
     currentBuddies.forEach(buddyId => {
       getUserData(buddyId).then(buddyData => {
         let card = buddyTemplate.content.cloneNode(true);
@@ -145,7 +159,8 @@ function displayAllUsers() {
   const mainContainer = document.getElementById("mainContainer");
   mainContainer.innerHTML = '';
 
-  getFriends(currentUserId).then(currentBuddies => {
+  getCurrentBuddies
+(currentUserId).then(currentBuddies => {
     db.collection("users").get().then(buddiesRef => {
       buddiesRef.forEach(buddy => {
         let buddyId = buddy.id;
@@ -205,7 +220,8 @@ function editCurrentBuddies() {
   const mainContainer = document.getElementById("mainContainer");
   mainContainer.innerHTML = '';
 
-  getFriends(currentUserId).then(currentBuddies => {
+  getCurrentBuddies
+(currentUserId).then(currentBuddies => {
     currentBuddies.forEach(buddyId => {
       getUserData(buddyId).then(buddyData => {
         let card = buddyTemplate.content.cloneNode(true);
