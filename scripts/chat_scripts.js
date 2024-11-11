@@ -6,16 +6,6 @@ firebase.auth().onAuthStateChanged((user) => {
 
     displayCurrentBuddies();
 
-    console.log(currentUserId);
-
-    getUsersWithFriend(currentUserId).then(users => {
-      console.log(users);
-    });
-
-    getUsersWithoutFriend(currentUserId).then(users => {
-      console.log(users);
-    })
-
     document.getElementById("friendsList").addEventListener("click", event => {
       displayCurrentBuddies();
     })
@@ -33,10 +23,17 @@ firebase.auth().onAuthStateChanged((user) => {
   }
 });
 
+/*
+  Returns an array of user data objects who have a 
+  specific user id in their "friends" array field 
+*/
 async function getUsersWithFriend(userId) {
   try {
-    const snapshot = await db.collection("users").where("friends", "array-contains", userId).get();
+    // Query documents for users whose "friends" field contains user id
+    const snapshot = await db.collection("users")
+      .where("friends", "array-contains", userId).get();
 
+    // Map over documents to create an array of user data objects
     const users = snapshot.docs.map(doc => doc.data());
     return users;
   } catch (error) {
@@ -44,11 +41,19 @@ async function getUsersWithFriend(userId) {
   }
 }
 
+/*
+  Returns an array of user data objects who do not 
+  have a specific user id in their "friends" array field
+*/
 async function getUsersWithoutFriend(userId) {
   try {
     const snapshot = await db.collection("users").get();
 
-    const users = snapshot.docs.map(doc => doc.data()).filter(user => !user.friends.includes(userId) && user.id !== currentUserId);
+    // Filter array to remove users who are friends and the current user
+    const users = snapshot.docs
+      .map(doc => doc.data())
+      .filter(user => !user.friends.includes(userId) && user.id !== currentUserId);
+
     return users;
   } catch (error) {
     console.error(`Error retrieving users with friend ${userId}:`, error);
@@ -91,14 +96,17 @@ async function getFavoriteRoutrNames(favoriteRoutes) {
   })
 }
 
-// Updates current/other users friend array to include each other
+/*
+  Adds specified user as a friend by updating "friends" 
+  field of both the current user and the target user
+*/ 
 function addFriend(friendId) {
   let userDoc = db.collection("users").doc(currentUserId);
   let friendDoc = db.collection("users").doc(friendId);
 
   Promise.all([
     userDoc.update({
-      friends: firebase.firestore.FieldValue.arrayUnion(buddyId)
+      friends: firebase.firestore.FieldValue.arrayUnion(friendId)
     }),
     friendDoc.update({
       friends: firebase.firestore.FieldValue.arrayUnion(currentUserId)
@@ -109,156 +117,161 @@ function addFriend(friendId) {
     })
 }
 
-async function removeFriend(buddyId) {
+/*
+  Removes specified user as a friend by updating "friends"
+  field of both current user and target user
+*/
+async function removeFriend(userId) {
   let userDoc = await db.collection("users").doc(currentUserId);
-  let buddyDoc = await db.collection("users").doc(buddyId);
+  let buddyDoc = await db.collection("users").doc(userId);
   userDoc.update({
-    friends: firebase.firestore.FieldValue.arrayRemove(buddyId)
+    friends: firebase.firestore.FieldValue.arrayRemove(userId)
   })
   buddyDoc.update({
     friends: firebase.firestore.FieldValue.arrayRemove(currentUserId)
   })
 }
 
-function friendListTemplateStyling(card, buddyData) {
-  card.querySelector(".card-title").textContent = buddyData.name;
-  let buttonOne = card.getElementById("buddyButtonOne");
-  let buttonTwo = card.getElementById("buddyButtonTwo");
+function templateStyling(card, user) {
+  card.querySelector(".card-title").textContent = user.name;
+  const [buttonOne, buttonTwo] = [
+    card.querySelector("#buddyButtonOne"),
+    card.querySelector("#buddyButtonTwo")
+  ];
+
   buttonOne.textContent = "More Info";
-  buttonOne.classList.toggle("btn-primary");
+  buttonOne.classList.add("btn-primary");
   buttonTwo.textContent = "Message";
-  buttonTwo.classList.toggle("btn-primary");
+  buttonTwo.classList.add("btn-primary");
 }
 
-function displayCurrentBuddies() {
+/*
+  Displays the current user's friends 
+  Presents option to view more info or begin messaging
+*/
+async function displayCurrentBuddies() {
   const buddyTemplate = document.getElementById("buddyTemplate");
   const mainContainer = document.getElementById("mainContainer");
   mainContainer.innerHTML = '';
 
-  getUsersWithFriend(currentUserId)
-    .then(users => {
-      users.forEach(user => {
-        let card = buddyTemplate.content.cloneNode(true);
-        let birthday = card.getElementById("birthday");
-        let bio = card.getElementById("bio");
-        let favouriteRoutes = card.getElementById("favourite-routes");
-        let isDataVidible = true;
-        let photo = card.getElementById("profile-photo");
-        let table = card.getElementById("table-info");
+  const users = await getUsersWithFriend(currentUserId);
 
-        friendListTemplateStyling(card, user);
+  users.forEach(user => {
+    const card = buddyTemplate.content.cloneNode(true);
+    const photo = card.querySelector("#profile-photo");
+    let table = card.querySelector("#table-info");
+    let birthday = card.getElementById("birthday");
+    let bio = card.getElementById("bio");
+    let favouriteRoutes = card.getElementById("favourite-routes");
+    let isDataVisible = true;
 
-        if (user.profilePhotoBase64) {
-          photo.src = user.profilePhotoBase64;
-        }
+    templateStyling(card, user);
 
-        card.querySelector("#buddyButtonOne").addEventListener("click", () => {
-          if (isDataVidible) {
-            table.style.display = "table";
-            birthday.innerHTML = user.birthday || "N/A";
-            bio.innerHTML = user.description || "N/A";
-            // console.log(buddyData.favorite_routes);
-            getFavoriteRoutrNames(user.favorite_routes).then(routeNames => {
-              favouriteRoutes.innerHTML = routeNames;
-            });
-          } else {
-            table.style.display = "none";
-            birthday.innerHTML = "";
-            bio.innerHTML = ""
-            favouriteRoutes = "";
-          }
-          isDataVidible = !isDataVidible;
+    if (user.profilePhotoBase64) {
+      photo.src = user.profilePhotoBase64;
+    }
 
-        })
-
-        mainContainer.appendChild(card);
-      })
+    card.querySelector("#buddyButtonOne").addEventListener("click", async () => {
+      if (isDataVisible) {
+        table.style.display = "table";
+        birthday.innerHTML = user.birthday || "N/A";
+        bio.innerHTML = user.description || "N/A";
+        const routes = await getFavoriteRoutrNames(user.favorite_routes)
+        favouriteRoutes.innerHTML = routes;
+      } else {
+        table.style.display = "none";
+        birthday.innerHTML = "";
+        bio.innerHTML = ""
+        favouriteRoutes = "";
+      }
+      isDataVisible = !isDataVisible;
     })
+
+    card.querySelector("#buddyButtonTwo").addEventListener("click", () => {
+
+    })
+
+    mainContainer.appendChild(card);
+  })
 }
 
-function displayAllUsers() {
+/*
+  Displays users who are not currently friends with the current user
+  Presents option to view more info or add target users as friends
+*/
+async function displayAllUsers() {
   const buddyTemplate = document.getElementById("buddyTemplate");
   const mainContainer = document.getElementById("mainContainer");
   mainContainer.innerHTML = '';
 
-  getCurrentBuddies
-    (currentUserId).then(currentBuddies => {
-      db.collection("users").get().then(buddiesRef => {
-        buddiesRef.forEach(buddy => {
-          let buddyId = buddy.id;
-          let buddyData = buddy.data();
+  const users = await getUsersWithoutFriend(currentUserId);
 
-          if (buddyId !== currentUserId && !currentBuddies.includes(buddyId)) {
-            let card = buddyTemplate.content.cloneNode(true);
-            let birthday = card.getElementById("birthday");
-            let bio = card.getElementById("bio");
-            let favouriteRoutes = card.getElementById("favourite-routes");
-            let photo = card.getElementById("profile-photo");
-            let isDataVidible = false;
-            let table = card.getElementById("table-info");
+  users.forEach(user => {
+    let card = buddyTemplate.content.cloneNode(true);
+    let birthday = card.getElementById("birthday");
+    let bio = card.getElementById("bio");
+    let favouriteRoutes = card.getElementById("favourite-routes");
+    let photo = card.getElementById("profile-photo");
+    let isDataVisible = false;
+    let table = card.getElementById("table-info");
 
-            card.querySelector(".card-title").textContent = buddyData.name;
-            card.querySelector("#buddyButtonOne").textContent = "Add Friend";
-            card.querySelector("#buddyButtonOne").classList.toggle("btn-primary");
-            card.querySelector("#buddyButtonTwo").textContent = "More Info";
-            card.querySelector("#buddyButtonTwo").classList.toggle("btn-primary");
+    card.querySelector(".card-title").textContent = user.name;
+    card.querySelector("#buddyButtonOne").textContent = "Add Friend";
+    card.querySelector("#buddyButtonOne").classList.toggle("btn-primary");
+    card.querySelector("#buddyButtonTwo").textContent = "More Info";
+    card.querySelector("#buddyButtonTwo").classList.toggle("btn-primary");
 
-            if (buddyData.profilePhotoBase64) {
-              photo.src = buddyData.profilePhotoBase64;
-            }
+    if (user.profilePhotoBase64) {
+      photo.src = user.profilePhotoBase64;
+    }
 
-            card.querySelector("#buddyButtonTwo").addEventListener("click", () => {
-              if (!isDataVidible) {
-                table.style.display = "table";
-                birthday.innerHTML = buddyData.birthday || "N/A";
-                bio.innerHTML = buddyData.description || "N/A";
-                getFavoriteRoutrNames(buddyData.favorite_routes).then(routeNames => {
-                  favouriteRoutes.innerHTML = routeNames;
-                });
-              } else {
-                table.style.display = "none";
-                birthday.innerHTML = "";
-                bio.innerHTML = "";
-                favouriteRoutes = "";
-              }
-              isDataVidible = !isDataVidible;
-
-            })
-
-            card.querySelector(".btn").addEventListener("click", event => {
-              addFriend(buddyId);
-              displayAllUsers();
-            })
-
-            mainContainer.appendChild(card);
-          }
-        })
-      })
+    card.querySelector("#buddyButtonTwo").addEventListener("click", async () => {
+      if (!isDataVisible) {
+        table.style.display = "table";
+        birthday.innerHTML = user.birthday || "N/A";
+        bio.innerHTML = user.description || "N/A";
+        const routes = await getFavoriteRoutrNames(user.favorite_routes);
+        favouriteRoutes.innerHTML = routes;
+      } else {
+        table.style.display = "none";
+        birthday.innerHTML = "";
+        bio.innerHTML = "";
+        favouriteRoutes = "";
+      }
+      isDataVisible = !isDataVisible;
     })
+
+    card.querySelector("#buddyButtonOne").addEventListener("click", event => {
+      addFriend(user.id);
+      displayAllUsers();
+    })
+
+    mainContainer.appendChild(card);
+  })
 }
 
-function editCurrentBuddies() {
+/*
+  Displays all current friends, but with the option to remove them as friends
+*/
+async function editCurrentBuddies() {
   const buddyTemplate = document.getElementById("buddyTemplate");
   const mainContainer = document.getElementById("mainContainer");
   mainContainer.innerHTML = '';
 
-  getCurrentBuddies
-    (currentUserId).then(currentBuddies => {
-      currentBuddies.forEach(buddyId => {
-        getUserData(buddyId).then(buddyData => {
-          let card = buddyTemplate.content.cloneNode(true);
-          card.querySelector(".card-title").textContent = buddyData.name;
-          card.querySelector("#buddyButtonOne").textContent = "Remove";
-          card.querySelector("#buddyButtonOne").classList.toggle("btn-warning");
+  const users = await getUsersWithFriend(currentUserId);
 
-          card.querySelector(".btn").addEventListener("click", event => {
-            removeFriend(buddyId);
-            editCurrentBuddies();
-          })
+  users.forEach(user => {
+    let card = buddyTemplate.content.cloneNode(true);
+    card.querySelector(".card-title").textContent = user.name;
+    card.querySelector("#buddyButtonOne").textContent = "Remove";
+    card.querySelector("#buddyButtonOne").classList.toggle("btn-warning");
 
-          mainContainer.appendChild(card);
-        })
-      })
+    card.querySelector(".btn").addEventListener("click", event => {
+      removeFriend(user.id);
+      editCurrentBuddies();
     })
+
+    mainContainer.appendChild(card);
+  })
 }
 
