@@ -4,7 +4,7 @@ firebase.auth().onAuthStateChanged((user) => {
   if (user) {
     currentUserId = user.uid;
 
-    measureFunctionTime(getCurrentBuddies);
+    displayCurrentBuddies();
 
     document.getElementById("friendsList").addEventListener("click", event => {
       displayCurrentBuddies();
@@ -23,20 +23,17 @@ firebase.auth().onAuthStateChanged((user) => {
   }
 });
 
-async function measureFunctionTime(callback) {
-  const start = Date.now();
-
-  await callback(currentUserId);
-
-  const end = Date.now();
-  console.log(`Execution time: ${end - start} ms`);
-}
-
-// Return promise of friends array for specific user in "users" collection
+/*
+  Returns friends (document field) if the document exists
+  Throws an error if user document doesn't exist
+  All errors are caught and logged
+*/
 async function getCurrentBuddies(userId) {
   try {
+    // Gets user specific document from the "users" collection
     const userDoc = await db.collection("users").doc(userId).get();
 
+    // Throws error is userDoc doesn't exist 
     if (!userDoc.exists) {
       throw new Error(`User ${userId} does not exist.`);
     }
@@ -47,11 +44,17 @@ async function getCurrentBuddies(userId) {
   }
 }
 
-// Get User Data for Specific User in the "users" collection
+/* 
+  Returns user data (fields) of specified userId
+  Throws an error if user document doesn't exist
+  All errors are caught and logged 
+*/
 async function getUserData(userId) {
   try {
+    // Gets user specific document from the "users" collection
     const userDoc = await db.collection("users").doc(userId).get();
 
+    // Throws error is userDoc doesn't exist 
     if (!userDoc.exists) {
       throw new Error(`User ${userId} does not exist.`);
     }
