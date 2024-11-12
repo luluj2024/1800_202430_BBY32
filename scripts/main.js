@@ -89,11 +89,18 @@ function outputCards(container, busTemplate, routeId) {
     let data = routeId.data();
     let card = busTemplate.content.cloneNode(true);
     let busTitle = "Bus " + data.bus + ": " + data.name;
-    let busTime = "Start: " + data.start + " End: " + data.end;
+    let busTime;
+    if (data.start == data.end) {
+        busTime = "Bus runs 24/7";
+    }
+    else {
+        busTime = "Start: " + data.start + " End: " + data.end;
+    }
     card.querySelector(".card-title").textContent = busTitle;
     card.querySelector(".card-time").textContent = busTime;
     let favCount = data.favorites.length;
-    if (favCount == 0) {
+    console.log(data.favorites.length)
+    if (favCount == 0 || favCount == undefined) {
         card.querySelector(".card-fav").textContent = "Be the first buddy on this route!";
     }
     else if (favCount == 1) {
@@ -157,7 +164,6 @@ function favBtn(curcard, routeId) {
             curcard.style.color = "blue";
             curcard.addEventListener("click", event => {
                 unfavoriteRoute(routeId.id)
-                curcard.style.color = "black";
                 displaySimilarRoutes();
               })
         }
@@ -165,10 +171,102 @@ function favBtn(curcard, routeId) {
             curcard.style.color = "black";
             curcard.addEventListener("click", event => {
                 favoriteRoute(routeId.id)
-                curcard.style.color = "blue";
                 displaySimilarRoutes();
               })
         }
     });
 }
 
+// function populateRoutes() {
+//     var routeRef = db.collection("Routes");
+
+//     routeRef.add({
+//         bus: 14,
+//         name: "UBC", 
+//         start: "5am",
+//         end: "12am",
+//         favorites: {},
+//         commuters: {},       
+//     });
+//     routeRef.add({
+//         bus: 564,
+//         name: "Langley Centre", 
+//         start: "5am",
+//         end: "12am",
+//         favorites: {},
+//         commuters: {},       
+//     });
+//     routeRef.add({
+//         bus: 147,
+//         name: "Metrotown", 
+//         start: "6am",
+//         end: "12am",
+//         favorites: {},
+//         commuters: {},       
+//     });
+//     routeRef.add({
+//         bus: 123,
+//         name: "New Westminster", 
+//         start: "12am",
+//         end: "12am",
+//         favorites: {},
+//         commuters: {},       
+//     });
+//     routeRef.add({
+//         bus: 17,
+//         name: "UBC Nightbus", 
+//         start: "2am",
+//         end: "4am",
+//         favorites: {},
+//         commuters: {},       
+//     });
+//     routeRef.add({
+//         bus: 229,
+//         name: "Lynn Valley", 
+//         start: "6am",
+//         end: "1am",
+//         favorites: {},
+//         commuters: {},       
+//     });
+//     routeRef.add({
+//         bus: 188,
+//         name: "Port Coquitlam", 
+//         start: "12am",
+//         end: "12am",
+//         favorites: {},
+//         commuters: {},       
+//     });
+//     routeRef.add({
+//         bus: 231,
+//         name: "Lonsdale Quay", 
+//         start: "4pm",
+//         end: "6pm",
+//         favorites: {},
+//         commuters: {},       
+//     });
+//     routeRef.add({
+//         bus: 335,
+//         name: "Newton Exchange", 
+//         start: "12am",
+//         end: "12am",
+//         favorites: {},
+//         commuters: {},       
+//     });
+//     routeRef.add({
+//         bus: 2,
+//         name: "Macdonald", 
+//         start: "12am",
+//         end: "12am",
+//         favorites: {},
+//         commuters: {},       
+//     });
+//     routeRef.add({
+//         bus: 391,
+//         name: "Scott Road", 
+//         start: "5am",
+//         end: "8am",
+//         favorites: {},
+//         commuters: {},       
+//     });
+// }
+// populateRoutes();
