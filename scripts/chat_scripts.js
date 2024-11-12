@@ -99,7 +99,7 @@ async function getFavoriteRoutrNames(favoriteRoutes) {
 /*
   Adds specified user as a friend by updating "friends" 
   field of both the current user and the target user
-*/ 
+*/
 function addFriend(friendId) {
   let userDoc = db.collection("users").doc(currentUserId);
   let friendDoc = db.collection("users").doc(friendId);
@@ -188,7 +188,7 @@ async function displayCurrentBuddies() {
     })
 
     card.querySelector("#buddyButtonTwo").addEventListener("click", () => {
-
+      displayMessages(user.id);
     })
 
     mainContainer.appendChild(card);
@@ -275,3 +275,66 @@ async function editCurrentBuddies() {
   })
 }
 
+async function displayMessages(userId) {
+  const messageTemplate = document.querySelector("#messageTemplate");
+  const mainContainer = document.querySelector("#mainContainer");
+  mainContainer.innerHTML = "";
+  mainContainer.appendChild(messageTemplate.content.cloneNode(true));
+
+  const messageDisplay = mainContainer.querySelector("#messageDisplay");
+
+  listenForMessages(userId, messageDisplay);
+
+  mainContainer.querySelector("#submitBtn").addEventListener("click", () => {
+    sendMessage(userId, mainContainer);
+  });
+}
+
+async function listenForMessages(userId, messageDisplay) {
+  db.collection("messages")
+  .where("users", "array-contains", currentUserId)  // Only messages between the currentUserId
+  .orderBy("timestamp") // Order by timestamp
+  .onSnapshot(snapshot => {
+    messageDisplay.innerHTML = ""; // Clear existing messages
+
+    snapshot.forEach(doc => {
+      const message = doc.data();
+
+      // Ensure that both userId and currentUserId are part of the message's users array
+      if (message.users.includes(currentUserId) && message.users.includes(userId)) {
+        const messageElement = document.createElement("p");
+        messageElement.textContent = message.text;
+
+        if (message.users[0] === currentUserId) {
+          messageElement.classList.add("bg-primary");
+        } else {
+          messageElement.classList.add("bg-success");
+        }
+
+        messageDisplay.appendChild(messageElement);
+      }
+    });
+  })
+}
+
+function sendMessage(receiverId, mainContainer) {
+  const messageInput = mainContainer.querySelector("#messageInput");
+  const message = messageInput.value.trim();
+
+  if (message) {
+    const messagesRef = db.collection("messages");
+    messagesRef.add({
+      users: [currentUserId, receiverId],
+      text: message,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(() => {
+      messageInput.value = "";
+    }).catch((error) => {
+      console.error("Error sending message: ", error);
+    });
+  }
+}
+
+function goBack() {
+  displayCurrentBuddies();
+}

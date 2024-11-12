@@ -7,7 +7,8 @@ var uiConfig = {
       // If the user is a "brand new" user, then create a new "user" in your own database.
       var user = authResult.user;                            
       if (authResult.additionalUserInfo.isNewUser) {        
-        db.collection("users").doc(user.uid).set({         
+        db.collection("users").doc(user.uid).set({   
+          id: user.uid,      
           name: user.displayName,                    
           email: user.email,                         
           favorite_routes: [],

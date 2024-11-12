@@ -57,7 +57,7 @@
   <template id="buddyTemplate">
     <div class="card">
       <div class="card-body">
-        <img id="profile-photo" src="./images/profile.png" alt="Profile Photo" style = "width: 100px; height: auto;">
+        <img id="profile-photo" src="./images/profile.png" alt="Profile Photo" style="width: 100px; height: auto;">
         <h5 class="card-title"></h5>
         <p class="card-text"></p>
         <a id="buddyButtonOne" href="#" class="btn"></a>
@@ -82,6 +82,19 @@
     </div>
   </template>
 
+  <template id="messageTemplate">
+    <button onclick="goBack()" class="btn btn-secondary mb-3">Back</button>
+    <div id="chatContainer" class="container border p-3 mt-4 rounded">
+      <div id="messageDisplay" class="messages bg-light p-3 mb-3 overflow-auto" style="height: 300px;">
+      </div>
+  
+      <div id="messageForm" class="d-flex">
+        <input id="messageInput" type="text" class="form-control mr-2" placeholder="Type your message...">
+        <button id="submitBtn" type="submit" class="btn btn-primary">Send</button>
+      </div>
+    </div>
+  </template>
+  
 
   <div id="mainContainer" class="container">
   </div>
@@ -96,7 +109,7 @@
   <script src="./scripts/skeleton.js"></script>
   <script src="./scripts/firebaseAPI_BBY32.js"></script>
   <script src="./scripts/chat_scripts.js"></script>
-   <!-- <script src="./scripts/test.js"></script> -->
+  <!-- <script src="./scripts/test.js"></script> -->
 </body>
 
 </html>
