@@ -20,6 +20,7 @@ firebase.auth().onAuthStateChanged((user) => {
 
   } else {
     console.log("No User Logged In");
+    window.location.href = "index.html";
   }
 });
 
@@ -81,19 +82,25 @@ async function getUserData(userId) {
   }
 }
 
+/* 
+  Function returns all the favorite routes' names of a specified userId.
+  All errors are caught and logged 
+*/
 async function getFavoriteRoutrNames(favoriteRoutes) {
   if (!favoriteRoutes || favoriteRoutes.length === 0) {
-    return Promise.resolve("No favorite routes.");
+    return "No favorite routes.";
   }
 
-  return Promise.all(favoriteRoutes.map(routeId => {
-    return db.collection("Routes").doc(routeId).get().data().name;
-  })).then(routeNames => {
+  try {
+    const routeNames = await Promise.all(favoriteRoutes.map(async (routeId) => {
+      const routeDoc = await db.collection("Routes").doc(routeId).get();
+      return routeDoc.data().name;
+    }))
     return routeNames.join(", ");
-  }).catch(error => {
-    console.log("errors in getting route name", error);
+  } catch (error) {
+    console.log(`error in getting favorite routes for ${currentUserId}`, error);
     return "Error loading routes";
-  })
+  }
 }
 
 /*
@@ -113,7 +120,7 @@ function addFriend(friendId) {
     })
   ])
     .catch(error => {
-      console.error("Error adding friend ${friendId}:", error);
+      console.log(`Error adding friend ${friendId}:`, error);
     })
 }
 
@@ -124,16 +131,31 @@ function addFriend(friendId) {
 async function removeFriend(userId) {
   let userDoc = await db.collection("users").doc(currentUserId);
   let buddyDoc = await db.collection("users").doc(userId);
-  userDoc.update({
-    friends: firebase.firestore.FieldValue.arrayRemove(userId)
+
+  Promise.all([
+    userDoc.update({
+      friends: firebase.firestore.FieldValue.arrayRemove(userId)
+    }),
+    buddyDoc.update({
+      friends: firebase.firestore.FieldValue.arrayRemove(currentUserId)
+    })
+  ]).catch(error => {
+      console.log(`Error deleting friend ${friendId}:`, error);
   })
-  buddyDoc.update({
-    friends: firebase.firestore.FieldValue.arrayRemove(currentUserId)
-  })
+
 }
 
+/*
+  Style for the template card.
+*/
 function templateStyling(card, user) {
   card.querySelector(".card-title").textContent = user.name;
+  let photo = card.querySelector("#profile-photo");
+
+  if (user.profilePhotoBase64) {
+    photo.src = user.profilePhotoBase64;
+  }
+
   const [buttonOne, buttonTwo] = [
     card.querySelector("#buddyButtonOne"),
     card.querySelector("#buddyButtonTwo")
@@ -157,20 +179,18 @@ async function displayCurrentBuddies() {
   const users = await getUsersWithFriend(currentUserId);
 
   users.forEach(user => {
-    const card = buddyTemplate.content.cloneNode(true);
-    const photo = card.querySelector("#profile-photo");
+    let card = buddyTemplate.content.cloneNode(true);
+
     let table = card.querySelector("#table-info");
     let birthday = card.getElementById("birthday");
     let bio = card.getElementById("bio");
     let favouriteRoutes = card.getElementById("favourite-routes");
+
     let isDataVisible = true;
 
     templateStyling(card, user);
 
-    if (user.profilePhotoBase64) {
-      photo.src = user.profilePhotoBase64;
-    }
-
+    // show user's info when click the "more info" button
     card.querySelector("#buddyButtonOne").addEventListener("click", async () => {
       if (isDataVisible) {
         table.style.display = "table";
@@ -180,9 +200,6 @@ async function displayCurrentBuddies() {
         favouriteRoutes.innerHTML = routes;
       } else {
         table.style.display = "none";
-        birthday.innerHTML = "";
-        bio.innerHTML = ""
-        favouriteRoutes = "";
       }
       isDataVisible = !isDataVisible;
     })
@@ -208,6 +225,7 @@ async function displayAllUsers() {
 
   users.forEach(user => {
     let card = buddyTemplate.content.cloneNode(true);
+
     let birthday = card.getElementById("birthday");
     let bio = card.getElementById("bio");
     let favouriteRoutes = card.getElementById("favourite-routes");
@@ -234,9 +252,6 @@ async function displayAllUsers() {
         favouriteRoutes.innerHTML = routes;
       } else {
         table.style.display = "none";
-        birthday.innerHTML = "";
-        bio.innerHTML = "";
-        favouriteRoutes = "";
       }
       isDataVisible = !isDataVisible;
     })
@@ -265,6 +280,11 @@ async function editCurrentBuddies() {
     card.querySelector(".card-title").textContent = user.name;
     card.querySelector("#buddyButtonOne").textContent = "Remove";
     card.querySelector("#buddyButtonOne").classList.toggle("btn-warning");
+    let photo = card.querySelector("#profile-photo");
+
+    if (user.profilePhotoBase64) {
+      photo.src = user.profilePhotoBase64;
+    }
 
     card.querySelector(".btn").addEventListener("click", event => {
       removeFriend(user.id);

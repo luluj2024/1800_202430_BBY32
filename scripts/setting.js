@@ -1,39 +1,70 @@
-function insertFormInfoFromFirestore() {
-    firebase.auth().onAuthStateChanged(user => {
-        if (user) {
-            const currentUserRef = db.collection("users").doc(user.uid);
-            currentUserRef.get().then(userDoc => {
-                if (userDoc.exists) {
-                    const userData = userDoc.data();
-                    document.getElementById("full-name").value = userData.name || "";
-                    document.getElementById("email").value = userData.email || "";
-                    document.getElementById("phone").value = userData.phone || "";
-                    document.getElementById("birthday").value = userData.birthday || "2024-11-02";
-                    document.getElementById("about-me").value = userData.description || "";
+let currentUserId;
+let profilePhotoBase64 = ""; 
 
-                    if (userData.profilePhotoBase64) {
-                        document.getElementById("profile-photo-preview").src = userData.profilePhotoBase64;
-                    }
-                }
-            }).catch(error => {
-                console.error("Error getting user document:", error);
-            });
+/* Main funtins of setting.html, including
+   Display user's info saved in firestoree.
+   Enable user to update their info. 
+   Log out. */
+firebase.auth().onAuthStateChanged((user) => {
+    if (user) {
+        currentUserId = user.uid;
+
+        insertFormInfoFromFirestore();
+
+        document.getElementById("save-button").addEventListener("click", (e) => {
+            saveUserInfo(e);
+        });
+
+        document.getElementById("log-out").addEventListener("click", () => {
+            logout();
+        })
+
+        document.getElementById("upload-button").addEventListener("click", () => {
+            document.getElementById("profile-photo-upload").click();
+        });
+
+        document.getElementById("profile-photo-upload").addEventListener("change", (e) => {
+            updateUserPhoto(e);
+        })
+ 
+    } else {
+        console.log("No user logged In");
+        window.location.href = "index.html";
+    }
+})
+
+/* Displays user's information from firestore
+   if not logging in, redirects to index.htm */
+function insertFormInfoFromFirestore() {
+    const currentUserRef = db.collection("users").doc(currentUserId);
+
+    const today = new Date();
+    const formattedToday = today.toISOString().split('T')[0];
+
+    /* Display user's info. If it doesn't exist, uses "N/A" for phone number and bio,
+       and uses today's date as the default birthday. */
+    currentUserRef.get().then(userDoc => {
+        if (userDoc.exists) { 
+            const userData = userDoc.data();
+            document.getElementById("full-name").value = userData.name || "";
+            document.getElementById("email").value = userData.email || "";
+            document.getElementById("phone").value = userData.phone || "N/A";
+            document.getElementById("birthday").value = userData.birthday || formattedToday;
+            document.getElementById("about-me").value = userData.description || "N/A";
+
+            if (userData.profilePhotoBase64) {
+                document.getElementById("profile-photo-preview").src = userData.profilePhotoBase64;
+            }
         } else {
-            console.log("No user is logged in.");
-            window.location.href = "index.html";
+            console.log("No user data found.");
         }
+    }).catch(error => {
+        console.log(`Error getting user document for ${currentUserId}:`, error);
     });
 }
 
-insertFormInfoFromFirestore();
-
-let profilePhotoBase64 = ""; 
-
-document.getElementById("upload-button").addEventListener("click", () => {
-    document.getElementById("profile-photo-upload").click();
-});
-
-document.getElementById("profile-photo-upload").addEventListener("change", (event) => {
+/* save and update uses's profile photo */
+function updateUserPhoto(event) {
     const profilePhotoFile = event.target.files[0];
     if (profilePhotoFile) {
         const reader = new FileReader();
@@ -43,21 +74,13 @@ document.getElementById("profile-photo-upload").addEventListener("change", (even
         };
         reader.readAsDataURL(profilePhotoFile);
     }
-});
+};
 
+/* save user's input and update the information */
 async function saveUserInfo(event) {
     event.preventDefault();
 
-    const user = firebase.auth().currentUser;
-    
-    if (!user) {
-        console.log("No user is logged in.");
-        window.location.href = "main.html";
-        return;
-    }
-
-    const userId = user.uid;
-    const currentUserRef = db.collection("users").doc(userId);
+    const currentUserRef = db.collection("users").doc(currentUserId);
 
     const updatedUserInfo = {
         name: document.getElementById("full-name").value,
@@ -70,26 +93,26 @@ async function saveUserInfo(event) {
 
     try {
         await currentUserRef.update(updatedUserInfo);
-        alert("User information and profile photo updated successfully.");
+        alert("Your information updated successfully.");
     } catch (error) {
-        console.error("Error updating user information:", error);
-        alert("Failed to update user information.");
+        console.error(`Error updating user information for ${currentUserId}`, error);
+        alert("Failed to update your information.");
     }
 }
 
-document.getElementById("save-button").addEventListener("click", saveUserInfo);
 
+/* log-out function 
+   after logging out, redirects to index.html */
 function logout() {
     firebase.auth().signOut().then(() => {
-        // Sign-out successful.
         console.log("logging out user");
+        window.location.href = "index.html";
+        alert("Log out successfully.");
       }).catch((error) => {
-        // An error happened.
+        console.log("error in logging out.");
       });
 }
 
-document.getElementById("log-out").addEventListener("click", () => {
-    logout();
-})
+
 
 

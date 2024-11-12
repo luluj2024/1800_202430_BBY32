@@ -1,15 +1,17 @@
 let currentUserId;
 
+//Authenticates users
 firebase.auth().onAuthStateChanged((user) => {
   if (user) {
     currentUserId = user.uid;
   }
-  processLoad()
+  //Calls all routes after delay and initializes searchbar 
+  displayAllRoutes()
   let searchbar = document.getElementById("searchbar");
   searchbar.value = "";
 })
 
-
+//Displays all routes in database
 function displayAllRoutes() {
     let busTemplate = document.getElementById("bus-template");
     let container = document.getElementById("bus-info");
@@ -25,15 +27,11 @@ function displayAllRoutes() {
 }
 
 
-let searchbar = document.getElementById("searchbar");
-searchbar.value = "";
 //Only displays routes similar to search query 
 function displaySimilarRoutes() {
     searchbar = document.getElementById("searchbar");
-    // console.log(searchbar.value);
     if (searchbar.value == "") {
-        displayAllRoutes();
-        // console.log("reset");
+        processLoad();
     }
     else {
         let count = 0;
@@ -43,16 +41,12 @@ function displaySimilarRoutes() {
         container.innerHTML = '';
         db.collection("Routes").get().then(routeList => {
             routeList.forEach(routeId => {
-                // console.log(routeId.data().bus);
-                // console.log(searchbar.value);
                 if (relatedRoutes(searchbar.value.toLowerCase(), routeId.data().bus, routeId.data().name)) {
                     count += 1;
-                    // console.log(count + "e")
                     outputCards(container, busTemplate, routeId);
                 }
             })
         }).then(() => {
-            // console.log("final" + count)
             if (count == 0) {
                 document.getElementById("status").innerHTML = "<h4>Sorry, your search doesnt match any routes in our database.</h4>";
             }
@@ -63,7 +57,7 @@ function displaySimilarRoutes() {
     }
 }
 
-
+//Compares search input with route database
 function relatedRoutes(search, result, result2) {
     result += '';
     result2 += '';
@@ -75,22 +69,18 @@ function relatedRoutes(search, result, result2) {
         }
         else if (i >= result.length) {
             if (search[i] != result2[i].toLowerCase()) {
-                // console.log("fail");
                 return false;
             }
         }
         else if (i >= result2.length) {
             if (search[i] != result[i]) {
-                // console.log("fail");
                 return false;
             }
         }
         else if (search[i] != result[i] && search[i].toLowerCase() != result2[i].toLowerCase()) {
-            // console.log("fail");
             return false;
         }
     }
-    // console.log(search + " success " + result);
     return true;
 }
 
@@ -102,6 +92,16 @@ function outputCards(container, busTemplate, routeId) {
     let busTime = "Start: " + data.start + " End: " + data.end;
     card.querySelector(".card-title").textContent = busTitle;
     card.querySelector(".card-time").textContent = busTime;
+    let favCount = data.favorites.length;
+    if (favCount == 0) {
+        card.querySelector(".card-fav").textContent = "Be the first buddy on this route!";
+    }
+    else if (favCount == 1) {
+        card.querySelector(".card-fav").textContent = favCount + " buddy favorited this route!";
+    }
+    else {
+        card.querySelector(".card-fav").textContent = favCount + " buddies favorited this route!";
+    }
 
     let curcard = card.querySelector("#cardbtn");
     favBtn(curcard, routeId);
@@ -122,9 +122,8 @@ function debounce(func, timeout = 250){
   const processSearch = debounce(() => displaySimilarRoutes());
   const processLoad = debounce(() => displayAllRoutes());
 
-
+//Favorites for both user and route
   async function favoriteRoute(route) {
-    // console.log("entered favorites");
     let userDocRef = await db.collection("users").doc(currentUserId);
     let routeDocRef = await db.collection("Routes").doc(route);
     userDocRef.update({
@@ -135,8 +134,8 @@ function debounce(func, timeout = 250){
     })
 }
 
+//Removes favorite for both user and route
 async function unfavoriteRoute(route) {
-    // console.log("entered unfavorites");
     let userDocRef = await db.collection("users").doc(currentUserId);
     let routeDocRef = await db.collection("Routes").doc(route);
     userDocRef.update({
@@ -147,14 +146,14 @@ async function unfavoriteRoute(route) {
     })
 }
 
+//Favorite button functionality
 function favBtn(curcard, routeId) {
     let favCheck = false;
     db.collection("users").doc(currentUserId).get().then(user => {
-        // console.log("isFav?");
         let favoriteRoutes = user.data().favorite_routes;
         favCheck = favoriteRoutes.includes(routeId.id);
+        //Establishes which version of favorite button
         if (favCheck) {
-            // console.log("favorite");
             curcard.style.color = "blue";
             curcard.addEventListener("click", event => {
                 unfavoriteRoute(routeId.id)
@@ -163,7 +162,6 @@ function favBtn(curcard, routeId) {
               })
         }
         else {
-            // console.log("not favorite");
             curcard.style.color = "black";
             curcard.addEventListener("click", event => {
                 favoriteRoute(routeId.id)
