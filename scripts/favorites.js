@@ -131,6 +131,12 @@ function outputCards(container, busTemplate, routeId) {
     }
 
     card.querySelector("#removebtn").addEventListener("click", event => { unfavoriteRoute(routeId.id) });
+
+    card.querySelector("#cardbtn").addEventListener("click", (event) => {
+        console.log("Chat Button Clicked");
+        displayMessages(routeId.id);
+    })
+
     container.appendChild(card);
 }
 
@@ -159,4 +165,3 @@ async function unfavoriteRoute(route) {
     })
     displaySimilarRoutes();
 }
-
