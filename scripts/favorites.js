@@ -111,6 +111,7 @@ function relatedRoutes(search, result, result2) {
 function outputCards(container, busTemplate, routeId) {
     let data = routeId.data();
     let card = busTemplate.content.cloneNode(true);
+    let busTitle = "Bus " + data.bus + ": " + data.name;
     if (data.start == data.end) {
         busTime = "Bus runs 24/7";
     }
