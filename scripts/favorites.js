@@ -22,21 +22,21 @@ function displayAllRoutes() {
     db.collection("users").doc(currentUserId).get().then(user => {
         let favoriteRoutes = user.data().favorite_routes;
         if (favoriteRoutes.length == 0) {
-                document.getElementById("status").innerHTML = "<h4>Favorite some routes to meet commute buddies!</h4>";
+            document.getElementById("status").innerHTML = "<h4>Favorite some routes to meet commute buddies!</h4>";
         }
         else {
-        db.collection("Routes").get().then(routeList => {
-            routeList.forEach(routeId => {
-                favCheck = favoriteRoutes.includes(routeId.id);
-                if (favCheck) {
-                    outputCards(container, busTemplate, routeId);
-                }
+            db.collection("Routes").get().then(routeList => {
+                routeList.forEach(routeId => {
+                    favCheck = favoriteRoutes.includes(routeId.id);
+                    if (favCheck) {
+                        outputCards(container, busTemplate, routeId);
+                    }
+                })
             })
-        }) 
-    }
+        }
     })
 }
- 
+
 //Only displays routes similar to search query that are favorited by the user
 function displaySimilarRoutes() {
     searchbar = document.getElementById("searchbar");
@@ -111,8 +111,12 @@ function relatedRoutes(search, result, result2) {
 function outputCards(container, busTemplate, routeId) {
     let data = routeId.data();
     let card = busTemplate.content.cloneNode(true);
-    let busTitle = "Bus " + data.bus + ": " + data.name;
-    let busTime = "Start: " + data.start + " End: " + data.end;
+    if (data.start == data.end) {
+        busTime = "Bus runs 24/7";
+    }
+    else {
+        busTime = "Start: " + data.start + " End: " + data.end;
+    }
     card.querySelector(".card-title").textContent = busTitle;
     card.querySelector(".card-time").textContent = busTime;
     let commuters = data.commuters.length;
