@@ -37,6 +37,66 @@ function displayAllRoutes() {
     })
 }
 
+function displayMessages(routeId) {
+    const messageTemplate = document.querySelector("#messageTemplate");
+    const mainContainer = document.querySelector("#bus-info");
+    mainContainer.innerHTML = "";
+    mainContainer.appendChild(messageTemplate.content.cloneNode(true));
+
+    const messageDisplay = mainContainer.querySelector("#messageDisplay");
+
+    listenForMessages(routeId, messageDisplay);
+
+    mainContainer.querySelector("#submitBtn").addEventListener("click", () => {
+        sendMessage(routeId, mainContainer);
+    });
+}
+
+function listenForMessages(routeId, messageDisplay) {
+    db.collection("Routes")
+        .doc(routeId)
+        .collection("messages")
+        .orderBy("timestamp") // Order by timestamp
+        .onSnapshot(snapshot => {
+            messageDisplay.innerHTML = ""; // Clear existing messages
+
+            snapshot.forEach(doc => {
+                const message = doc.data();
+
+                const messageElement = document.createElement("p");
+                messageElement.textContent = message.text;
+
+                if (message.sender === currentUserId) {
+                    messageElement.classList.add("bg-primary");
+                } else {
+                    messageElement.classList.add("bg-success");
+                }
+
+                messageDisplay.appendChild(messageElement);
+
+            });
+        })
+}
+
+function sendMessage(routeId, mainContainer) {
+    const messageInput = mainContainer.querySelector("#messageInput");
+    const message = messageInput.value.trim();
+
+    if (message) {
+        const messagesRef = db.collection("Routes").doc(routeId).collection("messages");
+        messagesRef.add({
+            sender: currentUserId,
+            text: message,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(() => {
+            messageInput.value = "";
+        }).catch((error) => {
+            console.error("Error sending message: ", error);
+        });
+    }
+}
+
+
 //Only displays routes similar to search query that are favorited by the user
 function displaySimilarRoutes() {
     searchbar = document.getElementById("searchbar");
