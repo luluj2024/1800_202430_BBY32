@@ -2,13 +2,13 @@ let currentUserId;
 
 //Authenticates users
 firebase.auth().onAuthStateChanged((user) => {
-  if (user) {
-    currentUserId = user.uid;
-  }
-  //Calls all routes after delay and initializes searchbar 
-  displayAllRoutes()
-  let searchbar = document.getElementById("searchbar");
-  searchbar.value = "";
+    if (user) {
+        currentUserId = user.uid;
+    }
+    //Calls all routes after delay and initializes searchbar 
+    displayAllRoutes()
+    let searchbar = document.getElementById("searchbar");
+    searchbar.value = "";
 })
 
 //Displays all routes in database
@@ -99,7 +99,6 @@ function outputCards(container, busTemplate, routeId) {
     card.querySelector(".card-title").textContent = busTitle;
     card.querySelector(".card-time").textContent = busTime;
     let favCount = data.favorites.length;
-    console.log(data.favorites.length)
     if (favCount == 0 || favCount == undefined) {
         card.querySelector(".card-fav").textContent = "Be the first buddy on this route!";
     }
@@ -118,26 +117,26 @@ function outputCards(container, busTemplate, routeId) {
 
 
 // Function found at https://www.freecodecamp.org/news/javascript-debounce-example/ and used to prevent multiple function calls in searchbar
-function debounce(func, timeout = 250){
+function debounce(func, timeout = 250) {
     let timer;
     return (...args) => {
-      clearTimeout(timer);
-      timer = setTimeout(() => { func.apply(this, args); }, timeout);
+        clearTimeout(timer);
+        timer = setTimeout(() => { func.apply(this, args); }, timeout);
     };
-  }
-  //delays searchbar inputs to prevent duplication and excessive database calls
-  const processSearch = debounce(() => displaySimilarRoutes());
-  const processLoad = debounce(() => displayAllRoutes());
+}
+//delays searchbar inputs to prevent duplication and excessive database calls
+const processSearch = debounce(() => displaySimilarRoutes());
+const processLoad = debounce(() => displayAllRoutes());
 
 //Favorites for both user and route
-  async function favoriteRoute(route) {
+async function favoriteRoute(route) {
     let userDocRef = await db.collection("users").doc(currentUserId);
     let routeDocRef = await db.collection("Routes").doc(route);
     userDocRef.update({
-      favorite_routes: firebase.firestore.FieldValue.arrayUnion(route)
+        favorite_routes: firebase.firestore.FieldValue.arrayUnion(route)
     })
     routeDocRef.update({
-      favorites: firebase.firestore.FieldValue.arrayUnion(currentUserId)
+        favorites: firebase.firestore.FieldValue.arrayUnion(currentUserId)
     })
 }
 
@@ -146,10 +145,10 @@ async function unfavoriteRoute(route) {
     let userDocRef = await db.collection("users").doc(currentUserId);
     let routeDocRef = await db.collection("Routes").doc(route);
     userDocRef.update({
-      favorite_routes: firebase.firestore.FieldValue.arrayRemove(route)
+        favorite_routes: firebase.firestore.FieldValue.arrayRemove(route)
     })
     routeDocRef.update({
-      favorites: firebase.firestore.FieldValue.arrayRemove(currentUserId)
+        favorites: firebase.firestore.FieldValue.arrayRemove(currentUserId)
     })
 }
 
@@ -165,14 +164,14 @@ function favBtn(curcard, routeId) {
             curcard.addEventListener("click", event => {
                 unfavoriteRoute(routeId.id)
                 displaySimilarRoutes();
-              })
+            })
         }
         else {
             curcard.style.color = "black";
             curcard.addEventListener("click", event => {
                 favoriteRoute(routeId.id)
                 displaySimilarRoutes();
-              })
+            })
         }
     });
 }
@@ -182,91 +181,91 @@ function favBtn(curcard, routeId) {
 
 //     routeRef.add({
 //         bus: 14,
-//         name: "UBC", 
+//         name: "UBC",
 //         start: "5am",
 //         end: "12am",
 //         favorites: {},
-//         commuters: {},       
+//         commuters: {},
 //     });
 //     routeRef.add({
 //         bus: 564,
-//         name: "Langley Centre", 
+//         name: "Langley Centre",
 //         start: "5am",
 //         end: "12am",
 //         favorites: {},
-//         commuters: {},       
+//         commuters: {},
 //     });
 //     routeRef.add({
 //         bus: 147,
-//         name: "Metrotown", 
+//         name: "Metrotown",
 //         start: "6am",
 //         end: "12am",
 //         favorites: {},
-//         commuters: {},       
+//         commuters: {},
 //     });
 //     routeRef.add({
 //         bus: 123,
-//         name: "New Westminster", 
+//         name: "New Westminster",
 //         start: "12am",
 //         end: "12am",
 //         favorites: {},
-//         commuters: {},       
+//         commuters: {},
 //     });
 //     routeRef.add({
 //         bus: 17,
-//         name: "UBC Nightbus", 
+//         name: "UBC Nightbus",
 //         start: "2am",
 //         end: "4am",
 //         favorites: {},
-//         commuters: {},       
+//         commuters: {},
 //     });
 //     routeRef.add({
 //         bus: 229,
-//         name: "Lynn Valley", 
+//         name: "Lynn Valley",
 //         start: "6am",
 //         end: "1am",
 //         favorites: {},
-//         commuters: {},       
+//         commuters: {},
 //     });
 //     routeRef.add({
 //         bus: 188,
-//         name: "Port Coquitlam", 
+//         name: "Port Coquitlam",
 //         start: "12am",
 //         end: "12am",
 //         favorites: {},
-//         commuters: {},       
+//         commuters: {},
 //     });
 //     routeRef.add({
 //         bus: 231,
-//         name: "Lonsdale Quay", 
+//         name: "Lonsdale Quay",
 //         start: "4pm",
 //         end: "6pm",
 //         favorites: {},
-//         commuters: {},       
+//         commuters: {},
 //     });
 //     routeRef.add({
 //         bus: 335,
-//         name: "Newton Exchange", 
+//         name: "Newton Exchange",
 //         start: "12am",
 //         end: "12am",
 //         favorites: {},
-//         commuters: {},       
+//         commuters: {},
 //     });
 //     routeRef.add({
 //         bus: 2,
-//         name: "Macdonald", 
+//         name: "Macdonald",
 //         start: "12am",
 //         end: "12am",
 //         favorites: {},
-//         commuters: {},       
+//         commuters: {},
 //     });
 //     routeRef.add({
 //         bus: 391,
-//         name: "Scott Road", 
+//         name: "Scott Road",
 //         start: "5am",
 //         end: "8am",
 //         favorites: {},
-//         commuters: {},       
+//         commuters: {},
 //     });
 // }
 // populateRoutes();
