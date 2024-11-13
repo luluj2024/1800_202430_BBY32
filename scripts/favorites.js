@@ -22,21 +22,81 @@ function displayAllRoutes() {
     db.collection("users").doc(currentUserId).get().then(user => {
         let favoriteRoutes = user.data().favorite_routes;
         if (favoriteRoutes.length == 0) {
-                document.getElementById("status").innerHTML = "<h4>Favorite some routes to meet commute buddies!</h4>";
+            document.getElementById("status").innerHTML = "<h4>Favorite some routes to meet commute buddies!</h4>";
         }
         else {
-        db.collection("Routes").get().then(routeList => {
-            routeList.forEach(routeId => {
-                favCheck = favoriteRoutes.includes(routeId.id);
-                if (favCheck) {
-                    outputCards(container, busTemplate, routeId);
-                }
+            db.collection("Routes").get().then(routeList => {
+                routeList.forEach(routeId => {
+                    favCheck = favoriteRoutes.includes(routeId.id);
+                    if (favCheck) {
+                        outputCards(container, busTemplate, routeId);
+                    }
+                })
             })
-        }) 
-    }
+        }
     })
 }
- 
+
+function displayMessages(routeId) {
+    const messageTemplate = document.querySelector("#messageTemplate");
+    const mainContainer = document.querySelector("#bus-info");
+    mainContainer.innerHTML = "";
+    mainContainer.appendChild(messageTemplate.content.cloneNode(true));
+
+    const messageDisplay = mainContainer.querySelector("#messageDisplay");
+
+    listenForMessages(routeId, messageDisplay);
+
+    mainContainer.querySelector("#submitBtn").addEventListener("click", () => {
+        sendMessage(routeId, mainContainer);
+    });
+}
+
+function listenForMessages(routeId, messageDisplay) {
+    db.collection("Routes")
+        .doc(routeId)
+        .collection("messages")
+        .orderBy("timestamp") // Order by timestamp
+        .onSnapshot(snapshot => {
+            messageDisplay.innerHTML = ""; // Clear existing messages
+
+            snapshot.forEach(doc => {
+                const message = doc.data();
+
+                const messageElement = document.createElement("p");
+                messageElement.textContent = message.text;
+
+                if (message.sender === currentUserId) {
+                    messageElement.classList.add("bg-primary");
+                } else {
+                    messageElement.classList.add("bg-success");
+                }
+
+                messageDisplay.appendChild(messageElement);
+
+            });
+        })
+}
+
+function sendMessage(routeId, mainContainer) {
+    const messageInput = mainContainer.querySelector("#messageInput");
+    const message = messageInput.value.trim();
+
+    if (message) {
+        const messagesRef = db.collection("Routes").doc(routeId).collection("messages");
+        messagesRef.add({
+            sender: currentUserId,
+            text: message,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(() => {
+            messageInput.value = "";
+        }).catch((error) => {
+            console.error("Error sending message: ", error);
+        });
+    }
+}
+
+
 //Only displays routes similar to search query that are favorited by the user
 function displaySimilarRoutes() {
     searchbar = document.getElementById("searchbar");
@@ -127,6 +187,12 @@ function outputCards(container, busTemplate, routeId) {
     }
 
     card.querySelector("#removebtn").addEventListener("click", event => { unfavoriteRoute(routeId.id) });
+
+    card.querySelector("#cardbtn").addEventListener("click", (event) => {
+        console.log("Chat Button Clicked");
+        displayMessages(routeId.id);
+    })
+
     container.appendChild(card);
 }
 
@@ -155,4 +221,3 @@ async function unfavoriteRoute(route) {
     })
     displaySimilarRoutes();
 }
-

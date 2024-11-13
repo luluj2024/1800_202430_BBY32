@@ -31,11 +31,11 @@ firebase.auth().onAuthStateChanged((user) => {
 async function getUsersWithFriend(userId) {
   try {
     // Query documents for users whose "friends" field contains user id
-    const snapshot = await db.collection("users")
+    const docsRef = await db.collection("users")
       .where("friends", "array-contains", userId).get();
 
     // Map over documents to create an array of user data objects
-    const users = snapshot.docs.map(doc => doc.data());
+    const users = docsRef.docs.map(doc => doc.data());
     return users;
   } catch (error) {
     console.error(`Error retrieving users with friend ${userId}:`, error);
@@ -48,10 +48,10 @@ async function getUsersWithFriend(userId) {
 */
 async function getUsersWithoutFriend(userId) {
   try {
-    const snapshot = await db.collection("users").get();
+    const docsRef = await db.collection("users").get();
 
     // Filter array to remove users who are friends and the current user
-    const users = snapshot.docs
+    const users = docsRef.docs
       .map(doc => doc.data())
       .filter(user => !user.friends.includes(userId) && user.id !== currentUserId);
 
@@ -295,7 +295,7 @@ async function editCurrentBuddies() {
   })
 }
 
-async function displayMessages(userId) {
+function displayMessages(userId) {
   const messageTemplate = document.querySelector("#messageTemplate");
   const mainContainer = document.querySelector("#mainContainer");
   mainContainer.innerHTML = "";
@@ -310,7 +310,7 @@ async function displayMessages(userId) {
   });
 }
 
-async function listenForMessages(userId, messageDisplay) {
+function listenForMessages(userId, messageDisplay) {
   db.collection("messages")
   .where("users", "array-contains", currentUserId)  // Only messages between the currentUserId
   .orderBy("timestamp") // Order by timestamp
@@ -355,6 +355,3 @@ function sendMessage(receiverId, mainContainer) {
   }
 }
 
-function goBack() {
-  displayCurrentBuddies();
-}
