@@ -48,7 +48,8 @@
   <nav class="navbar bg-body-tertiary">
     <div class="container-fluid">
       <form class="d-flex justify-content-center w-100" role="search">
-        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" id="searchbar" oninput="processSearch()">
+        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" id="searchbar"
+          oninput="processSearch()">
         <!-- <button class="btn btn-outline-success" type="button" id="searchbtn" onclick="displaySimilarRoutes()">Search</button> -->
         <a href="setting.html"><img src="./images/profile.jpg" alt="profile" class="profile-logo ms-auto"></a>
       </form>
@@ -57,16 +58,17 @@
 
   <!--Bus info-->
   <template id="bus-template">
-      <div class="card" style="width: 80%;">
-        <div class="card-body">
-          <button class="material-symbols-outlined" type="button" id="cardbtn">chat</button>
-          <h4 class="card-title"></h5>
+    <div class="card" style="width: 80%;">
+      <div class="card-body">
+        <button class="material-symbols-outlined" type="button" id="cardbtn">chat</button>
+        <h4 class="card-title">
+          </h5>
           <h5 class="card-time"></h5>
           <button class="material-symbols-outlined" type="button" id="removebtn">close</button>
           <h5 class="card-commute"></h5>
-         
-        </div>
+
       </div>
+    </div>
   </template>
 
   <template id="messageTemplate">
@@ -74,7 +76,7 @@
     <div id="chatContainer" class="container border p-3 mt-4 rounded">
       <div id="messageDisplay" class="messages bg-light p-3 mb-3 overflow-auto" style="height: 300px;">
       </div>
-  
+
       <div id="messageForm" class="d-flex">
         <input id="messageInput" type="text" class="form-control mr-2" placeholder="Type your message...">
         <button id="submitBtn" type="submit" class="btn btn-primary">Send</button>

@@ -140,7 +140,7 @@ async function removeFriend(userId) {
       friends: firebase.firestore.FieldValue.arrayRemove(currentUserId)
     })
   ]).catch(error => {
-      console.log(`Error deleting friend ${friendId}:`, error);
+    console.log(`Error deleting friend ${friendId}:`, error);
   })
 
 }
@@ -312,31 +312,29 @@ function displayMessages(userId) {
 
 function listenForMessages(userId, messageDisplay) {
   db.collection("messages")
-  .where("users", "array-contains", currentUserId)  // Only messages between the currentUserId
-  .orderBy("timestamp") // Order by timestamp
-  .onSnapshot(snapshot => {
-    messageDisplay.innerHTML = ""; // Clear existing messages
+    .where("users", "array-contains", currentUserId)  // Only messages between the currentUserId
+    .orderBy("timestamp") // Order by timestamp
+    .onSnapshot(snapshot => {
+      messageDisplay.innerHTML = ""; // Clear existing messages
 
-    snapshot.forEach(doc => {
-      const message = doc.data();
+      snapshot.forEach(doc => {
+        const message = doc.data();
 
-      // Ensure that both userId and currentUserId are part of the message's users array
-      if (message.users.includes(currentUserId) && message.users.includes(userId)) {
-        const messageElement = document.createElement("p");
-        messageElement.textContent = message.text;
+        // Ensure that both userId and currentUserId are part of the message's users array
+        if (message.users.includes(currentUserId) && message.users.includes(userId)) {
+          const messageElement = document.createElement("p");
+          messageElement.textContent = message.text;
 
         if (message.users[0] === currentUserId) {
           messageElement.classList.add("bg-primary");
-          messageElement.classList.add("right-aligned-message");
         } else {
           messageElement.classList.add("bg-success");
-          messageElement.classList.add("left-aligned-message")
         }
 
-        messageDisplay.appendChild(messageElement);
-      }
-    });
-  })
+          messageDisplay.appendChild(messageElement);
+        }
+      });
+    })
 }
 
 function sendMessage(receiverId, mainContainer) {

@@ -174,7 +174,12 @@ function outputCards(container, busTemplate, routeId) {
     let data = routeId.data();
     let card = busTemplate.content.cloneNode(true);
     let busTitle = "Bus " + data.bus + ": " + data.name;
-    let busTime = "Start: " + data.start + " End: " + data.end;
+    if (data.start == data.end) {
+        busTime = "Bus runs 24/7";
+    }
+    else {
+        busTime = "Start: " + data.start + " End: " + data.end;
+    }
     card.querySelector(".card-title").textContent = busTitle;
     card.querySelector(".card-time").textContent = busTime;
     let commuters = data.commuters.length;

@@ -122,5 +122,12 @@ button[type="submit"]{
 }
   
 
+input[type="date"]::-webkit-calendar-picker-indicator {
+  font-size: 20px; 
+  width: 24px; 
+  height: 24px; 
+}
+
+
 
 
