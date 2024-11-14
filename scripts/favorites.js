@@ -181,7 +181,7 @@ function outputCards(container, busTemplate, routeId) {
     card.querySelector(".card-title").textContent = busTitle;
     card.querySelector(".card-time").textContent = busTime;
     let commuters = data.commuters.length;
-    if (commuters == 0) {
+    if (commuters == 0 || commuters == undefined) {
         card.querySelector(".card-commute").textContent = "Be the first buddy on this route!";
     }
     else if (commuters == 1) {
@@ -207,6 +207,7 @@ function debounce(func, timeout = 250) {
     let timer;
     return (...args) => {
         clearTimeout(timer);
+        //Creates a timer based of the timeout that calls the passed in function once its complete
         timer = setTimeout(() => { func.apply(this, args); }, timeout);
     };
 }
@@ -218,6 +219,7 @@ const processLoad = debounce(() => displayAllRoutes());
 async function unfavoriteRoute(route) {
     let userDocRef = await db.collection("users").doc(currentUserId);
     let routeDocRef = await db.collection("Routes").doc(route);
+    //Updates both user favorites and routes favorites 
     userDocRef.update({
         favorite_routes: firebase.firestore.FieldValue.arrayRemove(route)
     })

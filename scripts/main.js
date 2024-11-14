@@ -121,6 +121,7 @@ function debounce(func, timeout = 250) {
     let timer;
     return (...args) => {
         clearTimeout(timer);
+        //Creates a timer based of the timeout that calls the passed in function once its complete
         timer = setTimeout(() => { func.apply(this, args); }, timeout);
     };
 }
@@ -132,6 +133,7 @@ const processLoad = debounce(() => displayAllRoutes());
 async function favoriteRoute(route) {
     let userDocRef = await db.collection("users").doc(currentUserId);
     let routeDocRef = await db.collection("Routes").doc(route);
+    //Updates both user favorites and routes favorites 
     userDocRef.update({
         favorite_routes: firebase.firestore.FieldValue.arrayUnion(route)
     })
@@ -144,6 +146,7 @@ async function favoriteRoute(route) {
 async function unfavoriteRoute(route) {
     let userDocRef = await db.collection("users").doc(currentUserId);
     let routeDocRef = await db.collection("Routes").doc(route);
+    //Updates both user favorites and routes favorites 
     userDocRef.update({
         favorite_routes: firebase.firestore.FieldValue.arrayRemove(route)
     })
