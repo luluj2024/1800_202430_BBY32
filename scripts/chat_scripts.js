@@ -325,11 +325,11 @@ function listenForMessages(userId, messageDisplay) {
           const messageElement = document.createElement("p");
           messageElement.textContent = message.text;
 
-          if (message.users[0] === currentUserId) {
-            messageElement.classList.add("bg-primary");
-          } else {
-            messageElement.classList.add("bg-success");
-          }
+        if (message.users[0] === currentUserId) {
+          messageElement.classList.add("bg-primary");
+        } else {
+          messageElement.classList.add("bg-success");
+        }
 
           messageDisplay.appendChild(messageElement);
         }
