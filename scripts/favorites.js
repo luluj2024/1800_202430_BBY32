@@ -68,8 +68,10 @@ function listenForMessages(routeId, messageDisplay) {
 
                 if (message.sender === currentUserId) {
                     messageElement.classList.add("bg-primary");
+                    messageElement.classList.add("right-aligned-message");
                 } else {
                     messageElement.classList.add("bg-success");
+                    messageElement.classList.add("left-aligned-message");
                 }
 
                 messageDisplay.appendChild(messageElement);
