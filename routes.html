@@ -31,6 +31,8 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
   <!-- Google Icons (Material Design)-->
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
 
   <!-- Link to styles of your own -->
   <link rel="stylesheet" href="./styles/styles.css">
@@ -51,26 +53,11 @@
   <template id="bus-template">
     <div class="card" style="width: 80%;">
       <div class="card-body">
-        <button class="material-symbols-outlined" type="button" id="cardbtn">chat</button>
+        <button class="material-symbols-outlined" type="button" id="cardbtn">star</button>
         <h4 class="card-title">
           </h5>
           <h5 class="card-time"></h5>
-          <button class="material-symbols-outlined" type="button" id="removebtn">close</button>
-          <h5 class="card-commute"></h5>
-
-      </div>
-    </div>
-  </template>
-
-  <template id="messageTemplate">
-    <button onclick="displayAllRoutes()" class="btn btn-secondary mb-3">Back</button>
-    <div id="chatContainer" class="container border p-3 mt-4 rounded">
-      <div id="messageDisplay" class="messages bg-light p-3 mb-3 overflow-auto" style="height: 300px;">
-      </div>
-
-      <div id="messageForm" class="d-flex">
-        <input id="messageInput" type="text" class="form-control mr-2" placeholder="Type your message...">
-        <button id="submitBtn" type="submit" class="btn btn-primary">Send</button>
+          <h5 class="card-fav"></h5>
       </div>
     </div>
   </template>
@@ -89,7 +76,7 @@
 
   <!-- Link to scripts of your own -->
   <script src="./scripts/firebaseAPI_BBY32.js"></script>
-  <script src="./scripts/favorites.js"></script>
+  <script src="./scripts/main.js"></script>
   <script src="./scripts/skeleton.js"></script>
 </body>
 
