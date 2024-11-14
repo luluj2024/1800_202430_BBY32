@@ -327,8 +327,10 @@ function listenForMessages(userId, messageDisplay) {
 
         if (message.users[0] === currentUserId) {
           messageElement.classList.add("bg-primary");
+          messageElement.classList.add("right-aligned-message");
         } else {
           messageElement.classList.add("bg-success");
+          messageElement.classList.add("left-aligned-message");
         }
 
           messageDisplay.appendChild(messageElement);
