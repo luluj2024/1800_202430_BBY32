@@ -1,10 +1,10 @@
 let currentUserId;
 let profilePhotoBase64 = ""; 
 
-/* Main funtins of setting.html, including
-   Display user's info saved in firestoree.
-   Enable user to update their info. 
-   Log out. */
+/* 
+    Main funtions of profile setting page, including displaying user's info saved in firestoree,
+    enabling user to update their info, clearing user's input and logging out.
+*/
 firebase.auth().onAuthStateChanged((user) => {
     if (user) {
         currentUserId = user.uid;
@@ -25,6 +25,11 @@ firebase.auth().onAuthStateChanged((user) => {
 
         document.getElementById("profile-photo-upload").addEventListener("change", (e) => {
             updateUserPhoto(e);
+            
+        })
+
+        document.getElementById("clear-button").addEventListener("click", function(e){
+            insertFormInfoFromFirestore();
         })
  
     } else {
@@ -33,16 +38,18 @@ firebase.auth().onAuthStateChanged((user) => {
     }
 })
 
-/* Displays user's information from firestore
-   if not logging in, redirects to index.htm */
+/* 
+    Displays user's information from firestore
+    if not logging in, redirects to index.htm 
+*/
 function insertFormInfoFromFirestore() {
     const currentUserRef = db.collection("users").doc(currentUserId);
 
     const today = new Date();
     const formattedToday = today.toISOString().split('T')[0];
 
-    /* Display user's info. If it doesn't exist, uses "N/A" for phone number and bio,
-       and uses today's date as the default birthday. */
+    // Display user's info. If it doesn't exist, uses "N/A" for phone number and bio,
+    // and uses today's date as the default birthday. 
     currentUserRef.get().then(userDoc => {
         if (userDoc.exists) { 
             const userData = userDoc.data();
@@ -63,7 +70,7 @@ function insertFormInfoFromFirestore() {
     });
 }
 
-/* save and update uses's profile photo */
+/* Save and update uses's profile photo */
 function updateUserPhoto(event) {
     const profilePhotoFile = event.target.files[0];
     if (profilePhotoFile) {
@@ -76,7 +83,7 @@ function updateUserPhoto(event) {
     }
 };
 
-/* save user's input and update the information */
+/* Save user's input and update the information */
 async function saveUserInfo(event) {
     event.preventDefault();
 
@@ -101,8 +108,10 @@ async function saveUserInfo(event) {
 }
 
 
-/* log-out function 
-   after logging out, redirects to index.html */
+/* 
+   log-out function 
+   after logging out, redirects to index.html 
+*/
 function logout() {
     firebase.auth().signOut().then(() => {
         console.log("logging out user");
@@ -112,6 +121,7 @@ function logout() {
         console.log("error in logging out.");
       });
 }
+
 
 
 

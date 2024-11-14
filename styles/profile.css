@@ -39,6 +39,7 @@ button[type="submit"]{
 .profile-info img{
     width: 20%;
     margin-right: 50px;
+    border-radius: 50%;
 }
 
 .form-container {
@@ -93,7 +94,7 @@ button[type="submit"]{
   border: 1px solid #ddd;
 }
 
-#upload-button, #log-out {
+#upload-button, #log-out, #save-button, #clear-button {
   height: 40px;
   width: 150px;
   border: 0;
@@ -101,6 +102,11 @@ button[type="submit"]{
   border-radius: 8px;
   background-color: rgb(68, 68, 205);
   color: white; 
+}
+
+#clear-button {
+  background-color: grey;
+  margin-left: 50px;
 }
 
 .center-container {
