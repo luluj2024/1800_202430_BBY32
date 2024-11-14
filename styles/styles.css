@@ -133,3 +133,13 @@ a {
     margin-left: auto;
   }
 
+  .footer {
+    background-color: #2596BE;
+    height: 50px;
+  }
+
+.signup-btn, .header {
+    background-color: #2596BE;
+}
+
+

@@ -9,7 +9,7 @@
     margin-left: 3%;
     margin-right: 3%;
     display: grid;
-    grid-template-columns: 40px auto 100px;
+    grid-template-columns: 40px auto 200px;
     border-bottom: 1px solid lightgray;
     padding-bottom: 8px;
 }
@@ -38,6 +38,7 @@ button[type="submit"]{
 
 .profile-info img{
     width: 20%;
+    height: auto;
     margin-right: 50px;
     border-radius: 50%;
 }
