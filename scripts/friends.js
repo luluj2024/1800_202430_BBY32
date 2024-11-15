@@ -11,7 +11,7 @@ firebase.auth().onAuthStateChanged((user) => {
     })
 
     document.getElementById("addFriends").addEventListener("click", event => {
-      displayAllUsers();
+      displayNonFriends();
     })
 
     document.getElementById("edit").addEventListener("click", event => {
@@ -39,7 +39,7 @@ async function getUsersWithFriend(targetUserId) {
     const querySnapshot = await db.collection("users")
       .where("friends", "array-contains", targetUserId)
       .get();
-    
+
     // If the query returns no documents, return an empty array  
     if (querySnapshot.empty) {
       return [];
@@ -66,6 +66,7 @@ async function getUsersWithFriend(targetUserId) {
   users found or an error occurs
 */
 async function getUsersWithoutFriend(targetUserId) {
+
   try {
     const querySnapshot = await db.collection("users").get();
 
@@ -77,7 +78,7 @@ async function getUsersWithoutFriend(targetUserId) {
     // Filter array to remove users who are friends and the current user
     const users = querySnapshot.docs
       .map(doc => doc.data())
-      .filter(user => !user.friends.includes(userId) && user.id !== targetUserId);
+      .filter(user => !user.friends.includes(targetUserId) && user.id !== targetUserId);
 
     return users;
   } catch (error) {
@@ -171,32 +172,32 @@ async function removeFriend(userId) {
 }
 
 /*
-  Displays the current user's friends. Presents option to view more info or 
+  Displays the current user's friends. Allows user to view profile info and 
   begin messaging.
 */
 async function displayFriends() {
-  const userTemplate = document.getElementById("user-template");
+  const friendTemplate = document.getElementById("friend-template");
   const contentContainer = document.getElementById("content-container");
-  contentContainer.innerHTML = '';
+  contentContainer.innerHTML = "";
 
   // Retrieve users who are friends with currentUserId
   const users = await getUsersWithFriend(currentUserId);
 
   users.forEach(user => {
-    const card = userTemplate.content.cloneNode(true);
-    const profile = card.querySelector(".user-profile");
-    card.querySelector(".user-title").textContent = user.name;
-    card.querySelector(".user-text").textContent = "Placeholder For Recent Message";
-    // card.querySelector(".user-button").textContent = "Message";
+    const card = friendTemplate.content.cloneNode(true);
+    const profile = card.querySelector(".friend-profile");
+    card.querySelector(".friend-title").textContent = user.name;
+    card.querySelector(".friend-text").textContent = "Placeholder For Recent Message";
+
     if (user.profilePhotoBase64) {
       profile.src = user.profilePhotoBase64;
     }
 
-    profile.addEventListener("click", (e) => {
+    profile.addEventListener("click", () => {
       console.log("Implement More Info Feature")
     })
 
-    card.querySelector(".user-body").addEventListener("click", (e) => {
+    card.querySelector(".friend-body").addEventListener("click", () => {
       window.location.assign("chat.html");
     })
 
@@ -205,52 +206,32 @@ async function displayFriends() {
 }
 
 /*
-  Displays users who are not currently friends with the current user
-  Presents option to view more info or add target users as friends
+  Displays users who are not currently friends with the current user.
+  Allows user to view profile info and add target users as friends.
 */
-async function displayAllUsers() {
-  const userTemplate = document.getElementById("userTemplate");
-  const contentContainer = document.getElementById("contentContainer");
-  contentContainer.innerHTML = '';
+async function displayNonFriends() {
+  const userTemplate = document.getElementById("user-template");
+  const contentContainer = document.getElementById("content-container");
+  contentContainer.innerHTML = "";
 
   const users = await getUsersWithoutFriend(currentUserId);
 
   users.forEach(user => {
-    let card = userTemplate.content.cloneNode(true);
-
-    let birthday = card.getElementById("birthday");
-    let bio = card.getElementById("bio");
-    let favouriteRoutes = card.getElementById("favourite-routes");
-    let photo = card.getElementById("profile-photo");
-    let isDataVisible = false;
-    let table = card.getElementById("table-info");
-
-    card.querySelector(".card-title").textContent = user.name;
-    card.querySelector("#buddyButtonOne").textContent = "Add Friend";
-    card.querySelector("#buddyButtonOne").classList.toggle("btn-primary");
-    card.querySelector("#buddyButtonTwo").textContent = "More Info";
-    card.querySelector("#buddyButtonTwo").classList.toggle("btn-primary");
+    const card = userTemplate.content.cloneNode(true);
+    const profile = card.querySelector(".user-profile");
+    card.querySelector(".user-title").textContent = user.name;
+    card.querySelector(".user-text").textContent = "Placeholder for commonalities";
 
     if (user.profilePhotoBase64) {
-      photo.src = user.profilePhotoBase64;
+      profile.src = user.profilePhotoBase64;
     }
 
-    card.querySelector("#buddyButtonTwo").addEventListener("click", async () => {
-      if (!isDataVisible) {
-        table.style.display = "table";
-        birthday.innerHTML = user.birthday || "N/A";
-        bio.innerHTML = user.description || "N/A";
-        const routes = await getFavoriteRoutrNames(user.favorite_routes);
-        favouriteRoutes.innerHTML = routes;
-      } else {
-        table.style.display = "none";
-      }
-      isDataVisible = !isDataVisible;
+    profile.addEventListener("click", () => {
+      console.log("Implement More Info Feature")
     })
 
-    card.querySelector("#buddyButtonOne").addEventListener("click", event => {
-      addFriend(user.id);
-      displayAllUsers();
+    card.querySelector(".user-button").addEventListener("click", () => {
+      console.log("Add Friend")
     })
 
     contentContainer.appendChild(card);
@@ -286,66 +267,3 @@ async function editCurrentBuddies() {
     contentContainer.appendChild(card);
   })
 }
-
-function displayMessages(userId) {
-  const messageTemplate = document.querySelector("#messageTemplate");
-  const contentContainer = document.querySelector("#content-container");
-  contentContainer.innerHTML = "";
-  contentContainer.appendChild(messageTemplate.content.cloneNode(true));
-
-  const messageDisplay = contentContainer.querySelector("#messageDisplay");
-
-  listenForMessages(userId, messageDisplay);
-
-  contentContainer.querySelector("#submitBtn").addEventListener("click", () => {
-    sendMessage(userId, contentContainer);
-  });
-}
-
-function listenForMessages(userId, messageDisplay) {
-  db.collection("messages")
-    .where("users", "array-contains", currentUserId)  // Only messages between the currentUserId
-    .orderBy("timestamp") // Order by timestamp
-    .onSnapshot(snapshot => {
-      messageDisplay.innerHTML = ""; // Clear existing messages
-
-      snapshot.forEach(doc => {
-        const message = doc.data();
-
-        // Ensure that both userId and currentUserId are part of the message's users array
-        if (message.users.includes(currentUserId) && message.users.includes(userId)) {
-          const messageElement = document.createElement("p");
-          messageElement.textContent = message.text;
-
-          if (message.users[0] === currentUserId) {
-            messageElement.classList.add("bg-primary");
-            messageElement.classList.add("right-aligned-message");
-          } else {
-            messageElement.classList.add("bg-success");
-            messageElement.classList.add("left-aligned-message");
-          }
-
-          messageDisplay.appendChild(messageElement);
-        }
-      });
-    })
-}
-
-function sendMessage(receiverId, contentContainer) {
-  const messageInput = contentContainer.querySelector("#messageInput");
-  const message = messageInput.value.trim();
-
-  if (message) {
-    const messagesRef = db.collection("messages");
-    messagesRef.add({
-      users: [currentUserId, receiverId],
-      text: message,
-      timestamp: firebase.firestore.FieldValue.serverTimestamp()
-    }).then(() => {
-      messageInput.value = "";
-    }).catch((error) => {
-      console.error("Error sending message: ", error);
-    });
-  }
-}
-

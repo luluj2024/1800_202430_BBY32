@@ -31,7 +31,7 @@
 
   <!-- Link to styles of your own -->
   <link rel="stylesheet" href="./styles/styles.css">
-  <link rel="stylesheet" href="./styles/friends-styles.css">
+  <link rel="stylesheet" href="./styles/friends.css">
 </head>
 
 <body>
@@ -58,17 +58,39 @@
 
   <br>
 
+  <template id="friend-template">
+    <div class="friend">
+      <img class="friend-profile" src="images/profile.png" alt="profile-photo">
+      <div class="friend-body">
+        <h6 class="friend-title"></h6>
+        <p class="friend-text"></p>
+        <p class="friend-date"></p>
+        <span class="material-symbols-outlined friend-arrow">arrow_forward_ios</span>
+      </div>
+    </div>
+  </template>
+
   <template id="user-template">
     <div class="user">
       <img class="user-profile" src="images/profile.png" alt="profile-photo">
       <div class="user-body">
         <h6 class="user-title"></h6>
         <p class="user-text"></p>
-        <p class="user-date"></p>
-        <span class="material-symbols-outlined user-arrow">arrow_forward_ios</span>
       </div>
+      <div class="material-symbols-outlined user-button">person_add</div>
     </div>
-    <!-- <table id="table-info" style="display: none;">
+  </template>
+
+  <div id="content-container">
+  </div>
+
+  <div id="navbar-template"></div>
+
+  <!---------------------------------------------->
+  <!-- Your own JavaScript functions go here    -->
+  <!---------------------------------------------->
+
+  <!-- <table id="table-info" style="display: none;">
       <tr>
         <td>Birthday: </td>
         <td id="birthday"></td>
@@ -82,30 +104,6 @@
         <td id="favourite-routes"></td>
       </tr>
     </table> -->
-  </template>
-
-  <template id="messageTemplate">
-    <button onclick="displayCurrentBuddies()" class="btn btn-secondary mb-3">Back</button>
-    <div id="chatContainer" class="container border p-3 mt-4 rounded">
-      <div id="messageDisplay" class="messages bg-light p-3 mb-3 overflow-auto" style="height: 300px;">
-      </div>
-
-      <div id="messageForm" class="d-flex">
-        <input id="messageInput" type="text" class="form-control mr-2" placeholder="Type your message...">
-        <button id="submitBtn" type="submit" class="btn btn-primary">Send</button>
-      </div>
-    </div>
-  </template>
-
-
-  <div id="content-container">
-  </div>
-
-  <div id="navbar-template"></div>
-
-  <!---------------------------------------------->
-  <!-- Your own JavaScript functions go here    -->
-  <!---------------------------------------------->
 
   <!-- Link to scripts of your own -->
   <script src="./scripts/skeleton.js"></script>
