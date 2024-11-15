@@ -1,39 +1,116 @@
 let currentUserId;
 
-//Authenticates users
+//authenticates current user
 firebase.auth().onAuthStateChanged((user) => {
     if (user) {
         currentUserId = user.uid;
+        //Calls all routes after delay and initializes searchbar 
+        displayAllRoutes();
+        let searchbar = document.getElementById("searchbar");
+        searchbar.value = "";
     }
-    //Calls all routes after delay and initializes searchbar 
-    displayAllRoutes()
-    let searchbar = document.getElementById("searchbar");
-    searchbar.value = "";
 })
 
-//Displays all routes in database
+//Displays all routes in users favorites
 function displayAllRoutes() {
     let busTemplate = document.getElementById("bus-template");
     let container = document.getElementById("bus-info");
-
     container.innerHTML = '';
-    document.getElementById("status").innerHTML = "";
+    document.getElementById("status").innerHTML = '';
 
-    //Runs through routes list, outputing routes as its found
-    db.collection("Routes").get().then(routeList => {
-        routeList.forEach(routeId => {
-            outputCards(container, busTemplate, routeId);
-        })
+    let favCheck = false;
+    db.collection("users").doc(currentUserId).get().then(user => {
+        let favoriteRoutes = user.data().favorite_routes;
+        if (favoriteRoutes.length == 0) {
+            document.getElementById("status").innerHTML = "<h4>Favorite some routes to meet commute buddies!</h4>";
+        }
+        else {
+            db.collection("Routes").get().then(routeList => {
+                routeList.forEach(routeId => {
+                    favCheck = favoriteRoutes.includes(routeId.id);
+                    if (favCheck) {
+                        outputCards(container, busTemplate, routeId);
+                    }
+                })
+            })
+        }
     })
 }
 
+function displayMessages(routeId) {
+    const messageTemplate = document.querySelector("#messageTemplate");
+    const mainContainer = document.querySelector("#bus-info");
+    mainContainer.innerHTML = "";
+    mainContainer.appendChild(messageTemplate.content.cloneNode(true));
 
-//Only displays routes similar to search query 
+    const messageDisplay = mainContainer.querySelector("#messageDisplay");
+
+    listenForMessages(routeId, messageDisplay);
+
+    mainContainer.querySelector("#submitBtn").addEventListener("click", () => {
+        sendMessage(routeId, mainContainer);
+    });
+}
+
+function listenForMessages(routeId, messageDisplay) {
+    db.collection("Routes")
+        .doc(routeId)
+        .collection("messages")
+        .orderBy("timestamp") // Order by timestamp
+        .onSnapshot(snapshot => {
+            messageDisplay.innerHTML = ""; // Clear existing messages
+
+            snapshot.forEach(doc => {
+                const message = doc.data();
+
+                const messageElement = document.createElement("p");
+                messageElement.textContent = message.text;
+
+                if (message.sender === currentUserId) {
+                    messageElement.classList.add("bg-primary");
+                    messageElement.classList.add("right-aligned-message");
+                } else {
+                    messageElement.classList.add("bg-success");
+                    messageElement.classList.add("left-aligned-message");
+                }
+
+                messageDisplay.appendChild(messageElement);
+
+            });
+        })
+}
+
+function sendMessage(routeId, mainContainer) {
+    const messageInput = mainContainer.querySelector("#messageInput");
+    const message = messageInput.value.trim();
+
+    if (message) {
+        const messagesRef = db.collection("Routes").doc(routeId).collection("messages");
+        messagesRef.add({
+            sender: currentUserId,
+            text: message,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(() => {
+            messageInput.value = "";
+        }).catch((error) => {
+            console.error("Error sending message: ", error);
+        });
+    }
+}
+
+
+//Only displays routes similar to search query that are favorited by the user
 function displaySimilarRoutes() {
     searchbar = document.getElementById("searchbar");
-    if (searchbar.value == "") {
-        //Resets page on empty search bar
-        processLoad();
+    searchVal = searchbar.value.toLowerCase();
+    //Checks if they writes bus and ignores it
+    if (searchVal.length >= 3 && searchVal.substring(0,3) == "bus") {
+        searchVal = searchVal.substring(3);
+    }
+    //Ignores white space 
+    searchVal = searchVal.trim();
+    if (searchVal == "") {
+        displayAllRoutes();
     }
     else {
         let count = 0;
@@ -41,27 +118,39 @@ function displaySimilarRoutes() {
         let container = document.getElementById("bus-info");
 
         container.innerHTML = '';
-        db.collection("Routes").get().then(routeList => {
-            routeList.forEach(routeId => {
-                //Takes searchbar value, and compares it to the route number and name to see if the search matches it
-                if (relatedRoutes(searchbar.value.toLowerCase(), routeId.data().bus, routeId.data().name)) {
-                    count += 1;
-                    outputCards(container, busTemplate, routeId);
-                }
-            })
-        }).then(() => {
-            //counts the amount of displayed routes, acting as an empty case condition to inform user there is no routes
-            if (count == 0) {
-                document.getElementById("status").innerHTML = "<h4>Sorry, your search doesnt match any routes in our database.</h4>";
+        let favCheck = false;
+        db.collection("users").doc(currentUserId).get().then(user => {
+            let favoriteRoutes = user.data().favorite_routes;
+            //Checks users favorited routes and displays them accordingly 
+            if (favoriteRoutes.length == 0) {
+                document.getElementById("status").innerHTML = "<h4>Favorite some routes to meet commute buddies!</h4>";
             }
             else {
-                document.getElementById("status").innerHTML = "";
+                db.collection("Routes").get().then(routeList => {
+                    routeList.forEach(routeId => {
+                        favCheck = favoriteRoutes.includes(routeId.id);
+                        //Checks if its there favorite and then runs through search to see if routes match it
+                        if (favCheck) {
+                            if (relatedRoutes(searchVal, routeId.data().bus, routeId.data().name)) {
+                                count += 1;
+                                outputCards(container, busTemplate, routeId);
+                            }
+                        }
+                    })
+                }).then(() => {
+                    if (count == 0) {
+                        document.getElementById("status").innerHTML = "<h4>Sorry, your search doesnt match any routes in your favorites.</h4>";
+                    }
+                    else {
+                        document.getElementById("status").innerHTML = "";
+                    }
+                })
             }
-        })
+        });
     }
 }
 
-//Compares search input with route database
+//Compares search query with favorite routes list
 function relatedRoutes(search, result, result2) {
     result += '';
     result2 += '';
@@ -93,8 +182,7 @@ function outputCards(container, busTemplate, routeId) {
     let data = routeId.data();
     let card = busTemplate.content.cloneNode(true);
     let busTitle = "Bus " + data.bus + ": " + data.name;
-    let busTime;
-    //Display bus times, where if the bus runs 24/7 it diplays it as such
+    //Displays bus times and whether its 24/7
     if (data.start == data.end) {
         busTime = "Bus runs 24/7";
     }
@@ -103,28 +191,33 @@ function outputCards(container, busTemplate, routeId) {
     }
     card.querySelector(".card-title").textContent = busTitle;
     card.querySelector(".card-time").textContent = busTime;
-    //Checks how many people have favoritied 
-    let favCount = data.favorites.length;
-    if (favCount == 0 || favCount == undefined) {
-        card.querySelector(".card-fav").textContent = "Be the first person on this route!";
+    //Displays how many commuters are actively on this route
+    let commuters = data.commuters.length;
+    if (commuters == 0 || commuters == undefined) {
+        card.querySelector(".card-commute").textContent = "Be the first person on this route!";
     }
-    else if (favCount == 1) {
-        card.querySelector(".card-fav").textContent = favCount + " person favorited this route!";
+    else if (commuters == 1) {
+        card.querySelector(".card-commute").textContent = commuters + " person is on this route!";
     }
     else {
-        card.querySelector(".card-fav").textContent = favCount + " people favorited this route!";
+        card.querySelector(".card-commute").textContent = commuters + " people are on this route!";
     }
 
-    //allows user to favorite specific routes
-    let curcard = card.querySelector("#cardbtn");
-    favBtn(curcard, routeId);
+    //Unfavorite route button
+    card.querySelector("#removebtn").addEventListener("click", event => { unfavoriteRoute(routeId.id) });
+
+    //Route groupchat button
+    card.querySelector("#cardbtn").addEventListener("click", (event) => {
+        console.log("Chat Button Clicked");
+        displayMessages(routeId.id);
+    })
 
     container.appendChild(card);
 }
 
 
 // Function found at https://www.freecodecamp.org/news/javascript-debounce-example/ and used to prevent multiple function calls in searchbar
-function debounce(func, timeout = 250) {
+function debounce(func, timeout = 280) {
     let timer;
     return (...args) => {
         clearTimeout(timer);
@@ -136,20 +229,7 @@ function debounce(func, timeout = 250) {
 const processSearch = debounce(() => displaySimilarRoutes());
 const processLoad = debounce(() => displayAllRoutes());
 
-//Favorites for both user and route
-async function favoriteRoute(route) {
-    let userDocRef = await db.collection("users").doc(currentUserId);
-    let routeDocRef = await db.collection("Routes").doc(route);
-    //Updates both user favorites and routes favorites 
-    userDocRef.update({
-        favorite_routes: firebase.firestore.FieldValue.arrayUnion(route)
-    })
-    routeDocRef.update({
-        favorites: firebase.firestore.FieldValue.arrayUnion(currentUserId)
-    })
-}
-
-//Removes favorite for both user and route
+//Allows users to unfavorite routes from favorites page
 async function unfavoriteRoute(route) {
     let userDocRef = await db.collection("users").doc(currentUserId);
     let routeDocRef = await db.collection("Routes").doc(route);
@@ -160,125 +240,5 @@ async function unfavoriteRoute(route) {
     routeDocRef.update({
         favorites: firebase.firestore.FieldValue.arrayRemove(currentUserId)
     })
+    displaySimilarRoutes();
 }
-
-//Favorite button functionality
-function favBtn(curcard, routeId) {
-    let favCheck = false;
-    db.collection("users").doc(currentUserId).get().then(user => {
-        let favoriteRoutes = user.data().favorite_routes;
-        favCheck = favoriteRoutes.includes(routeId.id);
-        //Establishes which version of favorite button
-        //unfavorites route
-        if (favCheck) {
-            curcard.style.color = "blue";
-            curcard.addEventListener("click", event => {
-                unfavoriteRoute(routeId.id)
-                displaySimilarRoutes();
-            })
-        }
-        //favorites route
-        else {
-            curcard.style.color = "black";
-            curcard.addEventListener("click", event => {
-                favoriteRoute(routeId.id)
-                displaySimilarRoutes();
-            })
-        }
-    });
-}
-
-//Populate route information code
-// function populateRoutes() {
-//     var routeRef = db.collection("Routes");
-
-//     routeRef.add({
-//         bus: 14,
-//         name: "UBC",
-//         start: "5am",
-//         end: "12am",
-//         favorites: {},
-//         commuters: {},
-//     });
-//     routeRef.add({
-//         bus: 564,
-//         name: "Langley Centre",
-//         start: "5am",
-//         end: "12am",
-//         favorites: {},
-//         commuters: {},
-//     });
-//     routeRef.add({
-//         bus: 147,
-//         name: "Metrotown",
-//         start: "6am",
-//         end: "12am",
-//         favorites: {},
-//         commuters: {},
-//     });
-//     routeRef.add({
-//         bus: 123,
-//         name: "New Westminster",
-//         start: "12am",
-//         end: "12am",
-//         favorites: {},
-//         commuters: {},
-//     });
-//     routeRef.add({
-//         bus: 17,
-//         name: "UBC Nightbus",
-//         start: "2am",
-//         end: "4am",
-//         favorites: {},
-//         commuters: {},
-//     });
-//     routeRef.add({
-//         bus: 229,
-//         name: "Lynn Valley",
-//         start: "6am",
-//         end: "1am",
-//         favorites: {},
-//         commuters: {},
-//     });
-//     routeRef.add({
-//         bus: 188,
-//         name: "Port Coquitlam",
-//         start: "12am",
-//         end: "12am",
-//         favorites: {},
-//         commuters: {},
-//     });
-//     routeRef.add({
-//         bus: 231,
-//         name: "Lonsdale Quay",
-//         start: "4pm",
-//         end: "6pm",
-//         favorites: {},
-//         commuters: {},
-//     });
-//     routeRef.add({
-//         bus: 335,
-//         name: "Newton Exchange",
-//         start: "12am",
-//         end: "12am",
-//         favorites: {},
-//         commuters: {},
-//     });
-//     routeRef.add({
-//         bus: 2,
-//         name: "Macdonald",
-//         start: "12am",
-//         end: "12am",
-//         favorites: {},
-//         commuters: {},
-//     });
-//     routeRef.add({
-//         bus: 391,
-//         name: "Scott Road",
-//         start: "5am",
-//         end: "8am",
-//         favorites: {},
-//         commuters: {},
-//     });
-// }
-// populateRoutes();
