@@ -31,11 +31,58 @@
 
   <!-- Link to styles of your own -->
   <link rel="stylesheet" href="./styles/styles.css">
+  <link rel="stylesheet" href="./styles/friends-styles.css">
 </head>
 
 <body>
   <!--Searchbox-->
   <div id="searchbox-template"></div>
+
+  <header>
+    <nav class="navbar navbar-expand navbar-light bg-light w-100">
+      <div class="container-fluid">
+        <ul class="navbar-nav flex-row justify-content-between w-100">
+          <li class="nav-item">
+            <a id="edit" class="nav-link" href="#">Edit</a>
+          </li>
+          <li class="nav-item">
+            <a id="addFriends" class="nav-link" href="#">Add Friends</a>
+          </li>
+          <li class="nav-item">
+            <a id="friendsList" class="nav-link" href="#">Friends List</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </header>
+
+  <br>
+
+  <template id="user-template">
+    <div class="user">
+      <img class="user-profile" src="images/profile.png" alt="profile-photo">
+      <div class="user-body">
+        <h6 class="user-title"></h6>
+        <p class="user-text"></p>
+        <p class="user-date"></p>
+        <span class="material-symbols-outlined user-arrow">arrow_forward_ios</span>
+      </div>
+    </div>
+    <!-- <table id="table-info" style="display: none;">
+      <tr>
+        <td>Birthday: </td>
+        <td id="birthday"></td>
+      </tr>
+      <tr>
+        <td>Bio:</td>
+        <td id="bio"></td>
+      </tr>
+      <tr>
+        <td>Favorite routes: </td>
+        <td id="favourite-routes"></td>
+      </tr>
+    </table> -->
+  </template>
 
   <template id="messageTemplate">
     <button onclick="displayCurrentBuddies()" class="btn btn-secondary mb-3">Back</button>
@@ -63,6 +110,7 @@
   <!-- Link to scripts of your own -->
   <script src="./scripts/skeleton.js"></script>
   <script src="./scripts/firebaseAPI_BBY32.js"></script>
+  <script src="./scripts/friends.js"></script>
 </body>
 
 </html>

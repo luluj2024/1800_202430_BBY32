@@ -4,10 +4,10 @@ firebase.auth().onAuthStateChanged((user) => {
   if (user) {
     currentUserId = user.uid;
 
-    displayCurrentBuddies();
+    displayFriends();
 
     document.getElementById("friendsList").addEventListener("click", event => {
-      displayCurrentBuddies();
+      displayFriends();
     })
 
     document.getElementById("addFriends").addEventListener("click", event => {
@@ -25,39 +25,64 @@ firebase.auth().onAuthStateChanged((user) => {
 });
 
 /*
-  Returns an array of user data objects who have a 
-  specific user id in their "friends" array field 
-*/
-async function getUsersWithFriend(userId) {
-  try {
-    // Query documents for users whose "friends" field contains user id
-    const docsRef = await db.collection("users")
-      .where("friends", "array-contains", userId).get();
+  Returns an array of user data objects who have the target user id in their 
+  "friends" array field
 
-    // Map over documents to create an array of user data objects
-    const users = docsRef.docs.map(doc => doc.data());
+  @param {string} targetUserId - Id of user whose friends you want to find
+
+  @returns {array} - An array of user data objects or an empty array if no 
+  users found or an error occurs
+*/
+async function getUsersWithFriend(targetUserId) {
+  try {
+    // Query for users whose "friends" array contains the targetUserId
+    const querySnapshot = await db.collection("users")
+      .where("friends", "array-contains", targetUserId)
+      .get();
+    
+    // If the query returns no documents, return an empty array  
+    if (querySnapshot.empty) {
+      return [];
+    }
+
+    // Map through the documents to extract user data
+    const users = querySnapshot.docs.map(doc => doc.data());
+
     return users;
   } catch (error) {
-    console.error(`Error retrieving users with friend ${userId}:`, error);
+    console.error(`Error retrieving users with friend ${targetUserId}:`, error);
+    return [];
   }
 }
 
 /*
-  Returns an array of user data objects who do not 
-  have a specific user id in their "friends" array field
+  Returns an array of user data objects of users whose "friends" array field 
+  does not contain the targetUserId 
+
+  @param {string} targetUserId - Id of user that should be used to exclude
+  users from the return
+
+  @returns {array} - An array of user data objects or an empty array if no
+  users found or an error occurs
 */
-async function getUsersWithoutFriend(userId) {
+async function getUsersWithoutFriend(targetUserId) {
   try {
-    const docsRef = await db.collection("users").get();
+    const querySnapshot = await db.collection("users").get();
+
+    // If the query returns no documents, return an empty array
+    if (querySnapshot.empty) {
+      return [];
+    }
 
     // Filter array to remove users who are friends and the current user
-    const users = docsRef.docs
+    const users = querySnapshot.docs
       .map(doc => doc.data())
-      .filter(user => !user.friends.includes(userId) && user.id !== currentUserId);
+      .filter(user => !user.friends.includes(userId) && user.id !== targetUserId);
 
     return users;
   } catch (error) {
-    console.error(`Error retrieving users with friend ${userId}:`, error);
+    console.error(`Error retrieving users without friend ${targetUserId}:`, error);
+    return [];
   }
 }
 
@@ -146,69 +171,36 @@ async function removeFriend(userId) {
 }
 
 /*
-  Style for the template card.
+  Displays the current user's friends. Presents option to view more info or 
+  begin messaging.
 */
-function templateStyling(card, user) {
-  card.querySelector(".card-title").textContent = user.name;
-  let photo = card.querySelector("#profile-photo");
+async function displayFriends() {
+  const userTemplate = document.getElementById("user-template");
+  const contentContainer = document.getElementById("content-container");
+  contentContainer.innerHTML = '';
 
-  if (user.profilePhotoBase64) {
-    photo.src = user.profilePhotoBase64;
-  }
-
-  const [buttonOne, buttonTwo] = [
-    card.querySelector("#buddyButtonOne"),
-    card.querySelector("#buddyButtonTwo")
-  ];
-
-  buttonOne.textContent = "More Info";
-  buttonOne.classList.add("btn-primary");
-  buttonTwo.textContent = "Message";
-  buttonTwo.classList.add("btn-primary");
-}
-
-/*
-  Displays the current user's friends 
-  Presents option to view more info or begin messaging
-*/
-async function displayCurrentBuddies() {
-  const buddyTemplate = document.getElementById("buddyTemplate");
-  const mainContainer = document.getElementById("mainContainer");
-  mainContainer.innerHTML = '';
-
+  // Retrieve users who are friends with currentUserId
   const users = await getUsersWithFriend(currentUserId);
 
   users.forEach(user => {
-    let card = buddyTemplate.content.cloneNode(true);
+    const card = userTemplate.content.cloneNode(true);
+    const profile = card.querySelector(".user-profile");
+    card.querySelector(".user-title").textContent = user.name;
+    card.querySelector(".user-text").textContent = "Placeholder For Recent Message";
+    // card.querySelector(".user-button").textContent = "Message";
+    if (user.profilePhotoBase64) {
+      profile.src = user.profilePhotoBase64;
+    }
 
-    let table = card.querySelector("#table-info");
-    let birthday = card.getElementById("birthday");
-    let bio = card.getElementById("bio");
-    let favouriteRoutes = card.getElementById("favourite-routes");
-
-    let isDataVisible = true;
-
-    templateStyling(card, user);
-
-    // show user's info when click the "more info" button
-    card.querySelector("#buddyButtonOne").addEventListener("click", async () => {
-      if (isDataVisible) {
-        table.style.display = "table";
-        birthday.innerHTML = user.birthday || "N/A";
-        bio.innerHTML = user.description || "N/A";
-        const routes = await getFavoriteRoutrNames(user.favorite_routes)
-        favouriteRoutes.innerHTML = routes;
-      } else {
-        table.style.display = "none";
-      }
-      isDataVisible = !isDataVisible;
+    profile.addEventListener("click", (e) => {
+      console.log("Implement More Info Feature")
     })
 
-    card.querySelector("#buddyButtonTwo").addEventListener("click", () => {
-      displayMessages(user.id);
+    card.querySelector(".user-body").addEventListener("click", (e) => {
+      window.location.assign("chat.html");
     })
 
-    mainContainer.appendChild(card);
+    contentContainer.appendChild(card);
   })
 }
 
@@ -217,14 +209,14 @@ async function displayCurrentBuddies() {
   Presents option to view more info or add target users as friends
 */
 async function displayAllUsers() {
-  const buddyTemplate = document.getElementById("buddyTemplate");
-  const mainContainer = document.getElementById("mainContainer");
-  mainContainer.innerHTML = '';
+  const userTemplate = document.getElementById("userTemplate");
+  const contentContainer = document.getElementById("contentContainer");
+  contentContainer.innerHTML = '';
 
   const users = await getUsersWithoutFriend(currentUserId);
 
   users.forEach(user => {
-    let card = buddyTemplate.content.cloneNode(true);
+    let card = userTemplate.content.cloneNode(true);
 
     let birthday = card.getElementById("birthday");
     let bio = card.getElementById("bio");
@@ -261,7 +253,7 @@ async function displayAllUsers() {
       displayAllUsers();
     })
 
-    mainContainer.appendChild(card);
+    contentContainer.appendChild(card);
   })
 }
 
@@ -269,14 +261,14 @@ async function displayAllUsers() {
   Displays all current friends, but with the option to remove them as friends
 */
 async function editCurrentBuddies() {
-  const buddyTemplate = document.getElementById("buddyTemplate");
-  const mainContainer = document.getElementById("mainContainer");
-  mainContainer.innerHTML = '';
+  const userTemplate = document.getElementById("userTemplate");
+  const contentContainer = document.getElementById("contentContainer");
+  contentContainer.innerHTML = '';
 
   const users = await getUsersWithFriend(currentUserId);
 
   users.forEach(user => {
-    let card = buddyTemplate.content.cloneNode(true);
+    let card = userTemplate.content.cloneNode(true);
     card.querySelector(".card-title").textContent = user.name;
     card.querySelector("#buddyButtonOne").textContent = "Remove";
     card.querySelector("#buddyButtonOne").classList.toggle("btn-warning");
@@ -291,22 +283,22 @@ async function editCurrentBuddies() {
       editCurrentBuddies();
     })
 
-    mainContainer.appendChild(card);
+    contentContainer.appendChild(card);
   })
 }
 
 function displayMessages(userId) {
   const messageTemplate = document.querySelector("#messageTemplate");
-  const mainContainer = document.querySelector("#mainContainer");
-  mainContainer.innerHTML = "";
-  mainContainer.appendChild(messageTemplate.content.cloneNode(true));
+  const contentContainer = document.querySelector("#content-container");
+  contentContainer.innerHTML = "";
+  contentContainer.appendChild(messageTemplate.content.cloneNode(true));
 
-  const messageDisplay = mainContainer.querySelector("#messageDisplay");
+  const messageDisplay = contentContainer.querySelector("#messageDisplay");
 
   listenForMessages(userId, messageDisplay);
 
-  mainContainer.querySelector("#submitBtn").addEventListener("click", () => {
-    sendMessage(userId, mainContainer);
+  contentContainer.querySelector("#submitBtn").addEventListener("click", () => {
+    sendMessage(userId, contentContainer);
   });
 }
 
@@ -325,13 +317,13 @@ function listenForMessages(userId, messageDisplay) {
           const messageElement = document.createElement("p");
           messageElement.textContent = message.text;
 
-        if (message.users[0] === currentUserId) {
-          messageElement.classList.add("bg-primary");
-          messageElement.classList.add("right-aligned-message");
-        } else {
-          messageElement.classList.add("bg-success");
-          messageElement.classList.add("left-aligned-message");
-        }
+          if (message.users[0] === currentUserId) {
+            messageElement.classList.add("bg-primary");
+            messageElement.classList.add("right-aligned-message");
+          } else {
+            messageElement.classList.add("bg-success");
+            messageElement.classList.add("left-aligned-message");
+          }
 
           messageDisplay.appendChild(messageElement);
         }
@@ -339,8 +331,8 @@ function listenForMessages(userId, messageDisplay) {
     })
 }
 
-function sendMessage(receiverId, mainContainer) {
-  const messageInput = mainContainer.querySelector("#messageInput");
+function sendMessage(receiverId, contentContainer) {
+  const messageInput = contentContainer.querySelector("#messageInput");
   const message = messageInput.value.trim();
 
   if (message) {
