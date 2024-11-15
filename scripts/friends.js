@@ -15,7 +15,7 @@ firebase.auth().onAuthStateChanged((user) => {
     })
 
     document.getElementById("edit").addEventListener("click", event => {
-      editCurrentBuddies();
+      editFriends();
     })
 
   } else {
@@ -202,10 +202,13 @@ async function displayNonFriends() {
   const contentContainer = document.getElementById("content-container");
   contentContainer.innerHTML = "";
 
+  // Retrieve an array of non-friends of the current user
   const users = await getUsersWithoutFriend(currentUserId);
 
   users.forEach(user => {
     const card = userTemplate.content.cloneNode(true);
+
+    // Access and set elements within the user card
     const profile = card.querySelector(".user-profile");
     card.querySelector(".user-title").textContent = user.name;
     card.querySelector(".user-text").textContent = "Placeholder for commonalities";
@@ -214,12 +217,15 @@ async function displayNonFriends() {
       profile.src = user.profilePhotoBase64;
     }
 
+    // Add event listener to the profile icon to display more profile info 
     profile.addEventListener("click", () => {
       console.log("Implement More Info Feature")
     })
 
-    card.querySelector(".user-button").addEventListener("click", () => {
-      console.log("Add Friend")
+    // Add a event listener to friend user and redisplay addFriends
+    card.querySelector(".user-button").addEventListener("click", async () => {
+      await addFriend(user.id);
+      displayNonFriends();
     })
 
     contentContainer.appendChild(card);
@@ -230,15 +236,18 @@ async function displayNonFriends() {
   Displays current user's friends. Allows user to view profile info and remove
   target users as friends.
 */
-async function editCurrentBuddies() {
+async function editFriends() {
   const userTemplate = document.getElementById("user-template");
   const contentContainer = document.getElementById("content-container");
   contentContainer.innerHTML = "";
 
+  // Retrieve an array of friends of the current user
   const users = await getUsersWithFriend(currentUserId);
 
   users.forEach(user => {
     const card = userTemplate.content.cloneNode(true);
+
+    // Access and set elements within the user card
     const profile = card.querySelector(".user-profile");
     card.querySelector(".user-title").textContent = user.name;
     card.querySelector(".user-text").textContent = "Placeholder for commonalities";
@@ -248,12 +257,15 @@ async function editCurrentBuddies() {
       profile.src = user.profilePhotoBase64;
     }
 
+    // Add event listenser to the profile icon to diplay more profile info
     profile.addEventListener("click", () => {
       console.log("Implement More Info Feature")
     })
 
-    card.querySelector(".user-button").addEventListener("click", () => {
-      console.log("Remove Button")
+    // Add event listener to unfriend user and redisplay editFriends
+    card.querySelector(".user-button").addEventListener("click", async () => {
+      await removeFriend(user.id);
+      editFriends();
     })
 
     contentContainer.appendChild(card);
