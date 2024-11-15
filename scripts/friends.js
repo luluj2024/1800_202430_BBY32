@@ -40,12 +40,12 @@ async function getUsersWithFriend(targetUserId) {
       .where("friends", "array-contains", targetUserId)
       .get();
 
-    // If the query returns no documents, return an empty array  
+    // Return empty array if query returns no documents
     if (querySnapshot.empty) {
       return [];
     }
 
-    // Map through the documents to extract user data
+    // Map new array of user document data 
     const users = querySnapshot.docs.map(doc => doc.data());
 
     return users;
@@ -57,7 +57,7 @@ async function getUsersWithFriend(targetUserId) {
 
 /*
   Returns an array of user data objects of users whose "friends" array field 
-  does not contain the targetUserId 
+  does not contain the targetUserId
 
   @param {string} targetUserId - Id of user that should be used to exclude
   users from the return
@@ -66,16 +66,15 @@ async function getUsersWithFriend(targetUserId) {
   users found or an error occurs
 */
 async function getUsersWithoutFriend(targetUserId) {
-
   try {
     const querySnapshot = await db.collection("users").get();
 
-    // If the query returns no documents, return an empty array
+    // Returns empty array if query returns no documents
     if (querySnapshot.empty) {
       return [];
     }
 
-    // Filter array to remove users who are friends and the current user
+    // Filter out the target user themself and their friends
     const users = querySnapshot.docs
       .map(doc => doc.data())
       .filter(user => !user.friends.includes(targetUserId) && user.id !== targetUserId);
@@ -87,30 +86,60 @@ async function getUsersWithoutFriend(targetUserId) {
   }
 }
 
-/* 
-  Function returns user data (fields) of specified userId
-  Throws an error if user document doesn't exist
-  All errors are caught and logged 
+/*
+  Adds target and current user to each others "friends" array field
+  
+  @param {string} targetUserId - Id of user who current user wishes to add 
+  as a friend
 */
-async function getUserData(userId) {
+async function addFriend(targetUserId) {
+  // Get user document references
+  const currentUserRef = db.collection("users").doc(currentUserId);
+  const targetUserRef = db.collection("users").doc(targetUserId);
+
   try {
-    // Gets user specific document from the "users" collection
-    const userDoc = await db.collection("users").doc(userId).get();
+    // Add targetUserId to the current users friends array
+    await currentUserRef.update({
+      friends: firebase.firestore.FieldValue.arrayUnion(targetUserId)
+    });
 
-    // Throws error is userDoc doesn't exist 
-    if (!userDoc.exists) {
-      throw new Error(`User ${userId} does not exist.`);
-    }
-
-    return userDoc.data();
+    // Remove currentUserId from the target users friends array
+    await targetUserRef.update({
+      friends: firebase.firestore.FieldValue.arrayUnion(currentUserId)
+    });
   } catch (error) {
-    console.error(`Error retrieving data for user ${userId}:`, error);
+    console.log(`Error adding friend ${targetUserId}:`, error)
+  }
+}
+
+/*
+  Removes target and current user from each others "friends" array field
+
+  @param {string} targetUserId - Id of user who current user wishes to remove
+  as a friend
+*/
+async function removeFriend(targetUserId) {
+  // Get user document references
+  let currentUserRef = db.collection("users").doc(currentUserId);
+  let targetUserRef = db.collection("users").doc(targetUserId);
+
+  try {
+    // Remove targetUserId from the current user's friends array
+    await currentUserRef.update({
+      friends: firebase.firestore.FieldValue.arrayRemove(targetUserId)
+    });
+
+    // Remove currentUserId from the target user's friends array
+    await targetUserRef.update({
+      friends: firebase.firestore.FieldValue.arrayRemove(currentUserId)
+    });
+  } catch (error) {
+    console.log(`Error removing friend ${targetUserId}:`, error);
   }
 }
 
 /* 
   Function returns all the favorite routes' names of a specified userId.
-  All errors are caught and logged 
 */
 async function getFavoriteRoutrNames(favoriteRoutes) {
   if (!favoriteRoutes || favoriteRoutes.length === 0) {
@@ -129,47 +158,6 @@ async function getFavoriteRoutrNames(favoriteRoutes) {
   }
 }
 
-/*
-  Adds specified user as a friend by updating "friends" 
-  field of both the current user and the target user
-*/
-function addFriend(friendId) {
-  let userDoc = db.collection("users").doc(currentUserId);
-  let friendDoc = db.collection("users").doc(friendId);
-
-  Promise.all([
-    userDoc.update({
-      friends: firebase.firestore.FieldValue.arrayUnion(friendId)
-    }),
-    friendDoc.update({
-      friends: firebase.firestore.FieldValue.arrayUnion(currentUserId)
-    })
-  ])
-    .catch(error => {
-      console.log(`Error adding friend ${friendId}:`, error);
-    })
-}
-
-/*
-  Removes specified user as a friend by updating "friends"
-  field of both current user and target user
-*/
-async function removeFriend(userId) {
-  let userDoc = await db.collection("users").doc(currentUserId);
-  let buddyDoc = await db.collection("users").doc(userId);
-
-  Promise.all([
-    userDoc.update({
-      friends: firebase.firestore.FieldValue.arrayRemove(userId)
-    }),
-    buddyDoc.update({
-      friends: firebase.firestore.FieldValue.arrayRemove(currentUserId)
-    })
-  ]).catch(error => {
-    console.log(`Error deleting friend ${friendId}:`, error);
-  })
-
-}
 
 /*
   Displays the current user's friends. Allows user to view profile info and 
@@ -239,7 +227,8 @@ async function displayNonFriends() {
 }
 
 /*
-  Displays all current friends, but with the option to remove them as friends
+  Displays current user's friends. Allows user to view profile info and remove
+  target users as friends.
 */
 async function editCurrentBuddies() {
   const userTemplate = document.getElementById("user-template");
