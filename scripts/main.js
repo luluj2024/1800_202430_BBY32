@@ -19,6 +19,7 @@ function displayAllRoutes() {
     container.innerHTML = '';
     document.getElementById("status").innerHTML = "";
 
+    //Runs through routes list, outputing routes as its found
     db.collection("Routes").get().then(routeList => {
         routeList.forEach(routeId => {
             outputCards(container, busTemplate, routeId);
@@ -31,6 +32,7 @@ function displayAllRoutes() {
 function displaySimilarRoutes() {
     searchbar = document.getElementById("searchbar");
     if (searchbar.value == "") {
+        //Resets page on empty search bar
         processLoad();
     }
     else {
@@ -41,12 +43,14 @@ function displaySimilarRoutes() {
         container.innerHTML = '';
         db.collection("Routes").get().then(routeList => {
             routeList.forEach(routeId => {
+                //Takes searchbar value, and compares it to the route number and name to see if the search matches it
                 if (relatedRoutes(searchbar.value.toLowerCase(), routeId.data().bus, routeId.data().name)) {
                     count += 1;
                     outputCards(container, busTemplate, routeId);
                 }
             })
         }).then(() => {
+            //counts the amount of displayed routes, acting as an empty case condition to inform user there is no routes
             if (count == 0) {
                 document.getElementById("status").innerHTML = "<h4>Sorry, your search doesnt match any routes in our database.</h4>";
             }
@@ -90,6 +94,7 @@ function outputCards(container, busTemplate, routeId) {
     let card = busTemplate.content.cloneNode(true);
     let busTitle = "Bus " + data.bus + ": " + data.name;
     let busTime;
+    //Display bus times, where if the bus runs 24/7 it diplays it as such
     if (data.start == data.end) {
         busTime = "Bus runs 24/7";
     }
@@ -98,17 +103,19 @@ function outputCards(container, busTemplate, routeId) {
     }
     card.querySelector(".card-title").textContent = busTitle;
     card.querySelector(".card-time").textContent = busTime;
+    //Checks how many people have favoritied 
     let favCount = data.favorites.length;
     if (favCount == 0 || favCount == undefined) {
-        card.querySelector(".card-fav").textContent = "Be the first buddy on this route!";
+        card.querySelector(".card-fav").textContent = "Be the first person on this route!";
     }
     else if (favCount == 1) {
-        card.querySelector(".card-fav").textContent = favCount + " buddy favorited this route!";
+        card.querySelector(".card-fav").textContent = favCount + " person favorited this route!";
     }
     else {
-        card.querySelector(".card-fav").textContent = favCount + " buddies favorited this route!";
+        card.querySelector(".card-fav").textContent = favCount + " people favorited this route!";
     }
 
+    //allows user to favorite specific routes
     let curcard = card.querySelector("#cardbtn");
     favBtn(curcard, routeId);
 
@@ -162,6 +169,7 @@ function favBtn(curcard, routeId) {
         let favoriteRoutes = user.data().favorite_routes;
         favCheck = favoriteRoutes.includes(routeId.id);
         //Establishes which version of favorite button
+        //unfavorites route
         if (favCheck) {
             curcard.style.color = "blue";
             curcard.addEventListener("click", event => {
@@ -169,6 +177,7 @@ function favBtn(curcard, routeId) {
                 displaySimilarRoutes();
             })
         }
+        //favorites route
         else {
             curcard.style.color = "black";
             curcard.addEventListener("click", event => {
@@ -179,6 +188,7 @@ function favBtn(curcard, routeId) {
     });
 }
 
+//Populate route information code
 // function populateRoutes() {
 //     var routeRef = db.collection("Routes");
 
