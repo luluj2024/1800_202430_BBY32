@@ -242,26 +242,29 @@ async function displayNonFriends() {
   Displays all current friends, but with the option to remove them as friends
 */
 async function editCurrentBuddies() {
-  const userTemplate = document.getElementById("userTemplate");
-  const contentContainer = document.getElementById("contentContainer");
-  contentContainer.innerHTML = '';
+  const userTemplate = document.getElementById("user-template");
+  const contentContainer = document.getElementById("content-container");
+  contentContainer.innerHTML = "";
 
   const users = await getUsersWithFriend(currentUserId);
 
   users.forEach(user => {
-    let card = userTemplate.content.cloneNode(true);
-    card.querySelector(".card-title").textContent = user.name;
-    card.querySelector("#buddyButtonOne").textContent = "Remove";
-    card.querySelector("#buddyButtonOne").classList.toggle("btn-warning");
-    let photo = card.querySelector("#profile-photo");
+    const card = userTemplate.content.cloneNode(true);
+    const profile = card.querySelector(".user-profile");
+    card.querySelector(".user-title").textContent = user.name;
+    card.querySelector(".user-text").textContent = "Placeholder for commonalities";
+    card.querySelector(".user-button").textContent = "person_remove";
 
     if (user.profilePhotoBase64) {
-      photo.src = user.profilePhotoBase64;
+      profile.src = user.profilePhotoBase64;
     }
 
-    card.querySelector(".btn").addEventListener("click", event => {
-      removeFriend(user.id);
-      editCurrentBuddies();
+    profile.addEventListener("click", () => {
+      console.log("Implement More Info Feature")
+    })
+
+    card.querySelector(".user-button").addEventListener("click", () => {
+      console.log("Remove Button")
     })
 
     contentContainer.appendChild(card);
