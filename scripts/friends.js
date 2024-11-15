@@ -6,17 +6,11 @@ firebase.auth().onAuthStateChanged((user) => {
 
     displayFriends();
 
-    document.getElementById("friendsList").addEventListener("click", event => {
-      displayFriends();
-    })
+    document.getElementById("friendsList").addEventListener("click", displayFriends)
 
-    document.getElementById("addFriends").addEventListener("click", event => {
-      displayNonFriends();
-    })
+    document.getElementById("addFriends").addEventListener("click", displayNonFriends)
 
-    document.getElementById("edit").addEventListener("click", event => {
-      editFriends();
-    })
+    document.getElementById("edit").addEventListener("click", editFriends)
 
   } else {
     console.log("No User Logged In");
@@ -139,9 +133,9 @@ async function removeFriend(targetUserId) {
 }
 
 /* 
-  Function returns all the favorite routes' names of a specified userId.
+  Returns Function returns all the favorite routes' names of a specified userId.
 */
-async function getFavoriteRoutrNames(favoriteRoutes) {
+async function getFavoritedRoutes(favoriteRoutes) {
   if (!favoriteRoutes || favoriteRoutes.length === 0) {
     return "No favorite routes.";
   }
@@ -186,6 +180,7 @@ async function displayFriends() {
     })
 
     card.querySelector(".friend-body").addEventListener("click", () => {
+      localStorage.setItem("targetUser", JSON.stringify(user));
       window.location.assign("chat.html");
     })
 
@@ -271,3 +266,10 @@ async function editFriends() {
     contentContainer.appendChild(card);
   })
 }
+
+/*
+  POTENTIAL UPDATES: 
+  - Add real-time listeners to auto-update when there are changes in the 
+  database
+  - Add lazy loading? Display 10 users and fetch more as needed
+*/
