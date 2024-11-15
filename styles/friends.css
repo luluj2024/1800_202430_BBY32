@@ -1,0 +1,85 @@
+.friend {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas: "profile content";
+  padding: 1rem;
+  background-color: lightgray;
+  margin-bottom: 1rem;
+  gap: 1rem;
+  border-radius: 1.25rem;
+}
+
+.friend-profile {
+  grid-area: profile;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid black;
+}
+
+.friend-body {
+  grid-area: content;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  grid-template-columns: 1fr auto auto;
+  grid-template-areas: 
+    "name date arrow"
+    "message message empty";
+  padding: 1rem 0;
+}
+
+.friend-title {
+  grid-area: name;
+  font-size: 1.2rem
+}
+
+.friend-text {
+  grid-area: message;
+}
+
+.friend-arrow {
+  grid-area: arrow;
+  font-size: 1.2rem;
+  margin: auto 0;
+}
+
+.user {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-template-areas: "profile content";
+  margin-bottom: 1rem;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 1.25rem;
+  background-color: lightgray;
+}
+
+.user-profile {
+  grid-area: profile;
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border: 4px solid black;
+  border-radius: 50%;
+}
+
+.user-body {
+  padding: 1rem 0;
+}
+
+.user-title {
+  font-size: 1.2rem;
+}
+
+.user-button {
+  align-self: center;
+  margin: 0 1rem 0 auto;
+}
+
+@media only screen and (min-width: 700px) {
+  #content-container {
+    width: 75%;
+    margin: 0 auto;
+  }
+}
