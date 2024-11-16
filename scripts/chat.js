@@ -1,14 +1,16 @@
-const targetUser = JSON.parse(localStorage.getItem('targetUser'));
-const targetRoute = JSON.parse(localStorage.getItem('targetRoute'));
+const targetUser = JSON.parse(sessionStorage.getItem('targetUser'));
+const targetRoute = sessionStorage.getItem('targetRoute');
+
 let currentUserId;
 
 firebase.auth().onAuthStateChanged((user) => {
   if (user) {
     currentUserId = user.uid;
 
-    console.log(currentUserId);
-    console.log(targetUser.id);
-
+    console.log(targetUser);
+    console.log(targetRoute);
+    
+    displayMessages();
   } else {
     console.log("No User Logged In");
     window.location.href = "index.html";
@@ -16,66 +18,108 @@ firebase.auth().onAuthStateChanged((user) => {
 });
 
 function displayMessages() {
-  
+  const messagesContainer = document.querySelector(".messages-container");
+  messagesContainer.innerHTML = "";
+
+  if (targetUser) {
+    listenForUserMessages(targetUser, messagesContainer);
+
+    document.querySelector(".btn-send").addEventListener("click", () => {
+      sendMessageToUser(targetUser.id, messagesContainer)
+    });
+  } else {
+    listenForRouteMessages(targetRoute, messagesContainer);
+
+    document.querySelector(".btn-send").addEventListener("click", () => {
+      sendMessageToGroup(targetRoute)
+    })
+  }
 }
-// function displayMessages(userId) {
-//   const messageTemplate = document.querySelector("#messageTemplate");
-//   const contentContainer = document.querySelector("#content-container");
-//   contentContainer.innerHTML = "";
-//   contentContainer.appendChild(messageTemplate.content.cloneNode(true));
 
-//   const messageDisplay = contentContainer.querySelector("#messageDisplay");
+function listenForUserMessages(targetUser, container) {
+  db.collection("messages")
+    .where("users", "array-contains", currentUserId)
+    .orderBy("timestamp")
+    .onSnapshot(snapshot => {
+      container.innerHTML = "";
 
-//   listenForMessages(userId, messageDisplay);
+      snapshot.forEach(doc => {
+        const message = doc.data();
 
-//   contentContainer.querySelector("#submitBtn").addEventListener("click", () => {
-//     sendMessage(userId, contentContainer);
-//   });
-// }
+        if (message.users.includes(targetUser.id)) {
+          const messageElement = document.createElement("p");
+          messageElement.textContent = message.text;
 
-// function listenForMessages(userId, messageDisplay) {
-//   db.collection("messages")
-//     .where("users", "array-contains", currentUserId)  // Only messages between the currentUserId
-//     .orderBy("timestamp") // Order by timestamp
-//     .onSnapshot(snapshot => {
-//       messageDisplay.innerHTML = ""; // Clear existing messages
+          if (message.users[0] === currentUserId) {
+            messageElement.classList.add("bg-primary");
+          } else {
+            messageElement.classList.add("bg-success");
+          }
 
-//       snapshot.forEach(doc => {
-//         const message = doc.data();
+          container.appendChild(messageElement);
+        }
+      })
+    })
+}
 
-//         // Ensure that both userId and currentUserId are part of the message's users array
-//         if (message.users.includes(currentUserId) && message.users.includes(userId)) {
-//           const messageElement = document.createElement("p");
-//           messageElement.textContent = message.text;
+function sendMessageToUser(receiverId) {
+  const messageInput = document.querySelector(".message-input");
+  const message = messageInput.value.trim();
 
-//           if (message.users[0] === currentUserId) {
-//             messageElement.classList.add("bg-primary");
-//             messageElement.classList.add("right-aligned-message");
-//           } else {
-//             messageElement.classList.add("bg-success");
-//             messageElement.classList.add("left-aligned-message");
-//           }
+  if (message) {
+    const messagesRef = db.collection("messages");
+    messagesRef.add({
+      users: [currentUserId, receiverId],
+      text: message,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(() => {
+      messageInput.value = "";
+    }).catch((error) => {
+      console.error("Error sending message: ", error);
+    });
+  }
+}
 
-//           messageDisplay.appendChild(messageElement);
-//         }
-//       });
-//     })
-// }
+function listenForRouteMessages(targetRouteId, container) {
+  db.collection("Routes").doc(targetRouteId)
+    .collection("messages")
+    .orderBy("timestamp")
+    .onSnapshot(snapshot => {
+      container.innerHTML = "";
 
-// function sendMessage(receiverId, contentContainer) {
-//   const messageInput = contentContainer.querySelector("#messageInput");
-//   const message = messageInput.value.trim();
+      snapshot.forEach(doc => {
+        const message = doc.data();
 
-//   if (message) {
-//     const messagesRef = db.collection("messages");
-//     messagesRef.add({
-//       users: [currentUserId, receiverId],
-//       text: message,
-//       timestamp: firebase.firestore.FieldValue.serverTimestamp()
-//     }).then(() => {
-//       messageInput.value = "";
-//     }).catch((error) => {
-//       console.error("Error sending message: ", error);
-//     });
-//   }
-// }
+        const messageElement = document.createElement("p");
+        messageElement.textContent = message.text;
+        if (message.sender === currentUserId) {
+          messageElement.classList.add("bg-primary");
+        } else {
+          messageElement.classList.add("bg-success");
+        }
+        container.appendChild(messageElement);
+      });
+    })
+}
+
+function sendMessageToGroup(targetRouteId) {
+  const messageInput = document.querySelector(".message-input");
+  const message = messageInput.value.trim();
+  if (message) {
+    const messagesRef = db.collection("Routes").doc(targetRouteId).collection("messages");
+    messagesRef.add({
+      sender: currentUserId,
+      text: message,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(() => {
+      messageInput.value = "";
+    }).catch((error) => {
+      console.error("Error sending message: ", error);
+    });
+  }
+}
+
+window.addEventListener("beforeunload", () => {
+  sessionStorage.removeItem("targetUser");
+  sessionStorage.removeItem("targetRoute");
+})

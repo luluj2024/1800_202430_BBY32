@@ -212,7 +212,7 @@ async function displayFriends() {
     })
 
     card.querySelector(".friend-body").addEventListener("click", () => {
-      localStorage.setItem("targetUser", JSON.stringify(user));
+      sessionStorage.setItem("targetUser", JSON.stringify(user));
       window.location.assign("chat.html");
     })
 
