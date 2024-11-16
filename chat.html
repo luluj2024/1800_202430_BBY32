@@ -35,15 +35,32 @@
 </head>
 
 <body>
-  <!-- <div id="chatContainer" class="container border p-3 mt-4 rounded">
-      <div id="messageDisplay" class="messages bg-light p-3 mb-3 overflow-auto" style="height: 300px;">
+  <template id="left-message">
+    <div class="l-message-container">
+      <div class="profile-container">
+        <img class="profile-icon" src="images/profile.png" alt="profile-icon">
       </div>
+      <div class=";-content">
+        <h6 class="title"></h6>
+        <p class="text"></p>
+        <p class="time"></p>
+      </div>
+    </div>
+  </template>
 
-      <div id="messageForm" class="d-flex">
-        <input type="text" class="form-control mr-2" placeholder="Type your message...">
-        <button id="submitBtn" type="submit" class="btn btn-primary">Send</button>
+  <template id="right-message">
+    <div class="r-message-container">
+      <div class="r-content">
+        <h6 class="title"></h6>
+        <p class="text"></p>
+        <p class="time"></p>
       </div>
-    </div> -->
+      <div class="profile-container">
+        <img class="profile-icon" src="images/profile.png" alt="profile-icon">
+      </div>
+    </div>
+  </template>
+
   <div class="chat-container">
     <div class="messages-container"></div>
     <div class="messages-form">

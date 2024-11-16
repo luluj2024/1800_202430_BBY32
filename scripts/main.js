@@ -148,7 +148,7 @@ function outputCards(container, busTemplate, routeId) {
     //Route groupchat button
     card.querySelector("#cardbtn").addEventListener("click", (event) => {
         console.log("Chat Button Clicked");
-        sessionStorage.setItem("targetRoute", routeId.id);
+        sessionStorage.setItem("targetRouteId", routeId.id);
         window.location.assign("chat.html");
     })
 
