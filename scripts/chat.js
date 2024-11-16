@@ -1,3 +1,23 @@
+const targetUser = JSON.parse(localStorage.getItem('targetUser'));
+const targetRoute = JSON.parse(localStorage.getItem('targetRoute'));
+let currentUserId;
+
+firebase.auth().onAuthStateChanged((user) => {
+  if (user) {
+    currentUserId = user.uid;
+
+    console.log(currentUserId);
+    console.log(targetUser.id);
+
+  } else {
+    console.log("No User Logged In");
+    window.location.href = "index.html";
+  }
+});
+
+function displayMessages() {
+  
+}
 // function displayMessages(userId) {
 //   const messageTemplate = document.querySelector("#messageTemplate");
 //   const contentContainer = document.querySelector("#content-container");
@@ -59,18 +79,3 @@
 //     });
 //   }
 // }
-const targetUser = JSON.parse(localStorage.getItem('targetUser'));
-let currentUserId;
-
-firebase.auth().onAuthStateChanged((user) => {
-  if (user) {
-    currentUserId = user.uid;
-
-    console.log(currentUserId);
-    console.log(targetUser.id);
-
-  } else {
-    console.log("No User Logged In");
-    window.location.href = "index.html";
-  }
-});

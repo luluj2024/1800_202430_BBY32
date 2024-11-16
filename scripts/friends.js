@@ -4,19 +4,30 @@ firebase.auth().onAuthStateChanged((user) => {
   if (user) {
     currentUserId = user.uid;
 
+    initialize();
+
     displayFriends();
+    document.getElementById("btn-friends").addEventListener("click", displayFriends)
 
-    document.getElementById("friendsList").addEventListener("click", displayFriends)
+    document.getElementById("btn-suggested").addEventListener("click", displayNonFriends)
 
-    document.getElementById("addFriends").addEventListener("click", displayNonFriends)
-
-    document.getElementById("edit").addEventListener("click", editFriends)
+    document.getElementById("btn-edit").addEventListener("click", editFriends)
 
   } else {
     console.log("No User Logged In");
     window.location.href = "index.html";
   }
 });
+
+async function initialize() {
+  const user = await getUserData(currentUserId);
+
+  const profileIcon = document.querySelector(".nav-profile");
+
+  if (user.profilePhotoBase64) {
+    profile.src = user.profilePhotoBase64;
+  }
+}
 
 /*
   Returns an array of user data objects who have the target user id in their 
@@ -77,6 +88,28 @@ async function getUsersWithoutFriend(targetUserId) {
   } catch (error) {
     console.error(`Error retrieving users without friend ${targetUserId}:`, error);
     return [];
+  }
+}
+
+/*
+  Returns user data object of target user id
+
+  @param {string} targetUserId - Id of target user
+  @returns {object} - An object containing all fields of the target user
+*/
+async function getUserData(targetUserId) {
+  try {
+    const docRef = await db.collection("users").doc(targetUserId).get();
+
+    // Returns null if retrieved document doesn't exist
+    if (docRef.empty) {
+      return null;
+    }
+
+    return docRef.data();
+  } catch (error) {
+    console.error(`Error returning user data ${targetUserId}`, error);
+    return null;
   }
 }
 
@@ -151,7 +184,6 @@ async function getFavoritedRoutes(favoriteRoutes) {
     return "Error loading routes";
   }
 }
-
 
 /*
   Displays the current user's friends. Allows user to view profile info and 
@@ -272,4 +304,5 @@ async function editFriends() {
   - Add real-time listeners to auto-update when there are changes in the 
   database
   - Add lazy loading? Display 10 users and fetch more as needed
+  - Change the top-navbar to include profile image, edit, and friends?
 */

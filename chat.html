@@ -31,24 +31,26 @@
 
   <!-- Link to styles of your own -->
   <link rel="stylesheet" href="./styles/styles.css">
+  <link rel="stylesheet" href="./styles/chat.css">
 </head>
 
 <body>
-  <template id="messageTemplate">
-    <button onclick="displayCurrentBuddies()" class="btn btn-secondary mb-3">Back</button>
-    <div id="chatContainer" class="container border p-3 mt-4 rounded">
+  <!-- <div id="chatContainer" class="container border p-3 mt-4 rounded">
       <div id="messageDisplay" class="messages bg-light p-3 mb-3 overflow-auto" style="height: 300px;">
       </div>
 
       <div id="messageForm" class="d-flex">
-        <input id="messageInput" type="text" class="form-control mr-2" placeholder="Type your message...">
+        <input type="text" class="form-control mr-2" placeholder="Type your message...">
         <button id="submitBtn" type="submit" class="btn btn-primary">Send</button>
       </div>
+    </div> -->
+  <div class="chat-container">
+    <div class="messages-container"></div>
+    <div class="messages-form">
+      <input type="text" placeholder="Type your message here...">
+      <button>Send</button>
     </div>
-  </template>
-
-
-  <div id="content-container"></div>
+  </div>
 
   <div id="navbar-template"></div>
 
