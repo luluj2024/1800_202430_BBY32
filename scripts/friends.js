@@ -4,25 +4,30 @@ firebase.auth().onAuthStateChanged((user) => {
   if (user) {
     currentUserId = user.uid;
 
+    initialize();
+
     displayFriends();
+    document.getElementById("btn-friends").addEventListener("click", displayFriends)
 
-    document.getElementById("friendsList").addEventListener("click", event => {
-      displayFriends();
-    })
+    document.getElementById("btn-suggested").addEventListener("click", displayNonFriends)
 
-    document.getElementById("addFriends").addEventListener("click", event => {
-      displayNonFriends();
-    })
-
-    document.getElementById("edit").addEventListener("click", event => {
-      editCurrentBuddies();
-    })
+    document.getElementById("btn-edit").addEventListener("click", editFriends)
 
   } else {
     console.log("No User Logged In");
     window.location.href = "index.html";
   }
 });
+
+async function initialize() {
+  const user = await getUserData(currentUserId);
+
+  const profileIcon = document.querySelector(".nav-profile");
+
+  if (user.profilePhotoBase64) {
+    profile.src = user.profilePhotoBase64;
+  }
+}
 
 /*
   Returns an array of user data objects who have the target user id in their 
@@ -40,12 +45,12 @@ async function getUsersWithFriend(targetUserId) {
       .where("friends", "array-contains", targetUserId)
       .get();
 
-    // If the query returns no documents, return an empty array  
+    // Return empty array if query returns no documents
     if (querySnapshot.empty) {
       return [];
     }
 
-    // Map through the documents to extract user data
+    // Map new array of user document data 
     const users = querySnapshot.docs.map(doc => doc.data());
 
     return users;
@@ -57,7 +62,7 @@ async function getUsersWithFriend(targetUserId) {
 
 /*
   Returns an array of user data objects of users whose "friends" array field 
-  does not contain the targetUserId 
+  does not contain the targetUserId
 
   @param {string} targetUserId - Id of user that should be used to exclude
   users from the return
@@ -66,16 +71,15 @@ async function getUsersWithFriend(targetUserId) {
   users found or an error occurs
 */
 async function getUsersWithoutFriend(targetUserId) {
-
   try {
     const querySnapshot = await db.collection("users").get();
 
-    // If the query returns no documents, return an empty array
+    // Returns empty array if query returns no documents
     if (querySnapshot.empty) {
       return [];
     }
 
-    // Filter array to remove users who are friends and the current user
+    // Filter out the target user themself and their friends
     const users = querySnapshot.docs
       .map(doc => doc.data())
       .filter(user => !user.friends.includes(targetUserId) && user.id !== targetUserId);
@@ -87,32 +91,84 @@ async function getUsersWithoutFriend(targetUserId) {
   }
 }
 
-/* 
-  Function returns user data (fields) of specified userId
-  Throws an error if user document doesn't exist
-  All errors are caught and logged 
-*/
-async function getUserData(userId) {
-  try {
-    // Gets user specific document from the "users" collection
-    const userDoc = await db.collection("users").doc(userId).get();
+/*
+  Returns user data object of target user id
 
-    // Throws error is userDoc doesn't exist 
-    if (!userDoc.exists) {
-      throw new Error(`User ${userId} does not exist.`);
+  @param {string} targetUserId - Id of target user
+  @returns {object} - An object containing all fields of the target user
+*/
+async function getUserData(targetUserId) {
+  try {
+    const docRef = await db.collection("users").doc(targetUserId).get();
+
+    // Returns null if retrieved document doesn't exist
+    if (docRef.empty) {
+      return null;
     }
 
-    return userDoc.data();
+    return docRef.data();
   } catch (error) {
-    console.error(`Error retrieving data for user ${userId}:`, error);
+    console.error(`Error returning user data ${targetUserId}`, error);
+    return null;
+  }
+}
+
+/*
+  Adds target and current user to each others "friends" array field
+  
+  @param {string} targetUserId - Id of user who current user wishes to add 
+  as a friend
+*/
+async function addFriend(targetUserId) {
+  // Get user document references
+  const currentUserRef = db.collection("users").doc(currentUserId);
+  const targetUserRef = db.collection("users").doc(targetUserId);
+
+  try {
+    // Add targetUserId to the current users friends array
+    await currentUserRef.update({
+      friends: firebase.firestore.FieldValue.arrayUnion(targetUserId)
+    });
+
+    // Remove currentUserId from the target users friends array
+    await targetUserRef.update({
+      friends: firebase.firestore.FieldValue.arrayUnion(currentUserId)
+    });
+  } catch (error) {
+    console.log(`Error adding friend ${targetUserId}:`, error)
+  }
+}
+
+/*
+  Removes target and current user from each others "friends" array field
+
+  @param {string} targetUserId - Id of user who current user wishes to remove
+  as a friend
+*/
+async function removeFriend(targetUserId) {
+  // Get user document references
+  let currentUserRef = db.collection("users").doc(currentUserId);
+  let targetUserRef = db.collection("users").doc(targetUserId);
+
+  try {
+    // Remove targetUserId from the current user's friends array
+    await currentUserRef.update({
+      friends: firebase.firestore.FieldValue.arrayRemove(targetUserId)
+    });
+
+    // Remove currentUserId from the target user's friends array
+    await targetUserRef.update({
+      friends: firebase.firestore.FieldValue.arrayRemove(currentUserId)
+    });
+  } catch (error) {
+    console.log(`Error removing friend ${targetUserId}:`, error);
   }
 }
 
 /* 
-  Function returns all the favorite routes' names of a specified userId.
-  All errors are caught and logged 
+  Returns Function returns all the favorite routes' names of a specified userId.
 */
-async function getFavoriteRoutrNames(favoriteRoutes) {
+async function getFavoritedRoutes(favoriteRoutes) {
   if (!favoriteRoutes || favoriteRoutes.length === 0) {
     return "No favorite routes.";
   }
@@ -127,48 +183,6 @@ async function getFavoriteRoutrNames(favoriteRoutes) {
     console.log(`error in getting favorite routes for ${currentUserId}`, error);
     return "Error loading routes";
   }
-}
-
-/*
-  Adds specified user as a friend by updating "friends" 
-  field of both the current user and the target user
-*/
-function addFriend(friendId) {
-  let userDoc = db.collection("users").doc(currentUserId);
-  let friendDoc = db.collection("users").doc(friendId);
-
-  Promise.all([
-    userDoc.update({
-      friends: firebase.firestore.FieldValue.arrayUnion(friendId)
-    }),
-    friendDoc.update({
-      friends: firebase.firestore.FieldValue.arrayUnion(currentUserId)
-    })
-  ])
-    .catch(error => {
-      console.log(`Error adding friend ${friendId}:`, error);
-    })
-}
-
-/*
-  Removes specified user as a friend by updating "friends"
-  field of both current user and target user
-*/
-async function removeFriend(userId) {
-  let userDoc = await db.collection("users").doc(currentUserId);
-  let buddyDoc = await db.collection("users").doc(userId);
-
-  Promise.all([
-    userDoc.update({
-      friends: firebase.firestore.FieldValue.arrayRemove(userId)
-    }),
-    buddyDoc.update({
-      friends: firebase.firestore.FieldValue.arrayRemove(currentUserId)
-    })
-  ]).catch(error => {
-    console.log(`Error deleting friend ${friendId}:`, error);
-  })
-
 }
 
 /*
@@ -198,6 +212,7 @@ async function displayFriends() {
     })
 
     card.querySelector(".friend-body").addEventListener("click", () => {
+      sessionStorage.setItem("targetUser", JSON.stringify(user));
       window.location.assign("chat.html");
     })
 
@@ -214,10 +229,13 @@ async function displayNonFriends() {
   const contentContainer = document.getElementById("content-container");
   contentContainer.innerHTML = "";
 
+  // Retrieve an array of non-friends of the current user
   const users = await getUsersWithoutFriend(currentUserId);
 
   users.forEach(user => {
     const card = userTemplate.content.cloneNode(true);
+
+    // Access and set elements within the user card
     const profile = card.querySelector(".user-profile");
     card.querySelector(".user-title").textContent = user.name;
     card.querySelector(".user-text").textContent = "Placeholder for commonalities";
@@ -226,12 +244,15 @@ async function displayNonFriends() {
       profile.src = user.profilePhotoBase64;
     }
 
+    // Add event listener to the profile icon to display more profile info 
     profile.addEventListener("click", () => {
       console.log("Implement More Info Feature")
     })
 
-    card.querySelector(".user-button").addEventListener("click", () => {
-      console.log("Add Friend")
+    // Add a event listener to friend user and redisplay addFriends
+    card.querySelector(".user-button").addEventListener("click", async () => {
+      await addFriend(user.id);
+      displayNonFriends();
     })
 
     contentContainer.appendChild(card);
@@ -239,17 +260,21 @@ async function displayNonFriends() {
 }
 
 /*
-  Displays all current friends, but with the option to remove them as friends
+  Displays current user's friends. Allows user to view profile info and remove
+  target users as friends.
 */
-async function editCurrentBuddies() {
+async function editFriends() {
   const userTemplate = document.getElementById("user-template");
   const contentContainer = document.getElementById("content-container");
   contentContainer.innerHTML = "";
 
+  // Retrieve an array of friends of the current user
   const users = await getUsersWithFriend(currentUserId);
 
   users.forEach(user => {
     const card = userTemplate.content.cloneNode(true);
+
+    // Access and set elements within the user card
     const profile = card.querySelector(".user-profile");
     card.querySelector(".user-title").textContent = user.name;
     card.querySelector(".user-text").textContent = "Placeholder for commonalities";
@@ -259,14 +284,25 @@ async function editCurrentBuddies() {
       profile.src = user.profilePhotoBase64;
     }
 
+    // Add event listenser to the profile icon to diplay more profile info
     profile.addEventListener("click", () => {
       console.log("Implement More Info Feature")
     })
 
-    card.querySelector(".user-button").addEventListener("click", () => {
-      console.log("Remove Button")
+    // Add event listener to unfriend user and redisplay editFriends
+    card.querySelector(".user-button").addEventListener("click", async () => {
+      await removeFriend(user.id);
+      editFriends();
     })
 
     contentContainer.appendChild(card);
   })
 }
+
+/*
+  POTENTIAL UPDATES: 
+  - Add real-time listeners to auto-update when there are changes in the 
+  database
+  - Add lazy loading? Display 10 users and fetch more as needed
+  - Change the top-navbar to include profile image, edit, and friends?
+*/

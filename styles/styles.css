@@ -128,16 +128,6 @@ a {
     text-decoration: none;
   }
 
-  .right-aligned-message, .left-aligned-message {
-    width: 300px;
-    color: white;
-    padding: 10px;
-  }
-  
-  .right-aligned-message {
-    margin-left: auto;
-  }
-
   .footer {
     background-color: #2596BE;
     height: 50px;

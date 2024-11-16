@@ -1,0 +1,26 @@
+.chat-container {
+  width: 85%;
+  height: 90vh;
+  padding-bottom: 5%;
+  margin: 0 auto;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  grid-template-areas: 
+    "display"
+    "message";
+}
+
+.messages-container {
+  grid-area: display;
+}
+
+.messages-form {
+  grid-area: message;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2rem
+}
+
+.messages-form > button {
+  padding: 0.5rem 2rem
+}
