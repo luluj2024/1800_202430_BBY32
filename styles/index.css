@@ -117,3 +117,41 @@ nav svg {
     z-index: 9;
   }
 } 
+
+#welcometitle {
+  font-size: 50pt;
+}
+
+#signup-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 50;
+}
+
+.close-btn {
+  position: absolute;
+  margin-top: -20px;
+  top: 5px;
+  right: 10px;
+  font-size: 50px;
+  font-weight: bolder;
+  color: azure;
+  cursor: pointer;
+  z-index: 51;
+}
+
+.btn-primary,
+.btn-warning {
+    font-weight: bold;
+    width: 30%;
+    margin-top: 2vh;
+    border: 0;
+    font-size: 1.2rem;
+}
