@@ -21,8 +21,9 @@ function displayAllRoutes() {
     let favCheck = false;
     db.collection("users").doc(currentUserId).get().then(user => {
         let favoriteRoutes = user.data().favorite_routes;
-        if (favoriteRoutes.length == 0) {
-            document.getElementById("status").innerHTML = "<h4>Favorite some routes to meet commute buddies!</h4>";
+        //Checks users favorited routes and displays them accordingly 
+        if (favoriteRoutes.length == 0) { //Checks for if the user has favorited routes, and if they dont, shows them where to go
+            document.getElementById("status").innerHTML = "<h4>Welcome to commute buddy, go to the routes tab to find some routes to save!</h4><h4> You will be able to see them here and meet new people on your routes!</h4>";
         }
         else {
             db.collection("Routes").get().then(routeList => {
@@ -121,9 +122,11 @@ function displaySimilarRoutes() {
         let favCheck = false;
         db.collection("users").doc(currentUserId).get().then(user => {
             let favoriteRoutes = user.data().favorite_routes;
+            
             //Checks users favorited routes and displays them accordingly 
-            if (favoriteRoutes.length == 0) {
-                document.getElementById("status").innerHTML = "<h4>Favorite some routes to meet commute buddies!</h4>";
+            if (favoriteRoutes.length == 0) { //Checks for if the user has favorited routes, and if they dont, shows them where to go
+                console.log("is this working");1
+                document.getElementById("status").innerHTML = "<h4>Welcome to commute buddy, go to the routes tab to find some routes to save! You will be able to see them here and meet new people on your routes!</h4>";
             }
             else {
                 db.collection("Routes").get().then(routeList => {
@@ -139,7 +142,7 @@ function displaySimilarRoutes() {
                     })
                 }).then(() => {
                     if (count == 0) {
-                        document.getElementById("status").innerHTML = "<h4>Sorry, your search doesnt match any routes in your favorites.</h4>";
+                        document.getElementById("status").innerHTML = "<h4>Sorry, your search doesnt match any routes in your favorites, try going to the routes page and find the route you want!</h4>";
                     }
                     else {
                         document.getElementById("status").innerHTML = "";
