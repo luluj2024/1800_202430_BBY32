@@ -34,3 +34,4 @@ document.querySelectorAll('.signup-btn').forEach(function(button) {
   button.addEventListener('click', showSignupContainer);
 });
 
+

@@ -28,7 +28,7 @@
 	<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
 
 	<!-- Link to styles of your own -->
-	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
 	<!-- <link rel="stylesheet" href="styles/routes.css"> -->
 	<link rel="stylesheet" href="styles/index.css">
 </head>
@@ -65,97 +65,66 @@
 		</nav>
 	</header>
 
-	<!-- Login Container -->
+	<div class="header-container">
+		<div class="hero-section">
+			<div class="hero-content">
+				<h1>Connect Commuters, Build Community</h1>
+				<p>
+					Commute Buddy connects like-minded individuals, transforming solitary journeys into meaningful
+					interactions. Fostering a sense of community among commuters.
+				</p>
+				<button class="signup-btn">Get Started Now&nbsp;<span
+						class="material-symbols-outlined">arrow_right_alt</span></button>
+			</div>
+			<div class="hero-img-container">
+				<img class="hero-img" src="./images/transit.png" alt="People connecting during a commute">
+			</div>
+		</div>
+	</div>
+
+	<div class="details-container">
+		<div class="intro">
+			<h1>We Help You To Start Your Project</h1>
+			<p>
+				This should be used to tell a story and let your users know a little
+				more about your product or service. How can you benefit them?
+			</p>
+		</div>
+		<div class="features-container">
+			<div class="feature">
+				<div class="feature-img-container"><img src="" alt="Great Results Icon"></div>
+				<h2>Great Results</h2>
+				<p>
+					This should be used to tell a story and let your users know more about
+					your service. How can you benefit them?
+				</p>
+			</div>
+			<div class="feature">
+				<div class="feature-img-container"><img src="" alt="Great Results Icon"></div>
+				<h2>Great Results</h2>
+				<p>
+					This should be used to tell a story and let your users know more about
+					your service. How can you benefit them?
+				</p>
+			</div>
+			<div class="feature">
+				<div class="feature-img-container"><img src="" alt="Great Results Icon"></div>
+				<h2>Great Results</h2>
+				<p>
+					This should be used to tell a story and let your users know more about
+					your service. How can you benefit them?
+				</p>
+			</div>
+		</div>
+	</div>
+
+
 	<div id="signup-container" class="d-none">
 		<div id="firebaseui-auth-container"></div>
 		<div id="loader">Loading...</div>
 	</div>
 
-	<!-- Welcome Banner -->
-	<div class="container bg-secondary-subtle p-5">
-		<div class="container-lg">
-			<div class="row justify-content-center g-3">
-				<div class="col-lg-6">
-					<div class="d-flex flex-column justify-content-between">
-						<h1 class="display-4 fw-bold">Commute Buddy!</h1>
-						<p class="lead">
-							Commute Buddy is the social transportation app that turns your long-distance
-							commutes into shared experiences. Alleviate isolation by connecting with like-minded
-							commuters
-							and building trust before you meet. Make your journey meaningful — start connecting today!
-						</p>
-						<button class="btn btn-lg btn-primary signup-btn" type="button">Log In</button>
-					</div>
-				</div>
-				<div class="col-lg-6">
-					<img src="./images/bustalking.jpg" class="mx-lg-auto img-fluid rounded"
-						alt="Two people talking during a commute" width="700" height="500" loading="lazy" id="bustalking">
-				</div>
-			</div>
-		</div>
-
-		<!-- Call To Action -->
-		<div class="container-fluid col-xxl-8 px-4 py-5" id="cta">
-			<div class="row g-3">
-				<div class="col-lg-6">
-					<img src="./images/cta-main-image.png" class="mx-lg-auto img-fluid rounded"
-						alt="People Connecting During A Commute">
-				</div>
-				<div class="col-lg-6">
-					<h2 class="display-4 fw-bold">Sign Up And Begin Connecting</h2>
-					<p class="lead">Turn Your Commute Into A Journey Of New Connections</p>
-					<div class="features-list d-flex flex-column gap-4">
-						<div class="feature-item d-flex align-items-start">
-							<div class="icon-shape icon-lg bg-danger-subtle rounded-4 me-3">
-								<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
-									class="bi bi-bullseye text-danger" viewBox="0 0 16 16">
-									<path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16">
-									</path>
-									<path d="M8 13A5 5 0 1 1 8 3a5 5 0 0 1 0 10m0 1A6 6 0 1 0 8 2a6 6 0 0 0 0 12">
-									</path>
-									<path d="M8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6m0 1a4 4 0 1 0 0-8 4 4 0 0 0 0 8"></path>
-									<path d="M9.5 8a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"></path>
-								</svg>
-							</div>
-							<h4 class="mb-0">Shared Journeys, Shared Stories!</h4>
-						</div>
-						<div class="feature-item d-flex align-items-start">
-							<div class="icon-shape icon-lg bg-warning-subtle rounded-4 me-3">
-								<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
-									class="bi bi-cash-stack text-warning" viewBox="0 0 16 16">
-									<path d="M1 3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1zm7 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4">
-									</path>
-									<path
-										d="M0 5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1zm3 0a2 2 0 0 1-2 2v4a2 2 0 0 1 2 2h10a2 2 0 0 1 2-2V7a2 2 0 0 1-2-2z">
-									</path>
-								</svg>
-							</div>
-							<h4 class="mb-0">Make The Most Of Your Time!</h4>
-						</div>
-						<div class="feature-item d-flex align-items-start">
-							<div class="icon-shape icon-lg bg-success-subtle rounded-4 me-3">
-								<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
-									class="bi bi-calendar-check text-success" viewBox="0 0 16 16">
-									<path
-										d="M10.854 7.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 9.793l2.646-2.647a.5.5 0 0 1 .708 0">
-									</path>
-									<path
-										d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4z">
-									</path>
-								</svg>
-							</div>
-							<h4 class="mb-0">Combat Isolation: Boost Your Mood!</h4>
-						</div>
-					</div>
-					<button class="btn btn-lg btn-primary signup-btn mt-3" type="button" style="width: auto;">
-						Become a Buddy!
-					</button>
-				</div>
-			</div>
-		</div>
-	</div>
-
-	<!-- Your own JavaScript functions go here    -->
+	<!-- Your own JavaScript functions go here -->
 	<script src="./scripts/firebaseAPI_BBY32.js"></script>
 	<script src="./scripts/authentication.js"></script>
 	<script src="./scripts/script.js"></script>
