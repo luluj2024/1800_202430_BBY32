@@ -1,3 +1,8 @@
+html, body, body * {
+  margin: 0;
+  padding: 0;
+}
+
 .chat-container {
   width: 85%;
   height: 90vh;
@@ -31,6 +36,7 @@
   grid-template-areas:
     "profile content";
   justify-content: start;
+  align-items: center;
 }
 
 .r-message-container {
@@ -39,11 +45,16 @@
   grid-template-areas:
     "content profile";
   justify-content: end;
+  align-items: center;
+}
+
+.profile-container {
+  height: 80px;
 }
 
 .profile-icon {
-  width: 40px;
-  height: 40px;
+  aspect-ratio: 1 / 1;
+  height: 100%;
   border: 4px solid black;
   border-radius: 50%;
 }

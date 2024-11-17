@@ -19,6 +19,14 @@ firebase.auth().onAuthStateChanged((user) => {
   }
 });
 
+function getTime(timestamp) {
+  let milliseconds = timestamp.seconds * 1000;
+  let date = new Date(milliseconds);
+
+  let formattedDateTime = date.toLocaleString();
+  return formattedDateTime;
+}
+
 /*
   Returns user data object of target user id
 
@@ -48,19 +56,37 @@ async function createMessageForUsers(userMessageData) {
     let message = document.getElementById("right-message").content.cloneNode(true);
     message.querySelector(".title").textContent = sender.name;
     message.querySelector(".text").textContent = userMessageData.text;
+    message.querySelector(".time").textContent = getTime(userMessageData.timestamp);
 
     return message;
   } else {
     let message = document.getElementById("left-message").content.cloneNode(true);
     message.querySelector(".title").textContent = sender.name;
     message.querySelector(".text").textContent = userMessageData.text;
+    message.querySelector(".time").textContent =  getTime(userMessageData.timestamp);
 
     return message;
   }
 }
 
 async function createMessageForGroup(groupMessageData) {
+  const sender = await getUserData(groupMessageData.sender);
 
+  if (sender.id === currentUserId) {
+    let message = document.getElementById("right-message").content.cloneNode(true);
+    message.querySelector(".title").textContent = sender.name;
+    message.querySelector(".text").textContent = groupMessageData.text;
+    message.querySelector(".time").textContent = getTime(groupMessageData.timestamp);
+
+    return message;
+  } else {
+    let message = document.getElementById("left-message").content.cloneNode(true);
+    message.querySelector(".title").textContent = sender.name;
+    message.querySelector(".text").textContent = groupMessageData.text;
+    message.querySelector(".time").textContent = getTime(groupMessageData.timestamp);
+
+    return message;
+  }
 }
 
 /*
@@ -137,9 +163,11 @@ function listenForRouteMessages(targetRouteId, messagesContainer) {
       snapshot.forEach(doc => {
         const message = doc.data();
 
-        // const messageElement = createMessage(message)
-
-        // messagesContainer.appendChild(messageElement);
+        createMessageForGroup(message).then(messageElement => {
+          if (messageElement) {
+            messagesContainer.appendChild(messageElement);
+          }
+        });
       });
     })
 }
