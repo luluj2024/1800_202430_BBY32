@@ -155,3 +155,48 @@ nav svg {
     border: 0;
     font-size: 1.2rem;
 }
+#table-info td:last-child {
+  color: #555;
+}
+
+a {
+  text-decoration: none;
+}
+
+.footer {
+  background-color: #2596BE;
+  height: 50px;
+}
+
+.signup-btn, .header {
+  background-color: #2596BE;
+}
+
+
+#table-info {
+  width: 80%;
+  max-width: 600px;
+  margin-top: 10px;
+  border-collapse: collapse;
+  background-color: #f9f9f9;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#table-info td {
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+}
+
+#table-info tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+#table-info tr:hover {
+  background-color: #eaeaea;
+}
+
+#table-info td:first-child {
+  font-weight: bold;
+  color: #333;
+}
+

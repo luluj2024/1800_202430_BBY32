@@ -178,7 +178,7 @@ function favBtn(curcard, routeId) {
         //Establishes which version of favorite button
         //unfavorites route
         if (favCheck) {
-            curcard.style.color = "blue";
+            curcard.style.color = "#2596BE";
             curcard.addEventListener("click", event => {
                 unfavoriteRoute(routeId.id)
                 displaySimilarRoutes();
