@@ -3,6 +3,7 @@ let currentUserId;
 //authenticates current user
 firebase.auth().onAuthStateChanged((user) => {
     if (user) {
+        sessionStorage.clear();
         currentUserId = user.uid;
         //Calls all routes after delay and initializes searchbar 
         displayAllRoutes();
@@ -151,7 +152,7 @@ function outputCards(container, busTemplate, routeId) {
     //Route groupchat button
     card.querySelector("#cardbtn").addEventListener("click", (event) => {
         console.log("Chat Button Clicked");
-        sessionStorage.setItem("targetRoute", routeId.id);
+        sessionStorage.setItem("targetRouteId", routeId.id);
         window.location.assign("chat.html");
     })
 

@@ -2,6 +2,7 @@ let currentUserId;
 
 firebase.auth().onAuthStateChanged((user) => {
   if (user) {
+    sessionStorage.clear();
     currentUserId = user.uid;
 
     initialize();
@@ -212,7 +213,7 @@ async function displayFriends() {
     })
 
     card.querySelector(".friend-body").addEventListener("click", () => {
-      sessionStorage.setItem("targetUser", JSON.stringify(user));
+      sessionStorage.setItem("targetUserId", user.id);
       window.location.assign("chat.html");
     })
 
