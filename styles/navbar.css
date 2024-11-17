@@ -1,0 +1,10 @@
+.fixed-bottom {
+    height: 10%;
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+  
+  .fixed-bottom .material-symbols-outlined {
+    font-size: 40px;
+    color: #2596BE;
+  }
