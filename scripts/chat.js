@@ -7,9 +7,9 @@ firebase.auth().onAuthStateChanged((user) => {
   if (user) {
     currentUserId = user.uid;
 
-    console.log(currentUserId);
-    console.log(targetUserId);
-    console.log(targetRouteId);
+    console.log(`Signed In: ${currentUserId}`);
+    console.log(`Friend: ${targetUserId}`);
+    console.log(`Route: ${targetRouteId}`);
 
     displayMessages();
 
@@ -159,13 +159,4 @@ function sendMessageToGroup(targetRouteId) {
       console.error("Error sending message: ", error);
     });
   }
-}
-
-if (!sessionStorage.getItem('pageRefreshed')) {
-  window.addEventListener("beforeunload", () => {
-    sessionStorage.removeItem("targetUserId");
-    sessionStorage.removeItem("targetRouteId");
-  });
-
-  sessionStorage.setItem('pageRefreshed', true); 
 }

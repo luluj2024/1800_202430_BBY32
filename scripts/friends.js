@@ -2,6 +2,7 @@ let currentUserId;
 
 firebase.auth().onAuthStateChanged((user) => {
   if (user) {
+    sessionStorage.clear();
     currentUserId = user.uid;
 
     initialize();

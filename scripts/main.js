@@ -3,6 +3,7 @@ let currentUserId;
 //authenticates current user
 firebase.auth().onAuthStateChanged((user) => {
     if (user) {
+        sessionStorage.clear();
         currentUserId = user.uid;
         //Calls all routes after delay and initializes searchbar 
         displayAllRoutes();
