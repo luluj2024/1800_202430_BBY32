@@ -191,7 +191,7 @@ async function getFavoritedRoutes(favoriteRoutes) {
   begin messaging.
 */
 async function displayFriends() {
-  const friendTemplate = document.getElementById("friend-template");
+  const friendTemplate = document.getElementById("user-template");
   const contentContainer = document.getElementById("content-container");
   contentContainer.innerHTML = "";
 
@@ -200,22 +200,8 @@ async function displayFriends() {
 
   users.forEach(user => {
     const card = friendTemplate.content.cloneNode(true);
-    const profile = card.querySelector(".friend-profile");
-    card.querySelector(".friend-title").textContent = user.name;
-    card.querySelector(".friend-text").textContent = "Placeholder For Recent Message";
 
-    if (user.profilePhotoBase64) {
-      profile.src = user.profilePhotoBase64;
-    }
-
-    profile.addEventListener("click", () => {
-      console.log("Implement More Info Feature")
-    })
-
-    card.querySelector(".friend-body").addEventListener("click", () => {
-      sessionStorage.setItem("targetUserId", user.id);
-      window.location.assign("chat.html");
-    })
+    styleFriends(user, card)
 
     contentContainer.appendChild(card);
   })
@@ -236,25 +222,7 @@ async function displayNonFriends() {
   users.forEach(user => {
     const card = userTemplate.content.cloneNode(true);
 
-    // Access and set elements within the user card
-    const profile = card.querySelector(".user-profile");
-    card.querySelector(".user-title").textContent = user.name;
-    card.querySelector(".user-text").textContent = "Placeholder for commonalities";
-
-    if (user.profilePhotoBase64) {
-      profile.src = user.profilePhotoBase64;
-    }
-
-    // Add event listener to the profile icon to display more profile info 
-    profile.addEventListener("click", () => {
-      console.log("Implement More Info Feature")
-    })
-
-    // Add a event listener to friend user and redisplay addFriends
-    card.querySelector(".user-button").addEventListener("click", async () => {
-      await addFriend(user.id);
-      displayNonFriends();
-    })
+    styleNonFriends(user, card);
 
     contentContainer.appendChild(card);
   })
@@ -275,31 +243,71 @@ async function editFriends() {
   users.forEach(user => {
     const card = userTemplate.content.cloneNode(true);
 
-    // Access and set elements within the user card
-    const profile = card.querySelector(".user-profile");
-    card.querySelector(".user-title").textContent = user.name;
-    card.querySelector(".user-text").textContent = "Placeholder for commonalities";
-    card.querySelector(".user-button").textContent = "person_remove";
-
-    if (user.profilePhotoBase64) {
-      profile.src = user.profilePhotoBase64;
-    }
-
-    // Add event listenser to the profile icon to diplay more profile info
-    profile.addEventListener("click", () => {
-      console.log("Implement More Info Feature")
-    })
-
-    // Add event listener to unfriend user and redisplay editFriends
-    card.querySelector(".user-button").addEventListener("click", async () => {
-      await removeFriend(user.id);
-      editFriends();
-    })
+    styleEdits(user, card);
 
     contentContainer.appendChild(card);
   })
 }
 
+function styleFriends(user, card) {
+  const profile = card.querySelector(".user-profile");
+  card.querySelector(".user-name").textContent = user.name;
+  card.querySelector(".user-message").textContent = "Placeholder For Message";
+
+  if (user.profilePhotoBase64) {
+    profile.src = user.profilePhotoBase64;
+  }
+
+  const buttons = card.querySelectorAll(".btn-friends")
+  buttons[0].textContent = "chat";
+
+  buttons[0].addEventListener("click", async () => {
+    sessionStorage.setItem("targetUserId", user.id);
+    window.location.assign("chat.html");
+  })
+}
+
+function styleEdits(user, card) {
+  // Access and set elements within the user card
+  const profile = card.querySelector(".user-profile");
+  card.querySelector(".user-name").textContent = user.name;
+  card.querySelector(".user-bio").textContent = "Placeholder for commonalities";
+
+  if (user.profilePhotoBase64) {
+    profile.src = user.profilePhotoBase64;
+  }
+
+  const buttons = card.querySelectorAll(".btn-friends")
+  buttons[0].textContent = "person_remove";
+
+  buttons[0].addEventListener("click", async () => {
+    await removeFriend(user.id);
+    editFriends();
+  })
+}
+
+function styleNonFriends(user, card) {
+  const profile = card.querySelector(".user-profile");
+  card.querySelector(".user-name").textContent = user.name;
+  card.querySelector(".user-bio").textContent = "Placeholder";
+
+  if (user.profilePhotoBase64) {
+    profile.src = user.profilePhotoBase64;
+  }
+
+  const buttons = card.querySelectorAll(".btn-friends")
+  buttons[0].textContent = "person_add";
+  buttons[1].textContent = "block";
+
+  buttons.forEach(button => {
+    button.classList.add("btn-padding");
+  })
+
+  buttons[0].addEventListener("click", async () => {
+    await addFriend(user.id);
+    displayNonFriends();
+  })
+}
 /*
   POTENTIAL UPDATES: 
   - Add real-time listeners to auto-update when there are changes in the 
