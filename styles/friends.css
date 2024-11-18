@@ -17,7 +17,7 @@ body {
   justify-content: space-around;
   align-items: center;
   column-gap: 16px;
-  background-color: lightblue;
+  background: linear-gradient(to right bottom, #00355f, #2596be);
 }
 
 .nav-btn-friends {
@@ -26,6 +26,12 @@ body {
   background-color: transparent;
   border: none;
   font-weight: bold;
+  color: #f0f0f0;
+  transition: color 0.5s;
+}
+
+.nav-btn-friends:hover {
+  color: black;
 }
 
 .nav-profile-container {
@@ -82,6 +88,21 @@ body {
   padding: 8px;
 }
 
+.no-users-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 320px;
+  width: 100%;
+  margin: 32px auto;
+}
+
+.no-users-container img {
+  object-fit: cover;
+  border: 8px solid black;
+  border-radius: 16px;
+  width: 100%;
+}
 
 @media only screen and (min-width: 991px) {
   .navbar-friends {
@@ -99,6 +120,10 @@ body {
     width: 100%;
     height: 100%;
     border-radius: 50%;
+  }
+
+  .no-users-container {
+    max-width: 800px;
   }
 }
 

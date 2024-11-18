@@ -266,6 +266,12 @@ async function displayFriends() {
   // Retrieve users who are friends with currentUserId
   const users = await getUsersWithFriend(currentUserId);
 
+  if (users.length === 0) {
+    const noUsersTemplate = document.getElementById("no-users-template");
+    contentContainer.appendChild(noUsersTemplate.content.cloneNode(true));
+    return;
+  }
+
   users.forEach(user => {
     const card = friendTemplate.content.cloneNode(true);
 
@@ -286,6 +292,12 @@ async function displayNonFriends() {
 
   // Retrieve an array of non-friends of the current user
   const users = await getUsersWithoutFriend(currentUserId);
+
+  if (users.length === 0) {
+    const noUsersTemplate = document.getElementById("no-users-template");
+    contentContainer.appendChild(noUsersTemplate.content.cloneNode(true));
+    return;
+  }
 
   users.forEach(user => {
     const card = userTemplate.content.cloneNode(true);
@@ -308,6 +320,12 @@ async function editFriends() {
   // Retrieve an array of friends of the current user
   const users = await getUsersWithFriend(currentUserId);
 
+  if (users.length === 0) {
+    const noUsersTemplate = document.getElementById("no-users-template");
+    contentContainer.appendChild(noUsersTemplate.content.cloneNode(true));
+    return;
+  }
+
   users.forEach(user => {
     const card = userTemplate.content.cloneNode(true);
 
@@ -323,6 +341,12 @@ async function displayPendingUsers() {
   contentContainer.innerHTML = "";
 
   const pendingUserIds = await getPendingUsers(currentUserId);
+
+  if (pendingUserIds.length === 0) {
+    const noUsersTemplate = document.getElementById("no-users-template");
+    contentContainer.appendChild(noUsersTemplate.content.cloneNode(true));
+    return;
+  }
 
   pendingUserIds.forEach(async (userId) => {
     const userData = await getUserData(userId);
