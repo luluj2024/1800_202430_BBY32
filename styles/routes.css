@@ -3,6 +3,12 @@
 html, body, body * {
     margin: 0;
     padding: 0;
+
+}
+
+body {
+    background-color: lightblue;
+    padding-bottom: 80px;
 }
 
 .btn-primary,
@@ -24,39 +30,67 @@ html, body, body * {
 }
 
 .material-symbols-outlined {
-    font-size: 50px;
-    color: #2596BE;
+    font-size: 300%;
+    /* color: #2596BE; */
   }
 
 #bus-info {
-    margin: 30px auto;
+    margin: 16px auto;
     height: 100%;
-    width: 80vw;
-    background-color: #2596BE;
+    width: 100vw;
     border-radius: 20px;
     padding-top: 20px;
     padding-bottom: 20px;
+    /* background-color: #00355f; */
 }
 
-#status h4 {
-    text-align: center;
-    padding: 5%;
+.card {
+    width: 100%;
+    max-width: 850px; 
+    height: 180px;
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas: "body buttons";
+    /* column-gap: 10px; */
+    align-items: center;
+    background-color: #e3e3e3;
+    margin: 16px auto;
+    padding-left: 16px;
+    box-shadow: 0 0 8px black;
+}
+
+.card::before {
+  position: absolute;
+  width: 14%;
+  height: 100%;
+  left: 0;
+  content: '';
+  background: linear-gradient(to right bottom, #00355f, #2596be);
+}
+
+.card-body {
+    position: relative;
+    grid-area: body;
+    padding-left: 15%;
 }
 
 #cardbtn,
 #removebtn {
+    position: relative;
+    grid-area: buttons;
     float: right;
-}
-
-.card {
-    margin: auto;
-    margin-bottom: 20px;
-    border-radius: 10px;
-
+    border: none;
+    background-color: #e3e3e3;
 }
 
 #mainContainer {
     margin-bottom: 100px;
 }
 
-
+#status h3 {
+    text-align: center;
+    padding: 5%;
+    font-weight: bolder;
+    font-size: 2rem;
+}

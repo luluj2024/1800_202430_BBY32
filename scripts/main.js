@@ -24,7 +24,7 @@ function displayAllRoutes() {
         let favoriteRoutes = user.data().favorite_routes;
         //Checks users favorited routes and displays them accordingly 
         if (favoriteRoutes.length == 0) { //Checks for if the user has favorited routes, and if they dont, shows them where to go
-            document.getElementById("status").innerHTML = "<h4>Welcome to commute buddy, go to the routes tab to find some routes to save!</h4><h4> You will be able to see them here and meet new people on your routes!</h4>";
+            document.getElementById("status").innerHTML = "<h3>Welcome to commute buddy, go to the routes tab to find some routes to favorite!</h3><h3> You will be able to see them here and be able to access your routes groupchats!</h3>";
         }
         else {
             db.collection("Routes").get().then(routeList => {
@@ -65,8 +65,8 @@ function displaySimilarRoutes() {
             
             //Checks users favorited routes and displays them accordingly 
             if (favoriteRoutes.length == 0) { //Checks for if the user has favorited routes, and if they dont, shows them where to go
-                console.log("is this working");1
-                document.getElementById("status").innerHTML = "<h4>Welcome to commute buddy, go to the routes tab to find some routes to save! You will be able to see them here and meet new people on your routes!</h4>";
+                console.log("is this working");
+                document.getElementById("status").innerHTML = "<h3>Welcome to commute buddy, go to the routes tab to find some routes to favorite! You will be able to see them here and be able to access your routes groupchats!</h3>";
             }
             else {
                 db.collection("Routes").get().then(routeList => {
@@ -82,7 +82,7 @@ function displaySimilarRoutes() {
                     })
                 }).then(() => {
                     if (count == 0) {
-                        document.getElementById("status").innerHTML = "<h4>Sorry, your search doesnt match any routes in your favorites, try going to the routes page and find the route you want!</h4>";
+                        document.getElementById("status").innerHTML = "<h3>Sorry, your search doesnt match any routes in your favorites, try going to the routes page and find the route you want!</h3>";
                     }
                     else {
                         document.getElementById("status").innerHTML = "";
