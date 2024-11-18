@@ -23,6 +23,11 @@ html, body, body * {
     width: auto;
 }
 
+.material-symbols-outlined {
+    font-size: 50px;
+    color: #2596BE;
+  }
+
 #bus-info {
     margin: 30px auto;
     height: 100%;
