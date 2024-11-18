@@ -4,6 +4,11 @@
     padding: 0;
 }
 
+body {
+  background-color: lightblue;
+}
+
+
 .top-part {
     margin-top: 5%;
     margin-left: 3%;
@@ -16,7 +21,7 @@
 #edit{
     font-size: 1.5rem;
     font-weight: 600;
-    color: #2596BE;
+    color: black;
 }
 
 button[type="submit"]{
@@ -107,12 +112,14 @@ button[type="submit"]{
 }
 
 #clear-button {
-  background-color: gainsboro;
+  /* background-color: gainsboro; */
   margin-left: 50px;
 }
 
 #log-out {
-  background-color: gainsboro;
+  background-color: lightgray;
+  color: black;
+  font-style: italic;
   width: 100px;
   margin-left: 80px;
 }

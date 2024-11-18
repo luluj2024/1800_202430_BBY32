@@ -59,7 +59,9 @@ async function createMessage(messageData, isGroup = false) {
 
   messageTemplate.querySelector(".title").textContent = sender.name;
   messageTemplate.querySelector(".text").textContent = messageData.text;
-  messageTemplate.querySelector(".time").textContent = getTime(messageData.timestamp);
+  if (messageData.timestamp) {
+    messageTemplate.querySelector(".time").textContent = getTime(messageData.timestamp);
+  }
 
   return messageTemplate;
 }
