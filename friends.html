@@ -36,37 +36,38 @@
 
 <body>
   <nav class="navbar-friends">
-    <button id="btn-edit" class="nav-link-friends">Edit</button>
-    <button id="btn-friends" class="nav-link-friends">Friends</button>
+    <button id="btn-edit" class="nav-btn-friends">Edit</button>
+    <button id="btn-friends" class="nav-btn-friends">Friends</button>
     <div class="nav-profile-container">
-      <img class="nav-profile" src="images/profile.png" alt="profile">
+      <img class="nav-profile" src="images/profile.png" alt="profile-icon">
     </div>
-    <button id="btn-pending" class="nav-link-friends">Pending</button>
-    <button id="btn-suggested" class="nav-link-friends">Suggested</button>
+    <button id="btn-pending" class="nav-btn-friends">Pending</button>
+    <button id="btn-suggested" class="nav-btn-friends">Suggested</button>
   </nav>
 
-  <br>
-
-  <template id="friend-template">
-    <div class="friend">
-      <img class="friend-profile" src="images/profile.png" alt="profile-photo">
-      <div class="friend-body">
-        <h6 class="friend-title"></h6>
-        <p class="friend-text"></p>
-        <p class="friend-date"></p>
-        <span class="material-symbols-outlined friend-arrow">arrow_forward_ios</span>
+  <template id="no-users-template">
+    <div class="no-users-container">
+      <h3>No Users Found</h3>
+      <div class="no-users-img-container">
+        <img src="./images/no-users-found.gif" alt="Confused Travolta Gif">
       </div>
     </div>
   </template>
 
   <template id="user-template">
     <div class="user">
-      <img class="user-profile" src="images/profile.png" alt="profile-photo">
-      <div class="user-body">
-        <h6 class="user-title"></h6>
-        <p class="user-text"></p>
+      <div class="user-profile-container">
+        <img class="user-profile" src="images/profile.png" alt="profile-photo">
       </div>
-      <div class="material-symbols-outlined user-button">person_add</div>
+      <div class="user-body">
+        <h6 class="user-name"></h6>
+        <p class="user-bio"></p>
+        <p class="user-message"></p>
+      </div>
+      <div class="buttons-container">
+        <div class="material-symbols-outlined btn-friends"></div>
+        <div class="material-symbols-outlined btn-friends"></div>
+      </div>
     </div>
   </template>
 
@@ -98,6 +99,7 @@
   <script src="./scripts/skeleton.js"></script>
   <script src="./scripts/firebaseAPI_BBY32.js"></script>
   <script src="./scripts/friends.js"></script>
+  <script src="./scripts/navbar.js"></script>
 </body>
 
 </html>

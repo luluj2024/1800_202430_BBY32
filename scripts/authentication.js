@@ -12,7 +12,9 @@ var uiConfig = {
           name: user.displayName,                    
           email: user.email,                         
           favorite_routes: [],
-          friends: []         
+          friends: [],
+          requestsSent: [],
+          requestsReceived: []        
         }).then(function () {
           console.log("New user added to users collection")
           window.location.assign("main.html");       
