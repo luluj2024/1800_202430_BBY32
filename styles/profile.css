@@ -5,30 +5,31 @@
 }
 
 .top-part {
-    margin-top: 3%;
+    margin-top: 5%;
     margin-left: 3%;
     margin-right: 3%;
     display: grid;
     grid-template-columns: 40px auto 200px;
-    border-bottom: 1px solid lightgray;
-    padding-bottom: 8px;
+    border-bottom: 1px solid #2596BE;
 }
 
 #edit{
     font-size: 1.5rem;
     font-weight: 600;
+    color: #2596BE;
 }
 
 button[type="submit"]{
     height: 40px;
     border: 0;
     border-radius: 8px;
-    background-color: rgb(68, 68, 205);
+    background-color: #2596BE;
     color: white;
 }
 
 .material-symbols-outlined{
     padding-top: 8px;
+    color: #2596BE;
 }
 
 .profile-info{
@@ -95,19 +96,25 @@ button[type="submit"]{
   border: 1px solid #ddd;
 }
 
-#upload-button, #log-out, #save-button, #clear-button {
+#upload-button, #save-button, #clear-button {
   height: 40px;
   width: 150px;
   border: 0;
   font-style: italic;
   border-radius: 8px;
-  background-color: rgb(68, 68, 205);
+  background-color: #2596BE;
   color: white; 
 }
 
 #clear-button {
-  background-color: grey;
+  background-color: gainsboro;
   margin-left: 50px;
+}
+
+#log-out {
+  background-color: gainsboro;
+  width: 100px;
+  margin-left: 80px;
 }
 
 .center-container {
