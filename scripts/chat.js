@@ -49,44 +49,19 @@ async function getUserData(targetUserId) {
   }
 }
 
-async function createMessageForUsers(userMessageData) {
-  const sender = await getUserData(userMessageData.users[0]);
+async function createMessage(messageData, isGroup = false) {
+  const senderId = isGroup ? messageData.sender : messageData.users[0];
+  const sender = await getUserData(senderId);
 
-  if (sender.id === currentUserId) {
-    let message = document.getElementById("right-message").content.cloneNode(true);
-    message.querySelector(".title").textContent = sender.name;
-    message.querySelector(".text").textContent = userMessageData.text;
-    message.querySelector(".time").textContent = getTime(userMessageData.timestamp);
+  const isCurrentUser = sender.id === currentUserId;
+  const templateId = isCurrentUser ? "right-message" : "left-message";
+  const messageTemplate = document.getElementById(templateId).content.cloneNode(true);
 
-    return message;
-  } else {
-    let message = document.getElementById("left-message").content.cloneNode(true);
-    message.querySelector(".title").textContent = sender.name;
-    message.querySelector(".text").textContent = userMessageData.text;
-    message.querySelector(".time").textContent =  getTime(userMessageData.timestamp);
+  messageTemplate.querySelector(".title").textContent = sender.name;
+  messageTemplate.querySelector(".text").textContent = messageData.text;
+  messageTemplate.querySelector(".time").textContent = getTime(messageData.timestamp);
 
-    return message;
-  }
-}
-
-async function createMessageForGroup(groupMessageData) {
-  const sender = await getUserData(groupMessageData.sender);
-
-  if (sender.id === currentUserId) {
-    let message = document.getElementById("right-message").content.cloneNode(true);
-    message.querySelector(".title").textContent = sender.name;
-    message.querySelector(".text").textContent = groupMessageData.text;
-    message.querySelector(".time").textContent = getTime(groupMessageData.timestamp);
-
-    return message;
-  } else {
-    let message = document.getElementById("left-message").content.cloneNode(true);
-    message.querySelector(".title").textContent = sender.name;
-    message.querySelector(".text").textContent = groupMessageData.text;
-    message.querySelector(".time").textContent = getTime(groupMessageData.timestamp);
-
-    return message;
-  }
+  return messageTemplate;
 }
 
 /*
@@ -125,7 +100,7 @@ function listenForUserMessages(targetUserId, messagesContainer) {
         const message = doc.data();
 
         if (message.users.includes(targetUserId)) {
-          createMessageForUsers(message).then(messageElement => {
+          createMessage(message, false).then(messageElement => {
             if (messageElement) {
               messagesContainer.appendChild(messageElement);
             }
@@ -163,7 +138,7 @@ function listenForRouteMessages(targetRouteId, messagesContainer) {
       snapshot.forEach(doc => {
         const message = doc.data();
 
-        createMessageForGroup(message).then(messageElement => {
+        createMessage(message, true).then(messageElement => {
           if (messageElement) {
             messagesContainer.appendChild(messageElement);
           }
