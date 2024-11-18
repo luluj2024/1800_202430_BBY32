@@ -14,6 +14,8 @@ firebase.auth().onAuthStateChanged((user) => {
 
     document.getElementById("btn-edit").addEventListener("click", editFriends)
 
+    document.getElementById("btn-pending").addEventListener("click", displayPendingUsers)
+
   } else {
     console.log("No User Logged In");
     window.location.href = "index.html";
@@ -83,7 +85,12 @@ async function getUsersWithoutFriend(targetUserId) {
     // Filter out the target user themself and their friends
     const users = querySnapshot.docs
       .map(doc => doc.data())
-      .filter(user => !user.friends.includes(targetUserId) && user.id !== targetUserId);
+      .filter(user => 
+        !user.friends.includes(targetUserId) && 
+        user.id !== targetUserId && 
+        !user.requestsReceived.includes(targetUserId) &&
+        !user.requestsSent.includes(targetUserId)
+      );
 
     return users;
   } catch (error) {
@@ -114,13 +121,32 @@ async function getUserData(targetUserId) {
   }
 }
 
+async function getPendingUsers(targetUserId) {
+  try {
+    const docRef = await db.collection("users").doc(targetUserId).get();
+
+    // Returns null if retrieved document doesn't exist
+    if (docRef.empty) {
+      return null;
+    }
+
+    console.log(docRef.data().requestsReceived)
+
+    return docRef.data().requestsReceived;
+  } catch (error) {
+    console.error(`Error returning user data ${targetUserId}`, error);
+    return null;
+  }
+}
+
+
 /*
   Adds target and current user to each others "friends" array field
   
   @param {string} targetUserId - Id of user who current user wishes to add 
   as a friend
 */
-async function addFriend(targetUserId) {
+async function sendFriendRequest(targetUserId) {
   // Get user document references
   const currentUserRef = db.collection("users").doc(currentUserId);
   const targetUserRef = db.collection("users").doc(targetUserId);
@@ -128,12 +154,54 @@ async function addFriend(targetUserId) {
   try {
     // Add targetUserId to the current users friends array
     await currentUserRef.update({
+      requestsSent: firebase.firestore.FieldValue.arrayUnion(targetUserId)
+    });
+
+    // Remove currentUserId from the target users friends array
+    await targetUserRef.update({
+      requestsReceived: firebase.firestore.FieldValue.arrayUnion(currentUserId)
+    });
+  } catch (error) {
+    console.log(`Error adding friend ${targetUserId}:`, error)
+  }
+}
+
+async function acceptFriendRequest(targetUserId) {
+  // Get user document references
+  const currentUserRef = db.collection("users").doc(currentUserId);
+  const targetUserRef = db.collection("users").doc(targetUserId);
+
+  try {
+    // Add targetUserId to the current users friends array
+    await currentUserRef.update({
+      requestsReceived: firebase.firestore.FieldValue.arrayRemove(targetUserId),
       friends: firebase.firestore.FieldValue.arrayUnion(targetUserId)
     });
 
     // Remove currentUserId from the target users friends array
     await targetUserRef.update({
+      requestsSent: firebase.firestore.FieldValue.arrayRemove(currentUserId),
       friends: firebase.firestore.FieldValue.arrayUnion(currentUserId)
+    });
+  } catch (error) {
+    console.log(`Error adding friend ${targetUserId}:`, error)
+  }
+}
+
+async function rejectFriendRequest(targetUserId) {
+  // Get user document references
+  const currentUserRef = db.collection("users").doc(currentUserId);
+  const targetUserRef = db.collection("users").doc(targetUserId);
+
+  try {
+    // Add targetUserId to the current users friends array
+    await currentUserRef.update({
+      requestsReceived: firebase.firestore.FieldValue.arrayRemove(targetUserId)
+    });
+
+    // Remove currentUserId from the target users friends array
+    await targetUserRef.update({
+      requestsSent: firebase.firestore.FieldValue.arrayRemove(currentUserId)
     });
   } catch (error) {
     console.log(`Error adding friend ${targetUserId}:`, error)
@@ -249,6 +317,24 @@ async function editFriends() {
   })
 }
 
+async function displayPendingUsers() {
+  const userTemplate = document.getElementById("user-template");
+  const contentContainer = document.getElementById("content-container");
+  contentContainer.innerHTML = "";
+
+  const pendingUserIds = await getPendingUsers(currentUserId);
+
+  pendingUserIds.forEach(async (userId) => {
+    const userData = await getUserData(userId);
+
+    const card = userTemplate.content.cloneNode(true);
+
+    stylePendingUsers(userData, card);
+
+    contentContainer.appendChild(card);
+  })
+}
+
 function styleFriends(user, card) {
   const profile = card.querySelector(".user-profile");
   card.querySelector(".user-name").textContent = user.name;
@@ -304,8 +390,36 @@ function styleNonFriends(user, card) {
   })
 
   buttons[0].addEventListener("click", async () => {
-    await addFriend(user.id);
+    await sendFriendRequest(user.id);
     displayNonFriends();
+  })
+}
+
+function stylePendingUsers(user, card) {
+  const profile = card.querySelector(".user-profile");
+  card.querySelector(".user-name").textContent = user.name;
+  card.querySelector(".user-bio").textContent = "Placeholder";
+
+  if (user.profilePhotoBase64) {
+    profile.src = user.profilePhotoBase64;
+  }
+
+  const buttons = card.querySelectorAll(".btn-friends")
+  buttons[0].textContent = "add";
+  buttons[1].textContent = "remove";
+
+  buttons.forEach(button => {
+    button.classList.add("btn-padding");
+  })
+
+  buttons[0].addEventListener("click", async () => {
+    await acceptFriendRequest(user.id);
+    displayPendingUsers();
+  })
+
+  buttons[1].addEventListener("click", async () => {
+    await rejectFriendRequest(user.id);
+    displayPendingUsers();
   })
 }
 /*
