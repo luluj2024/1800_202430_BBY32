@@ -39,7 +39,9 @@ body {
 }
 
 .user {
-  height: 120px;
+  width: 100%;
+  max-width: 800px; 
+  height: 160px;
   position: relative;
   display: grid;
   grid-template-columns: auto 1fr auto;
@@ -47,7 +49,7 @@ body {
   column-gap: 16px;
   align-items: center;
   background-color: #e3e3e3;
-  margin: 16px 0;
+  margin: 16px auto;
   padding: 16px;
   box-shadow: 0 0 8px black;
 }
@@ -64,8 +66,8 @@ body {
 .user-profile-container {
   position: relative;
   grid-area: profile;
-  width: 60px;
-  height: 60px;
+  width: 80px;
+  height: 80px;
 }
 
 .user-profile {
@@ -73,6 +75,13 @@ body {
   height: 100%;
   object-fit: cover;
   border-radius: 50%;
+  border: 4px solid #e3e3e3;
+  transition: border 0.5s;
+}
+
+.user-profile:hover,
+.user-profile:active {
+  border: 4px solid black;
 }
 
 .buttons-container {
@@ -104,6 +113,13 @@ body {
   width: 100%;
 }
 
+/* This is so it can be responsive down to 314px */
+@media only screen and (max-width: 330px) {
+  .nav-btn-friends {
+    font-size: 0.9rem;
+  }
+}
+
 @media only screen and (min-width: 991px) {
   .navbar-friends {
     grid-template-columns: 1fr 1fr auto 1fr 1fr;
@@ -112,18 +128,37 @@ body {
 
   .nav-profile-container {
     display: block;
-    width: 60px;
-    height: 60px;
+    width: 80px;
+    height: 80px;
   }
 
   .nav-profile {
     width: 100%;
     height: 100%;
     border-radius: 50%;
+    border: 4px solid transparent;
+    transition: border 0.5s;
+  }
+
+  .nav-profile:hover,
+  .nav-profile:active {
+    border: 4px solid black;
   }
 
   .no-users-container {
     max-width: 800px;
+  }
+
+  .user {
+    grid-template-columns: 120px 1fr auto;
+  }
+
+  .user-profile-container {
+    justify-self: center;
+  }
+
+  .user::before {
+    width: 76px;
   }
 }
 
