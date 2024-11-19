@@ -1,38 +1,45 @@
 @import url('https://fonts.googleapis.com/css2?family=Edu+AU+VIC+WA+NT+Guides:wght@400..700&display=swap');
 
-html, body, body * {
+/* Global Variables */
+:root {
+    --primary-gradient: linear-gradient(to right bottom, #00355f, #2596be);
+    --card-color: #e3e3e3;
+}
+
+html,
+body,
+body * {
     margin: 0;
     padding: 0;
 }
 
+
 body {
     background-color: lightblue;
+    /* allows all cards to be on screen */
     padding-bottom: 80px;
 }
 
-.btn-primary,
-.btn-warning {
-    font-weight: bold;
-    width: 30%;
-    margin-top: 2vh;
-    border: 0;
-    font-size: 1.2rem;
-}
-
+/* Width of search bar */
 .form-control {
     width: 80vw;
 }
 
+/* top right profile picture */
 .profile-logo {
-    height: 70px;
-    width: auto;
+    width: 70px;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 4px solid var(--card-color);
 }
 
+/* Card buttons */
 .material-symbols-outlined {
     font-size: 300%;
-    /* color: #2596BE; */
-  }
+}
 
+/* container holding different routes */
 #bus-info {
     margin: 16px auto;
     height: 100%;
@@ -40,53 +47,52 @@ body {
     border-radius: 20px;
     padding-top: 20px;
     padding-bottom: 20px;
-    /* background-color: #00355f; */
 }
 
+/* Displayed routes */
 .card {
     width: 100%;
-    max-width: 850px; 
+    max-width: 850px;
     height: 180px;
     position: relative;
     display: grid;
     grid-template-columns: 1fr auto;
     grid-template-areas: "body buttons";
-    /* column-gap: 10px; */
     align-items: center;
-    background-color: #e3e3e3;
+    background-color: var(--card-color);
     margin: 16px auto;
     padding-left: 16px;
     box-shadow: 0 0 8px black;
 }
 
+/* Side gradient on card */
 .card::before {
-  position: absolute;
-  width: 14%;
-  height: 100%;
-  left: 0;
-  content: '';
-  background: linear-gradient(to right bottom, #00355f, #2596be);
+    position: absolute;
+    width: 14%;
+    height: 100%;
+    left: 0;
+    content: '';
+    background: var(--primary-gradient);
 }
 
+/* Main card info */
 .card-body {
     position: relative;
     grid-area: body;
     padding-left: 15%;
 }
 
+/* Buttons on the card */
 #cardbtn,
 #removebtn {
     position: relative;
     grid-area: buttons;
     float: right;
     border: none;
-    background-color: #e3e3e3;
+    background-color: var(--card-color);
 }
 
-#mainContainer {
-    margin-bottom: 100px;
-}
-
+/* No route pop up text */
 #status h3 {
     text-align: center;
     padding: 5%;
@@ -94,12 +100,14 @@ body {
     font-size: 2rem;
 }
 
+/* top Search bar */
 #searchbar {
     font-weight: bolder;
     box-shadow: 0 0 8px black;
-    background-color: #e3e3e3;
+    background-color: var(--card-color);
 }
 
+/* Top bar */
 .navbar {
-    background: linear-gradient(to right bottom, #00355f, #2596be);
+    background: var(--primary-gradient);
 }

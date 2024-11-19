@@ -33,7 +33,7 @@ function displaySimilarRoutes() {
     searchbar = document.getElementById("searchbar");
     searchVal = searchbar.value.toLowerCase();
     //Checks if they writes bus and ignores it
-    if (searchVal.length >= 3 && searchVal.substring(0,3) == "bus") {
+    if (searchVal.length >= 3 && searchVal.substring(0, 3) == "bus") {
         searchVal = searchVal.substring(3);
     }
     //Ignores white space 

@@ -45,7 +45,7 @@ function displaySimilarRoutes() {
     searchbar = document.getElementById("searchbar");
     searchVal = searchbar.value.toLowerCase();
     //Checks if they writes bus and ignores it
-    if (searchVal.length >= 3 && searchVal.substring(0,3) == "bus") {
+    if (searchVal.length >= 3 && searchVal.substring(0, 3) == "bus") {
         searchVal = searchVal.substring(3);
     }
     //Ignores white space 
@@ -62,7 +62,7 @@ function displaySimilarRoutes() {
         let favCheck = false;
         db.collection("users").doc(currentUserId).get().then(user => {
             let favoriteRoutes = user.data().favorite_routes;
-            
+
             //Checks users favorited routes and displays them accordingly 
             if (favoriteRoutes.length == 0) { //Checks for if the user has favorited routes, and if they dont, shows them where to go
                 console.log("is this working");

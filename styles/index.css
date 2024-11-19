@@ -140,7 +140,7 @@ nav svg {
   background-color: var(--accent-color);
 }
 
-.hero-content> button:hover {
+.hero-content>button:hover {
   color: black;
   transition: color 0.5s;
 }

@@ -85,9 +85,9 @@ async function getUsersWithoutFriend(targetUserId) {
     // Filter out the target user themself and their friends
     const users = querySnapshot.docs
       .map(doc => doc.data())
-      .filter(user => 
-        !user.friends.includes(targetUserId) && 
-        user.id !== targetUserId && 
+      .filter(user =>
+        !user.friends.includes(targetUserId) &&
+        user.id !== targetUserId &&
         !user.requestsReceived.includes(targetUserId) &&
         !user.requestsSent.includes(targetUserId)
       );
