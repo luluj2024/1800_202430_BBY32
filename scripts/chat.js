@@ -213,6 +213,7 @@ function userMessageListener(container) {
 function routeMessagesListener(container) {
   db.collection("Routes").doc(targetRouteId).collection("messages")
     .orderBy("timestamp")
+    .limitToLast(25)
     .onSnapshot(async (snapshot) => {
       const messageBuffer = []; // Temporary buffer for storing styled messages
 
