@@ -302,6 +302,7 @@ async function displayFriends() {
   if (users.length === 0) {
     const noUsersContainer = document.getElementById("no-users-template").content.cloneNode(true);
     noUsersContainer.querySelector("h3").textContent = "No Friends Found";
+    noUsersContainer.querySelector("h4").textContent = "Go To Suggested To Send Friend Requests";
     contentContainer.appendChild(noUsersContainer);
     return;
   }
@@ -389,6 +390,8 @@ async function displayPendingUsers() {
     return;
   }
 
+  
+
   receivedRequests.forEach(async (userId) => {
     const userData = await getUserData(userId);
 
@@ -398,6 +401,8 @@ async function displayPendingUsers() {
 
     contentContainer.appendChild(card);
   })
+
+
 
   sentRequests.forEach(async (userId) => {
     const userData = await getUserData(userId);
