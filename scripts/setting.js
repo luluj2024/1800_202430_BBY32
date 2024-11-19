@@ -15,7 +15,7 @@ firebase.auth().onAuthStateChanged((user) => {
             saveUserInfo(e);
         });
 
-        document.getElementById("log-out").addEventListener("click", () => {
+        document.getElementById("btn-suggested").addEventListener("click", () => {
             logout();
         })
 
