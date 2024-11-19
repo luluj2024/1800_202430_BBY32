@@ -30,6 +30,21 @@ async function initialize() {
   if (user.profilePhotoBase64) {
     profile.src = user.profilePhotoBase64;
   }
+// testing
+  const receivedRequests = await getReceivedRequests(currentUserId);
+  const sentRequests = await getSentRequests(currentUserId);
+
+  if (receivedRequests.length === 0 && sentRequests.length === 0) {
+      document.getElementById("pending-notification").style.display = "none";
+  }
+
+  const users = await getUsersWithoutFriend(currentUserId);
+  console.log("user length", users.length);
+
+  if (users.length === 0) {
+    document.getElementById("suggested-notification").style.display = "none";
+  }
+
 }
 
 /*
