@@ -166,13 +166,11 @@ function routeMessagesListener(container) {
       for (const doc of snapshot.docs) {
         const messageData = doc.data();
 
-        if (messageData.users.includes(targetUserId)) {
-          const styledMessage = await createMessage(messageData, false);
-          messageBuffer.push({
-            styledMessage,
-            timestamp: messageData.timestamp, // Include timestamp for sorting
-          });
-        }
+        const styledMessage = await createMessage(messageData, true);
+        messageBuffer.push({
+          styledMessage,
+          timestamp: messageData.timestamp, // Include timestamp for sorting
+        })
       }
 
       // Sort messages by timestamp

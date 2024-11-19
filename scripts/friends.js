@@ -524,5 +524,7 @@ function styleReceived(user, card) {
   - Make the icons more responsive to user interactions
   - Possibly integrate edit into friends
   - Show profile on the right of the navbar to align with other designs
-  - Display all pending users including those you have sent a friend request to
+  - Fix up placeholder, for friends showcase recent message or placeholder message text,
+  for new users show placeholder text "a lasting friendship is only a click away", or show
+  what routes they have in common. 
 */
