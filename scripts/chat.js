@@ -58,13 +58,15 @@ function displayMessages() {
   if (targetUserId) {
     userMessageListener(messagesContainer);
 
-    document.querySelector(".btn-send").addEventListener("click", () => {
-      sendUserMessage()
-    });
+    document.querySelector(".messages-form").addEventListener("submit", (event) => {
+      event.preventDefault();
+      sendUserMessage(targetUserId)
+    })
   } else {
     routeMessagesListener(messagesContainer);
 
-    document.querySelector(".btn-send").addEventListener("click", () => {
+    document.querySelector(".messages-form").addEventListener("submit", (event) => {
+      event.preventDefault();
       sendGroupMessage(targetRouteId)
     })
   }
