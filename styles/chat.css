@@ -6,7 +6,7 @@ html, body, body * {
 
 body {
   height: 100vh;
-  padding-bottom: 60px;
+  padding-bottom: 80px;
 }
 
 .chat-container {
@@ -36,7 +36,6 @@ body {
 .messages-form > button {
   padding: 0.5rem 2rem
 }
-
 
 .l-message-container {
   display: grid;

@@ -67,25 +67,73 @@ async function createMessage(messageData, isGroup = false) {
 }
 
 /*
-  Determine whether a user id was sent over or a route id. Based on which
-  display all the messages of the users. 
+  Initiate rendering of messages between users or with favourited route
 */
 function displayMessages() {
   const messagesContainer = document.querySelector(".messages-container");
   messagesContainer.innerHTML = "";
 
   if (targetUserId) {
-    listenForUserMessages(targetUserId, messagesContainer);
+    // listenForUserMessages(targetUserId, messagesContainer);
 
     document.querySelector(".btn-send").addEventListener("click", () => {
-      sendMessageToUser(targetUserId)
+      sendUserMessage()
     });
   } else {
-    listenForRouteMessages(targetRouteId, messagesContainer);
+    // listenForRouteMessages(targetRouteId, messagesContainer);
 
     document.querySelector(".btn-send").addEventListener("click", () => {
-      sendMessageToGroup(targetRouteId)
+      sendGroupMessage(targetRouteId)
     })
+  }
+}
+
+/*
+  Updates the messages collection with user provided input. Message fields 
+  include text, server timestamp, and an users array consisting of 
+  [currentUserId, targetUserId]
+*/
+function sendUserMessage() {
+  const input = document.querySelector(".input");
+  const message = input.value.trim();
+
+  if (message) {
+    const messagesRef = db.collection("messages");
+    messagesRef.add({
+      users: [currentUserId, targetUserId],
+      text: message,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    })
+    .then(() => {
+      input.value = "";
+    })
+    .catch((error) => {
+      console.error("Error sending message: ", error);
+    });
+  }
+}
+
+/*
+  Updates the messages collection inside the Routes collection with user
+  provided input. Message fields include text, server timestamp, and sender
+*/
+function sendGroupMessage() {
+  const input = document.querySelector(".input");
+  const message = input.value.trim();
+  
+  if (message) {
+    const messagesRef = db.collection("Routes").doc(targetRouteId).collection("messages");
+    messagesRef.add({
+      sender: currentUserId,
+      text: message,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    })
+    .then(() => {
+      input.value = "";
+    })
+    .catch((error) => {
+      console.error("Error sending message: ", error);
+    });
   }
 }
 
@@ -112,24 +160,6 @@ function listenForUserMessages(targetUserId, messagesContainer) {
     })
 }
 
-function sendMessageToUser(targetUserId) {
-  const messageInput = document.querySelector(".message-input");
-  const message = messageInput.value.trim();
-
-  if (message) {
-    const messagesRef = db.collection("messages");
-    messagesRef.add({
-      users: [currentUserId, targetUserId],
-      text: message,
-      timestamp: firebase.firestore.FieldValue.serverTimestamp()
-    }).then(() => {
-      messageInput.value = "";
-    }).catch((error) => {
-      console.error("Error sending message: ", error);
-    });
-  }
-}
-
 function listenForRouteMessages(targetRouteId, messagesContainer) {
   db.collection("Routes").doc(targetRouteId)
     .collection("messages")
@@ -147,21 +177,4 @@ function listenForRouteMessages(targetRouteId, messagesContainer) {
         });
       });
     })
-}
-
-function sendMessageToGroup(targetRouteId) {
-  const messageInput = document.querySelector(".message-input");
-  const message = messageInput.value.trim();
-  if (message) {
-    const messagesRef = db.collection("Routes").doc(targetRouteId).collection("messages");
-    messagesRef.add({
-      sender: currentUserId,
-      text: message,
-      timestamp: firebase.firestore.FieldValue.serverTimestamp()
-    }).then(() => {
-      messageInput.value = "";
-    }).catch((error) => {
-      console.error("Error sending message: ", error);
-    });
-  }
 }
