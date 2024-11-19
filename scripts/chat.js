@@ -11,6 +11,8 @@ firebase.auth().onAuthStateChanged((user) => {
     console.log(`Friend: ${targetUserId}`);
     console.log(`Route: ${targetRouteId}`);
 
+    initialize();
+
     displayMessages();
 
   } else {
@@ -25,6 +27,18 @@ function getTime(timestamp) {
 
   let formattedDateTime = date.toLocaleString();
   return formattedDateTime;
+}
+
+async function initialize() {
+  if (targetUserId) {
+    const userData = await getUserData(targetUserId);
+    document.querySelector(".chat-title").textContent = userData.name;
+    return;
+  }
+
+  const routeRef = await db.collection("Routes").doc(targetRouteId).get()
+  const routeData = await routeRef.data();
+  document.querySelector(".chat-title").textContent =  `Bus ${routeData.bus}: ${routeData.name}`;
 }
 
 /*
@@ -223,9 +237,9 @@ async function createMessage(message, isGroup = false) {
   // Styling Template Content
   messageTemplate.querySelector(".title").textContent = sender.name;
   messageTemplate.querySelector(".text").textContent = message.text;
-  // if (message.timestamp) {
-  //   messageTemplate.querySelector(".time").textContent = getTime(message.timestamp);
-  // }
+  if (message.timestamp) {
+    messageTemplate.querySelector(".time").textContent = getTime(message.timestamp);
+  }
 
   return messageTemplate;
 }
