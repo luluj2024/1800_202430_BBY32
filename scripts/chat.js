@@ -33,12 +33,20 @@ async function initialize() {
   if (targetUserId) {
     const userData = await getUserData(targetUserId);
     document.querySelector(".chat-title").textContent = userData.name;
+
+    document.querySelector("#back-btn").addEventListener("click", () => {
+      window.location.href = "friends.html";
+    })
+
     return;
   }
 
   const routeRef = await db.collection("Routes").doc(targetRouteId).get()
   const routeData = await routeRef.data();
   document.querySelector(".chat-title").textContent =  `Bus ${routeData.bus}: ${routeData.name}`;
+  document.querySelector("#back-btn").addEventListener("click", () => {
+    window.location.href = "main.html";
+  })
 }
 
 /*
