@@ -131,7 +131,7 @@ function outputCards(container, busTemplate, routeId) {
 
 
 // Function found at https://www.freecodecamp.org/news/javascript-debounce-example/ and used to prevent multiple function calls in searchbar
-function debounce(func, timeout = 280) {
+function debounce(func, timeout = 300) {
     let timer;
     return (...args) => {
         clearTimeout(timer);
