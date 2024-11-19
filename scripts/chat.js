@@ -22,11 +22,43 @@ firebase.auth().onAuthStateChanged((user) => {
 });
 
 function getTime(timestamp) {
+  // Convert Firestore Timestamp to milliseconds
   let milliseconds = timestamp.seconds * 1000;
   let date = new Date(milliseconds);
 
-  let formattedDateTime = date.toLocaleString();
-  return formattedDateTime;
+  // Get the current date and midnight reference
+  let now = new Date();
+  let todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  let differenceInMilliseconds = now - date;
+  let differenceInDays = Math.floor((date - todayMidnight) / (24 * 60 * 60 * 1000));
+
+  // Format date components
+  const formatDate = (date) => {
+    let year = date.getFullYear();
+    let month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+    let day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const formatTime = (date) => {
+    let hours = date.getHours();
+    let minutes = String(date.getMinutes()).padStart(2, '0');
+    let seconds = String(date.getSeconds()).padStart(2, '0');
+    let period = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12 || 12; // Convert 0 to 12 for midnight
+    return `${hours}:${minutes}:${seconds} ${period}`;
+  };
+
+  // Return appropriate result based on difference
+  if (differenceInDays === 0) {
+    return formatTime(date); // Same day
+  } else if (differenceInDays === -1) {
+    return "Yesterday"; // Previous day
+  } else if (differenceInMilliseconds < 7 * 24 * 60 * 60 * 1000) {
+    return formatDate(date); // Within the last week
+  } else {
+    return "A week ago"; // More than a week
+  }
 }
 
 async function initialize() {
@@ -243,11 +275,10 @@ async function createMessage(message, isGroup = false) {
   const messageTemplate = document.getElementById(templateId).content.cloneNode(true);
 
   // Styling Template Content
+  messageTemplate.querySelector(".time").textContent = getTime(message.timestamp);
   messageTemplate.querySelector(".title").textContent = sender.name;
   messageTemplate.querySelector(".text").textContent = message.text;
-  if (message.timestamp) {
-    messageTemplate.querySelector(".time").textContent = getTime(message.timestamp);
-  }
+  
 
   return messageTemplate;
 }

@@ -67,7 +67,7 @@ body {
 
 .l-message-container,
 .r-message-container {
-  max-width: 400px;
+  max-width: 300px;
   margin-bottom: 16px;
   column-gap: 12px;
 }
@@ -75,23 +75,40 @@ body {
 .l-message-container {
   display: grid;
   grid-template-columns: auto 1fr;
+  grid-template-rows: auto 1fr auto;
   grid-template-areas:
-    "profile content";
+    "none content"
+    "profile content"
+    "none content";
   justify-content: start;
   align-items: center;
   border-radius: 8px 8px 8px 0;
 }
 
-.l-content {
+.l-content * {
+  padding: 0;
+  margin: 0;
+}
+
+.l-content > .text {
   background-color: lightslategray;
   padding: 1rem;
   border-radius: 16px 16px 16px 0px;
 }
 
-.r-content {
+.r-content * {
+  padding: 0;
+  margin: 0;
+}
+
+.r-content > .text {
   background-color: lightpink;
   padding: 1rem;
   border-radius: 16px 16px 0px 16px;
+}
+
+.time {
+  font-size: 12px;
 }
 
 .r-message-container {
@@ -105,7 +122,7 @@ body {
 }
 
 .profile-container {
-  height: 80px;
+  height: 60px;
   align-self: flex-end;
 }
 
