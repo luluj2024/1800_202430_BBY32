@@ -71,16 +71,15 @@ async function createMessage(messageData, isGroup = false) {
 */
 function displayMessages() {
   const messagesContainer = document.querySelector(".messages-container");
-  messagesContainer.innerHTML = "";
 
   if (targetUserId) {
-    // listenForUserMessages(targetUserId, messagesContainer);
+    userMessageListener(messagesContainer);
 
     document.querySelector(".btn-send").addEventListener("click", () => {
       sendUserMessage()
     });
   } else {
-    // listenForRouteMessages(targetRouteId, messagesContainer);
+    routeMessagesListener(messagesContainer);
 
     document.querySelector(".btn-send").addEventListener("click", () => {
       sendGroupMessage(targetRouteId)
@@ -97,6 +96,7 @@ function sendUserMessage() {
   const input = document.querySelector(".input");
   const message = input.value.trim();
 
+  // If message is not empty or whitespace
   if (message) {
     const messagesRef = db.collection("messages");
     messagesRef.add({
@@ -105,6 +105,7 @@ function sendUserMessage() {
       timestamp: firebase.firestore.FieldValue.serverTimestamp()
     })
     .then(() => {
+      // Clear textbox
       input.value = "";
     })
     .catch((error) => {
@@ -121,6 +122,7 @@ function sendGroupMessage() {
   const input = document.querySelector(".input");
   const message = input.value.trim();
   
+   // If message is not empty or whitespace
   if (message) {
     const messagesRef = db.collection("Routes").doc(targetRouteId).collection("messages");
     messagesRef.add({
@@ -129,6 +131,7 @@ function sendGroupMessage() {
       timestamp: firebase.firestore.FieldValue.serverTimestamp()
     })
     .then(() => {
+      // Clear textbox
       input.value = "";
     })
     .catch((error) => {
@@ -139,42 +142,69 @@ function sendGroupMessage() {
 
 /*
 */
-function listenForUserMessages(targetUserId, messagesContainer) {
+function userMessageListener(container) {
   db.collection("messages")
     .where("users", "array-contains", currentUserId)
     .orderBy("timestamp")
     .onSnapshot(snapshot => {
-      messagesContainer.innerHTML = "";
+      container.innerHTML = "";
 
-      snapshot.forEach(doc => {
-        const message = doc.data();
+      snapshot.forEach(message => {
+        const messageData = message.data();
 
-        if (message.users.includes(targetUserId)) {
-          createMessage(message, false).then(messageElement => {
-            if (messageElement) {
-              messagesContainer.appendChild(messageElement);
-            }
-          });
+        if (messageData.users.includes(targetUserId)) {
+          console.log(messageData);
         }
+      })
+    })
+  // db.collection("messages")
+  //   .where("users", "array-contains", currentUserId)
+  //   .orderBy("timestamp")
+  //   .onSnapshot(snapshot => {
+  //     messagesContainer.innerHTML = "";
+
+  //     snapshot.forEach(doc => {
+  //       const message = doc.data();
+
+  //       if (message.users.includes(targetUserId)) {
+  //         createMessage(message, false).then(messageElement => {
+  //           if (messageElement) {
+  //             messagesContainer.appendChild(messageElement);
+  //           }
+  //         });
+  //       }
+  //     })
+  //   })
+}
+
+function routeMessagesListener(container) {
+  db.collection("Routes").doc(targetRouteId).collection("messages")
+    .orderBy("timestamp")
+    .onSnapshot(snapshot => {
+      container.innerHTML = "";
+
+      snapshot.forEach(message => {
+        const messageData = message.data();
+        console.log(messageData);
       })
     })
 }
 
-function listenForRouteMessages(targetRouteId, messagesContainer) {
-  db.collection("Routes").doc(targetRouteId)
-    .collection("messages")
-    .orderBy("timestamp")
-    .onSnapshot(snapshot => {
-      messagesContainer.innerHTML = "";
+// function listenForRouteMessages(targetRouteId, messagesContainer) {
+//   db.collection("Routes").doc(targetRouteId)
+//     .collection("messages")
+//     .orderBy("timestamp")
+//     .onSnapshot(snapshot => {
+//       messagesContainer.innerHTML = "";
 
-      snapshot.forEach(doc => {
-        const message = doc.data();
+//       snapshot.forEach(doc => {
+//         const message = doc.data();
 
-        createMessage(message, true).then(messageElement => {
-          if (messageElement) {
-            messagesContainer.appendChild(messageElement);
-          }
-        });
-      });
-    })
-}
+//         createMessage(message, true).then(messageElement => {
+//           if (messageElement) {
+//             messagesContainer.appendChild(messageElement);
+//           }
+//         });
+//       });
+//     })
+// }
