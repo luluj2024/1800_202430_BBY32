@@ -33,9 +33,9 @@ function getTime(timestamp) {
   @param {string} targetUserId - Id of target user
   @returns {object} - An object containing all fields of the target user
 */
-async function getUserData(targetUserId) {
+async function getUserData(userId) {
   try {
-    const docRef = await db.collection("users").doc(targetUserId).get();
+    const docRef = await db.collection("users").doc(userId).get();
 
     // Returns null if retrieved document doesn't exist
     if (docRef.empty) {
@@ -44,26 +44,9 @@ async function getUserData(targetUserId) {
 
     return docRef.data();
   } catch (error) {
-    console.error(`Error returning user data ${targetUserId}`, error);
+    console.error(`Error returning user data ${userId}`, error);
     return null;
   }
-}
-
-async function createMessage(messageData, isGroup = false) {
-  const senderId = isGroup ? messageData.sender : messageData.users[0];
-  const sender = await getUserData(senderId);
-
-  const isCurrentUser = sender.id === currentUserId;
-  const templateId = isCurrentUser ? "right-message" : "left-message";
-  const messageTemplate = document.getElementById(templateId).content.cloneNode(true);
-
-  messageTemplate.querySelector(".title").textContent = sender.name;
-  messageTemplate.querySelector(".text").textContent = messageData.text;
-  if (messageData.timestamp) {
-    messageTemplate.querySelector(".time").textContent = getTime(messageData.timestamp);
-  }
-
-  return messageTemplate;
 }
 
 /*
@@ -104,13 +87,13 @@ function sendUserMessage() {
       text: message,
       timestamp: firebase.firestore.FieldValue.serverTimestamp()
     })
-    .then(() => {
-      // Clear textbox
-      input.value = "";
-    })
-    .catch((error) => {
-      console.error("Error sending message: ", error);
-    });
+      .then(() => {
+        // Clear textbox
+        input.value = "";
+      })
+      .catch((error) => {
+        console.error("Error sending message: ", error);
+      });
   }
 }
 
@@ -121,8 +104,8 @@ function sendUserMessage() {
 function sendGroupMessage() {
   const input = document.querySelector(".input");
   const message = input.value.trim();
-  
-   // If message is not empty or whitespace
+
+  // If message is not empty or whitespace
   if (message) {
     const messagesRef = db.collection("Routes").doc(targetRouteId).collection("messages");
     messagesRef.add({
@@ -130,13 +113,13 @@ function sendGroupMessage() {
       text: message,
       timestamp: firebase.firestore.FieldValue.serverTimestamp()
     })
-    .then(() => {
-      // Clear textbox
-      input.value = "";
-    })
-    .catch((error) => {
-      console.error("Error sending message: ", error);
-    });
+      .then(() => {
+        // Clear textbox
+        input.value = "";
+      })
+      .catch((error) => {
+        console.error("Error sending message: ", error);
+      });
   }
 }
 
@@ -146,48 +129,61 @@ function userMessageListener(container) {
   db.collection("messages")
     .where("users", "array-contains", currentUserId)
     .orderBy("timestamp")
-    .onSnapshot(snapshot => {
-      container.innerHTML = "";
+    .onSnapshot(async (snapshot) => {
+      const messageBuffer = []; // Temporary buffer for storing styled messages
 
-      snapshot.forEach(message => {
-        const messageData = message.data();
+      for (const doc of snapshot.docs) {
+        const messageData = doc.data();
 
         if (messageData.users.includes(targetUserId)) {
-          console.log(messageData);
+          const styledMessage = await createMessage(messageData, false);
+          messageBuffer.push({
+            styledMessage,
+            timestamp: messageData.timestamp, // Include timestamp for sorting
+          });
         }
-      })
-    })
-  // db.collection("messages")
-  //   .where("users", "array-contains", currentUserId)
-  //   .orderBy("timestamp")
-  //   .onSnapshot(snapshot => {
-  //     messagesContainer.innerHTML = "";
+      }
 
-  //     snapshot.forEach(doc => {
-  //       const message = doc.data();
+      // Sort messages by timestamp
+      messageBuffer.sort((a, b) => a.timestamp.seconds - b.timestamp.seconds);
 
-  //       if (message.users.includes(targetUserId)) {
-  //         createMessage(message, false).then(messageElement => {
-  //           if (messageElement) {
-  //             messagesContainer.appendChild(messageElement);
-  //           }
-  //         });
-  //       }
-  //     })
-  //   })
+      // Clear and render all messages in the correct order
+      container.innerHTML = "";
+      messageBuffer.forEach(({ styledMessage }) => {
+        container.appendChild(styledMessage);
+      });
+    });
 }
+
+
 
 function routeMessagesListener(container) {
   db.collection("Routes").doc(targetRouteId).collection("messages")
     .orderBy("timestamp")
-    .onSnapshot(snapshot => {
-      container.innerHTML = "";
+    .onSnapshot(async (snapshot) => {
+      const messageBuffer = []; // Temporary buffer for storing styled messages
 
-      snapshot.forEach(message => {
-        const messageData = message.data();
-        console.log(messageData);
-      })
-    })
+      for (const doc of snapshot.docs) {
+        const messageData = doc.data();
+
+        if (messageData.users.includes(targetUserId)) {
+          const styledMessage = await createMessage(messageData, false);
+          messageBuffer.push({
+            styledMessage,
+            timestamp: messageData.timestamp, // Include timestamp for sorting
+          });
+        }
+      }
+
+      // Sort messages by timestamp
+      messageBuffer.sort((a, b) => a.timestamp.seconds - b.timestamp.seconds);
+
+      // Clear and render all messages in the correct order
+      container.innerHTML = "";
+      messageBuffer.forEach(({ styledMessage }) => {
+        container.appendChild(styledMessage);
+      });
+    });
 }
 
 // function listenForRouteMessages(targetRouteId, messagesContainer) {
@@ -208,3 +204,28 @@ function routeMessagesListener(container) {
 //       });
 //     })
 // }
+
+/*
+  Creates a message to append to container.
+  @param {object} message: An object containing text, timestamp, and users/sender
+  @param {boolean} isGroup: Used to determine whether a message was sent into a
+  group or to another user
+*/
+async function createMessage(message, isGroup = false) {
+  const senderId = isGroup ? message.sender : message.users[0];
+  const sender = await getUserData(senderId);
+  const isCurrentUser = sender.id === currentUserId;
+
+  // Clone a template based on isCurrentUser
+  const templateId = isCurrentUser ? "current-user-message" : "external-user-message";
+  const messageTemplate = document.getElementById(templateId).content.cloneNode(true);
+
+  // Styling Template Content
+  messageTemplate.querySelector(".title").textContent = sender.name;
+  messageTemplate.querySelector(".text").textContent = message.text;
+  // if (message.timestamp) {
+  //   messageTemplate.querySelector(".time").textContent = getTime(message.timestamp);
+  // }
+
+  return messageTemplate;
+}
