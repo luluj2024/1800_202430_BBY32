@@ -29,7 +29,6 @@ function getTime(timestamp) {
   // Get the current date and midnight reference
   let now = new Date();
   let todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  let differenceInMilliseconds = now - date;
   let differenceInDays = Math.floor((date - todayMidnight) / (24 * 60 * 60 * 1000));
 
   // Format date components
@@ -54,11 +53,9 @@ function getTime(timestamp) {
     return formatTime(date); // Same day
   } else if (differenceInDays === -1) {
     return "Yesterday"; // Previous day
-  } else if (differenceInMilliseconds < 7 * 24 * 60 * 60 * 1000) {
-    return formatDate(date); // Within the last week
   } else {
-    return "A week ago"; // More than a week
-  }
+    return formatDate(date); 
+  } 
 }
 
 async function initialize() {
