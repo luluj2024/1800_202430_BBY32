@@ -267,8 +267,9 @@ async function displayFriends() {
   const users = await getUsersWithFriend(currentUserId);
 
   if (users.length === 0) {
-    const noUsersTemplate = document.getElementById("no-users-template");
-    contentContainer.appendChild(noUsersTemplate.content.cloneNode(true));
+    const noUsersContainer = document.getElementById("no-users-template").content.cloneNode(true);
+    noUsersContainer.querySelector("h3").textContent = "No Friends Found";
+    contentContainer.appendChild(noUsersContainer);
     return;
   }
 
@@ -294,8 +295,9 @@ async function displayNonFriends() {
   const users = await getUsersWithoutFriend(currentUserId);
 
   if (users.length === 0) {
-    const noUsersTemplate = document.getElementById("no-users-template");
-    contentContainer.appendChild(noUsersTemplate.content.cloneNode(true));
+    const noUsersContainer = document.getElementById("no-users-template").content.cloneNode(true);
+    noUsersContainer.querySelector("h3").textContent = "No Users To Friend";
+    contentContainer.appendChild(noUsersContainer);
     return;
   }
 
@@ -321,8 +323,9 @@ async function editFriends() {
   const users = await getUsersWithFriend(currentUserId);
 
   if (users.length === 0) {
-    const noUsersTemplate = document.getElementById("no-users-template");
-    contentContainer.appendChild(noUsersTemplate.content.cloneNode(true));
+    const noUsersContainer = document.getElementById("no-users-template").content.cloneNode(true);
+    noUsersContainer.querySelector("h3").textContent = "No Friends Found";
+    contentContainer.appendChild(noUsersContainer);
     return;
   }
 
@@ -343,8 +346,9 @@ async function displayPendingUsers() {
   const pendingUserIds = await getPendingUsers(currentUserId);
 
   if (pendingUserIds.length === 0) {
-    const noUsersTemplate = document.getElementById("no-users-template");
-    contentContainer.appendChild(noUsersTemplate.content.cloneNode(true));
+    const noUsersContainer = document.getElementById("no-users-template").content.cloneNode(true);
+    noUsersContainer.querySelector("h3").textContent = "No Pending Requests";
+    contentContainer.appendChild(noUsersContainer);
     return;
   }
 
@@ -405,15 +409,12 @@ function styleNonFriends(user, card) {
     profile.src = user.profilePhotoBase64;
   }
 
-  const buttons = card.querySelectorAll(".btn-friends")
-  buttons[0].textContent = "person_add";
-  buttons[1].textContent = "block";
+  const button = card.querySelector(".btn-friends")
+  button.textContent = "person_add";
 
-  buttons.forEach(button => {
-    button.classList.add("btn-padding");
-  })
+  button.classList.add("btn-padding");
 
-  buttons[0].addEventListener("click", async () => {
+  button.addEventListener("click", async () => {
     await sendFriendRequest(user.id);
     displayNonFriends();
   })
@@ -428,28 +429,31 @@ function stylePendingUsers(user, card) {
     profile.src = user.profilePhotoBase64;
   }
 
-  const buttons = card.querySelectorAll(".btn-friends")
-  buttons[0].textContent = "add";
-  buttons[1].textContent = "remove";
+  const buttonContainer = card.querySelector(".buttons-container");
+  const button = buttonContainer.querySelector(".btn-friends");
+  const button2 = button.cloneNode(true);
+  button.textContent = "add";
+  button.classList.add("btn-padding");
+  button2.classList.add("btn-padding");
+  button2.textContent = "remove";
 
-  buttons.forEach(button => {
-    button.classList.add("btn-padding");
-  })
-
-  buttons[0].addEventListener("click", async () => {
+  button.addEventListener("click", async () => {
     await acceptFriendRequest(user.id);
     displayPendingUsers();
   })
 
-  buttons[1].addEventListener("click", async () => {
+  button2.addEventListener("click", async () => {
     await rejectFriendRequest(user.id);
     displayPendingUsers();
   })
+
+  buttonContainer.appendChild(button2);
 }
+
 /*
   POTENTIAL UPDATES: 
-  - Add real-time listeners to auto-update when there are changes in the 
-  database
-  - Add lazy loading? Display 10 users and fetch more as needed
-  - Change the top-navbar to include profile image, edit, and friends?
+  - Make the icons more responsive to user interactions
+  - Possibly integrate edit into friends
+  - Show profile on the right of the navbar to align with other designs
+  - Display all pending users including those you have sent a friend request to
 */

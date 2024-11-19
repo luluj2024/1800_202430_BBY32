@@ -1,14 +1,28 @@
-html, body, body * {
+/* Global Variables */
+:root {
+  --primary-color: #00355f;
+  --secondary-color: #2596be;
+  --text-color: #f0f0f0;
+  --box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --transition-time: 0.5s;
+  --nav-height: 80px;
+  --max-container-width: 800px;
+}
+
+/* General Reset */
+* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+/* Body Styles */
 body {
-  padding-top: 100px;
-  padding-bottom: 100px;
+  padding-top: 80px;
+  padding-bottom: 80px;
 }
 
+/* Navbar Styles */
 .navbar-friends {
   position: fixed;
   top: 0;
@@ -16,15 +30,15 @@ body {
   right: 0;
   width: 100%;
   z-index: 3;
-  height: 80px;
+  height: var(--nav-height);
   display: grid;
-  grid-template-columns: repeat(1fr, 4);
+  grid-template-columns: repeat(4, 1fr);
   grid-template-areas: "edit friends pending suggested";
   justify-content: space-around;
   align-items: center;
   column-gap: 16px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-  background: linear-gradient(to right bottom, #00355f, #2596be);
+  box-shadow: var(--box-shadow);
+  background: linear-gradient(to right bottom, var(--primary-color), var(--secondary-color));
 }
 
 .nav-btn-friends {
@@ -33,21 +47,49 @@ body {
   background-color: transparent;
   border: none;
   font-weight: bold;
-  color: #f0f0f0;
-  transition: color 0.5s;
+  color: var(--text-color);
+  transition: color var(--transition-time);
 }
 
 .nav-btn-friends:hover {
   color: black;
 }
 
+/* Profile Container (Shown in Large Screens) */
 .nav-profile-container {
   display: none;
 }
 
+@media only screen and (min-width: 991px) {
+  .navbar-friends {
+    grid-template-columns: 1fr 1fr auto 1fr 1fr;
+    grid-template-areas: "edit friends profile pending suggested";
+  }
+
+  .nav-profile-container {
+    display: block;
+    width: 60px;
+    height: 60px;
+  }
+
+  .nav-profile {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 4px solid transparent;
+    transition: border var(--transition-time);
+  }
+
+  .nav-profile:hover,
+  .nav-profile:active {
+    border: 4px solid black;
+  }
+}
+
+/* User Card */
 .user {
   width: 100%;
-  max-width: 800px; 
+  max-width: var(--max-container-width);
   height: 160px;
   position: relative;
   display: grid;
@@ -66,8 +108,8 @@ body {
   width: 46px;
   height: 100%;
   left: 0;
-  content: '';
-  background: linear-gradient(to right bottom, #00355f, #2596be);
+  content: "";
+  background: linear-gradient(to right bottom, var(--primary-color), var(--secondary-color));
 }
 
 .user-profile-container {
@@ -83,7 +125,7 @@ body {
   object-fit: cover;
   border-radius: 50%;
   border: 4px solid #e3e3e3;
-  transition: border 0.5s;
+  transition: border var(--transition-time);
 }
 
 .user-profile:hover,
@@ -91,19 +133,29 @@ body {
   border: 4px solid black;
 }
 
+/* Button Container */
 .buttons-container {
   display: flex;
   flex-direction: column;
 }
 
+/* Button Styles */
 .btn-friends {
-  font-size: 32px;
+  background-color: transparent;
+  border: none;
+  font-size: 40px;
+  transition: color var(--transition-time);
+}
+
+.btn-friends:active {
+  color: var(--secondary-color);
 }
 
 .btn-padding {
   padding: 8px;
 }
 
+/* No Users Container */
 .no-users-container {
   display: flex;
   flex-direction: column;
@@ -120,40 +172,10 @@ body {
   width: 100%;
 }
 
-/* This is so it can be responsive down to 314px */
-@media only screen and (max-width: 330px) {
-  .nav-btn-friends {
-    font-size: 0.9rem;
-  }
-}
-
+/* Adjustments for Larger Screens */
 @media only screen and (min-width: 991px) {
-  .navbar-friends {
-    grid-template-columns: 1fr 1fr auto 1fr 1fr;
-    grid-template-areas: "edit friends profile pending suggested";
-  }
-
-  .nav-profile-container {
-    display: block;
-    width: 80px;
-    height: 80px;
-  }
-
-  .nav-profile {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    border: 4px solid transparent;
-    transition: border 0.5s;
-  }
-
-  .nav-profile:hover,
-  .nav-profile:active {
-    border: 4px solid black;
-  }
-
   .no-users-container {
-    max-width: 800px;
+    max-width: var(--max-container-width);
   }
 
   .user {
@@ -169,3 +191,9 @@ body {
   }
 }
 
+/* Adjustments for Small Screens */
+@media only screen and (max-width: 330px) {
+  .nav-btn-friends {
+    font-size: 0.9rem;
+  }
+}
