@@ -121,24 +121,37 @@ async function getUserData(targetUserId) {
   }
 }
 
-async function getPendingUsers(targetUserId) {
+async function getReceivedRequests(userId) {
   try {
-    const docRef = await db.collection("users").doc(targetUserId).get();
+    const docRef = await db.collection("users").doc(userId).get();
 
     // Returns null if retrieved document doesn't exist
     if (docRef.empty) {
-      return null;
+      return [];
     }
-
-    console.log(docRef.data().requestsReceived)
 
     return docRef.data().requestsReceived;
   } catch (error) {
-    console.error(`Error returning user data ${targetUserId}`, error);
-    return null;
+    console.error(`Error returning user data ${userId}`, error);
+    return [];
   }
 }
 
+async function getSentRequests(userId) {
+  try {
+    const docRef = await db.collection("users").doc(userId).get();
+
+    // Returns null if retrieved document doesn't exist
+    if (docRef.empty) {
+      return [];
+    }
+
+    return docRef.data().requestsSent;
+  } catch (error) {
+    console.error(`Error returning user data ${userId}`, error);
+    return [];
+  }
+}
 
 /*
   Adds target and current user to each others "friends" array field
@@ -205,6 +218,26 @@ async function rejectFriendRequest(targetUserId) {
     });
   } catch (error) {
     console.log(`Error adding friend ${targetUserId}:`, error)
+  }
+}
+
+async function cancelFriendRequest(userId) {
+  // Get user document references
+  const currentUserRef = db.collection("users").doc(currentUserId);
+  const targetUserRef = db.collection("users").doc(userId);
+
+  try {
+    // Add targetUserId to the current users friends array
+    await currentUserRef.update({
+      requestsSent: firebase.firestore.FieldValue.arrayRemove(userId)
+    });
+
+    // Remove currentUserId from the target users friends array
+    await targetUserRef.update({
+      requestsReceived: firebase.firestore.FieldValue.arrayRemove(currentUserId)
+    });
+  } catch (error) {
+    console.log(`Error adding friend ${userId}:`, error)
   }
 }
 
@@ -343,21 +376,35 @@ async function displayPendingUsers() {
   const contentContainer = document.getElementById("content-container");
   contentContainer.innerHTML = "";
 
-  const pendingUserIds = await getPendingUsers(currentUserId);
+  const receivedRequests = await getReceivedRequests(currentUserId);
+  const sentRequests = await getSentRequests(currentUserId);
 
-  if (pendingUserIds.length === 0) {
+  console.log(receivedRequests);
+  console.log(sentRequests);
+
+  if (receivedRequests.length === 0 && sentRequests.length === 0) {
     const noUsersContainer = document.getElementById("no-users-template").content.cloneNode(true);
     noUsersContainer.querySelector("h3").textContent = "No Pending Requests";
     contentContainer.appendChild(noUsersContainer);
     return;
   }
 
-  pendingUserIds.forEach(async (userId) => {
+  receivedRequests.forEach(async (userId) => {
     const userData = await getUserData(userId);
 
     const card = userTemplate.content.cloneNode(true);
 
-    stylePendingUsers(userData, card);
+    styleReceived(userData, card);
+
+    contentContainer.appendChild(card);
+  })
+
+  sentRequests.forEach(async (userId) => {
+    const userData = await getUserData(userId);
+
+    const card = userTemplate.content.cloneNode(true);
+
+    styleSent(userData, card);
 
     contentContainer.appendChild(card);
   })
@@ -420,7 +467,27 @@ function styleNonFriends(user, card) {
   })
 }
 
-function stylePendingUsers(user, card) {
+function styleSent(user, card) {
+  const profile = card.querySelector(".user-profile");
+  card.querySelector(".user-name").textContent = user.name;
+  card.querySelector(".user-bio").textContent = "Placeholder";
+
+  if (user.profilePhotoBase64) {
+    profile.src = user.profilePhotoBase64;
+  }
+
+  const buttonContainer = card.querySelector(".buttons-container");
+  const button = buttonContainer.querySelector(".btn-friends");
+  button.textContent = "remove";
+  button.classList.add("btn-padding");
+
+  button.addEventListener("click", async () => {
+    await cancelFriendRequest(user.id);
+    displayPendingUsers();
+  })
+}
+
+function styleReceived(user, card) {
   const profile = card.querySelector(".user-profile");
   card.querySelector(".user-name").textContent = user.name;
   card.querySelector(".user-bio").textContent = "Placeholder";
@@ -449,6 +516,8 @@ function stylePendingUsers(user, card) {
 
   buttonContainer.appendChild(button2);
 }
+
+
 
 /*
   POTENTIAL UPDATES: 
