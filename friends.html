@@ -83,6 +83,10 @@
     </div>
   </template>
 
+  <!-- Suggested friends search bar -->
+  <input class="form-control me-2" type="text" placeholder="Search" aria-label="Search" id="searchbar"
+        oninput="processSearch()" onkeydown="return (event.keyCode!=13);">
+
   <div id="content-container">
   </div>
 
