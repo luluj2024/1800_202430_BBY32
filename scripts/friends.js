@@ -30,7 +30,7 @@ async function initialize() {
   if (user.profilePhotoBase64) {
     profile.src = user.profilePhotoBase64;
   }
-// testing
+  
   const receivedRequests = await getReceivedRequests(currentUserId);
   const sentRequests = await getSentRequests(currentUserId);
 
