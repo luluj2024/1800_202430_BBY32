@@ -65,7 +65,6 @@ function displaySimilarRoutes() {
 
             //Checks users favorited routes and displays them accordingly 
             if (favoriteRoutes.length == 0) { //Checks for if the user has favorited routes, and if they dont, shows them where to go
-                console.log("is this working");
                 document.getElementById("status").innerHTML = "<h3>Welcome to commute buddy, go to the routes tab to find some routes to favorite! You will be able to see them here and be able to access your routes groupchats!</h3>";
             }
             else {
