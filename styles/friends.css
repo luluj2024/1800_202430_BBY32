@@ -163,6 +163,14 @@ body {
   padding: 8px;
 }
 
+/* Fiends search bar */
+#searchbar {
+  width: 80%;
+  margin-top: 10px;
+  margin-left: 10%;
+  box-shadow: var(--box-shadow);
+}
+
 /* No Users Container */
 .no-users-container {
   display: flex;

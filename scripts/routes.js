@@ -59,7 +59,7 @@ function displaySimilarRoutes() {
         }).then(() => {
             //counts the amount of displayed routes, acting as an empty case condition to inform user there is no routes
             if (count == 0) {
-                document.getElementById("status").innerHTML = "<h4>Sorry, your search doesnt match any routes in our database.</h4>";
+                document.getElementById("status").innerHTML = "<h3>Sorry, your search doesnt match any routes in our database.</h3>";
             }
             else {
                 document.getElementById("status").innerHTML = "";
