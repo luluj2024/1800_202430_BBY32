@@ -140,7 +140,7 @@ nav svg {
   background-color: var(--accent-color);
 }
 
-.hero-content> button:hover {
+.hero-content>button:hover {
   color: black;
   transition: color 0.5s;
 }
@@ -240,12 +240,12 @@ nav svg {
 
 .close-btn {
   position: absolute;
-  margin-top: -20px;
+  margin-top: -10px;
   top: 5px;
-  right: 10px;
-  font-size: 50px;
+  right: 20px;
+  font-size: 70px;
   font-weight: bolder;
-  color: azure;
+  color: var(--text-color);
   cursor: pointer;
   z-index: 51;
 }

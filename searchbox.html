@@ -1,12 +1,11 @@
 <!-- Holds search bar and profile button functionality for main pages-->
 <nav class="navbar">
-  <div class="container-fluid"id="search-container">
+  <div class="container-fluid" id="search-container">
     <form class="d-flex justify-content-center w-100" role="search">
       <input class="form-control me-2" type="text" placeholder="Search" aria-label="Search" id="searchbar"
         oninput="processSearch()" onkeydown="return (event.keyCode!=13);">
       <!-- processSearch() calls specified search function in each main page-->
-      <a href="setting.html"><img src="./images/profile.png" alt="profile" class="profile-logo ms-auto"
-          ></a>
+      <a href="setting.html"><img src="./images/profile.png" alt="profile" class="profile-logo ms-auto"></a>
     </form>
   </div>
 </nav>

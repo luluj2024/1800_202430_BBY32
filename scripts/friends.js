@@ -8,11 +8,10 @@ firebase.auth().onAuthStateChanged((user) => {
     initialize();
 
     displayFriends();
+
     document.getElementById("btn-friends").addEventListener("click", displayFriends)
 
     document.getElementById("btn-suggested").addEventListener("click", displayNonFriends)
-
-    document.getElementById("btn-edit").addEventListener("click", editFriends)
 
     document.getElementById("btn-pending").addEventListener("click", displayPendingUsers)
 
@@ -28,22 +27,22 @@ async function initialize() {
   const profileIcon = document.querySelector(".nav-profile");
 
   if (user.profilePhotoBase64) {
-    profile.src = user.profilePhotoBase64;
+    profileIcon.src = user.profilePhotoBase64;
   }
-  
-  const receivedRequests = await getReceivedRequests(currentUserId);
-  const sentRequests = await getSentRequests(currentUserId);
+// testing
+//   const receivedRequests = await getReceivedRequests(currentUserId);
+//   const sentRequests = await getSentRequests(currentUserId);
 
-  if (receivedRequests.length === 0 && sentRequests.length === 0) {
-      document.getElementById("pending-notification").style.display = "none";
-  }
+//   if (receivedRequests.length === 0 && sentRequests.length === 0) {
+//       document.getElementById("pending-notification").style.display = "none";
+//   }
 
-  const users = await getUsersWithoutFriend(currentUserId);
-  console.log("user length", users.length);
+//   const users = await getUsersWithoutFriend(currentUserId);
+//   console.log("user length", users.length);
 
-  if (users.length === 0) {
-    document.getElementById("suggested-notification").style.display = "none";
-  }
+//   if (users.length === 0) {
+//     document.getElementById("suggested-notification").style.display = "none";
+//   }
 
 }
 
@@ -100,9 +99,9 @@ async function getUsersWithoutFriend(targetUserId) {
     // Filter out the target user themself and their friends
     const users = querySnapshot.docs
       .map(doc => doc.data())
-      .filter(user => 
-        !user.friends.includes(targetUserId) && 
-        user.id !== targetUserId && 
+      .filter(user =>
+        !user.friends.includes(targetUserId) &&
+        user.id !== targetUserId &&
         !user.requestsReceived.includes(targetUserId) &&
         !user.requestsSent.includes(targetUserId)
       );
@@ -359,34 +358,6 @@ async function displayNonFriends() {
   })
 }
 
-/*
-  Displays current user's friends. Allows user to view profile info and remove
-  target users as friends.
-*/
-async function editFriends() {
-  const userTemplate = document.getElementById("user-template");
-  const contentContainer = document.getElementById("content-container");
-  contentContainer.innerHTML = "";
-
-  // Retrieve an array of friends of the current user
-  const users = await getUsersWithFriend(currentUserId);
-
-  if (users.length === 0) {
-    const noUsersContainer = document.getElementById("no-users-template").content.cloneNode(true);
-    noUsersContainer.querySelector("h3").textContent = "No Friends Found";
-    contentContainer.appendChild(noUsersContainer);
-    return;
-  }
-
-  users.forEach(user => {
-    const card = userTemplate.content.cloneNode(true);
-
-    styleEdits(user, card);
-
-    contentContainer.appendChild(card);
-  })
-}
-
 async function displayPendingUsers() {
   const userTemplate = document.getElementById("user-template");
   const contentContainer = document.getElementById("content-container");
@@ -439,32 +410,23 @@ function styleFriends(user, card) {
     profile.src = user.profilePhotoBase64;
   }
 
-  const buttons = card.querySelectorAll(".btn-friends")
-  buttons[0].textContent = "chat";
+  const buttonContainer = card.querySelector(".buttons-container");
+  const button = card.querySelector(".btn-friends")
+  const button2 = button.cloneNode(true);
+  button.textContent = "chat";
+  button2.textContent = "person_remove";
 
-  buttons[0].addEventListener("click", async () => {
+  button.addEventListener("click", async () => {
     sessionStorage.setItem("targetUserId", user.id);
     window.location.assign("chat.html");
   })
-}
 
-function styleEdits(user, card) {
-  // Access and set elements within the user card
-  const profile = card.querySelector(".user-profile");
-  card.querySelector(".user-name").textContent = user.name;
-  card.querySelector(".user-bio").textContent = "Placeholder for commonalities";
-
-  if (user.profilePhotoBase64) {
-    profile.src = user.profilePhotoBase64;
-  }
-
-  const buttons = card.querySelectorAll(".btn-friends")
-  buttons[0].textContent = "person_remove";
-
-  buttons[0].addEventListener("click", async () => {
+  button2.addEventListener("click", async () => {
     await removeFriend(user.id);
-    editFriends();
+    displayFriends();
   })
+
+  buttonContainer.appendChild(button2);
 }
 
 function styleNonFriends(user, card) {
