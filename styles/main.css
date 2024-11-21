@@ -154,4 +154,18 @@ body {
         margin-left: 0;
         margin-right: 0;
     }
+    .card-text {
+        line-height: 20px;
+        font-size: 18px;
+        width: 80%;
+    }
+    .card-title {
+        font-size: 22px;
+        width: 80%;
+    }
+
+    #commutebtn,
+    #cardbtn {
+        font-size: 40px;
+    }
   }
