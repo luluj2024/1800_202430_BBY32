@@ -94,6 +94,8 @@ body {
   background-color: lightslategray;
   padding: 1rem;
   border-radius: 16px 16px 16px 0px;
+  max-width: 300px;
+  overflow-wrap: break-word;
 }
 
 .r-content * {
@@ -103,6 +105,8 @@ body {
 
 .r-content > .text {
   background-color: lightpink;
+  max-width: 300px;
+  overflow-wrap: break-word;
   padding: 1rem;
   border-radius: 16px 16px 0px 16px;
 }
