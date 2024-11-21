@@ -29,21 +29,6 @@ async function initialize() {
   if (user.profilePhotoBase64) {
     profileIcon.src = user.profilePhotoBase64;
   }
-// testing
-//   const receivedRequests = await getReceivedRequests(currentUserId);
-//   const sentRequests = await getSentRequests(currentUserId);
-
-//   if (receivedRequests.length === 0 && sentRequests.length === 0) {
-//       document.getElementById("pending-notification").style.display = "none";
-//   }
-
-//   const users = await getUsersWithoutFriend(currentUserId);
-//   console.log("user length", users.length);
-
-//   if (users.length === 0) {
-//     document.getElementById("suggested-notification").style.display = "none";
-//   }
-
 }
 
 /*
@@ -376,7 +361,7 @@ async function displayPendingUsers() {
     return;
   }
 
-  
+
 
   receivedRequests.forEach(async (userId) => {
     const userData = await getUserData(userId);
@@ -498,8 +483,6 @@ function styleReceived(user, card) {
 
   buttonContainer.appendChild(button2);
 }
-
-
 
 /*
   POTENTIAL UPDATES: 

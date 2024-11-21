@@ -56,6 +56,20 @@ body {
   color: black;
 }
 
+#btn-pending {
+  position: relative;
+}
+
+.pending-notification {
+  position: absolute;
+  top: 16px;
+  right: -20px;
+  background-color: red;
+  height: 25px;
+  width: 25px;
+  border-radius: 50%;
+}
+
 /* Profile Container (Shown in Large Screens) */
 .nav-profile-container {
   display: block;
