@@ -92,6 +92,14 @@ body {
     background-color: var(--card-color);
 }
 
+/* #commutebtn {
+    float: right;
+    padding-right: 30%;
+    font-size: 28px;
+    border: none;
+    background-color: var(--card-color);
+} */
+
 /* No route pop up text */
 #status h3 {
     text-align: center;
