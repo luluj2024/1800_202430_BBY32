@@ -157,6 +157,29 @@ async function getOutgoingRequests(userId) {
 }
 
 /*
+  Returns latest message data between current user and target user
+  @param {string} userId - Id of user to check messages between
+  @returns {object} - An object containing users, text, and timestamp
+*/
+async function getLatestMessage(userId) {
+  try {
+    const querySnapshot = await db.collection("messages")
+      .where("users", "array-contains", currentUserId)
+      .orderBy("timestamp")
+      .get()
+
+    const messages = querySnapshot.docs
+      .map(doc => doc.data())
+      .filter(message => message.users.includes(userId));
+
+    return messages[messages.length-1];
+
+  } catch (error) {
+    console.error(`Error getting latest message to ${userId}:`, error);
+  }
+}
+
+/*
   Update firebase fields defined updates of user id 
   @param {string} userId - Id of user who needs database updating
   @param {object} updates - field and action to be taken to update
@@ -188,7 +211,7 @@ async function sendFriendRequest(targetUserId) {
       requestsReceived: firebase.firestore.FieldValue.arrayUnion(currentUserId)
     });
   } catch (error) {
-    console.log(`Error adding friend ${targetUserId}:`, error)
+    console.error(`Error adding friend ${targetUserId}:`, error)
   }
 }
 
@@ -213,7 +236,7 @@ async function acceptFriendRequest(targetUserId) {
       friends: firebase.firestore.FieldValue.arrayUnion(currentUserId)
     });
   } catch (error) {
-    console.log(`Error adding friend ${targetUserId}:`, error)
+    console.error(`Error adding friend ${targetUserId}:`, error)
   }
 }
 
@@ -236,7 +259,7 @@ async function rejectFriendRequest(targetUserId) {
       requestsSent: firebase.firestore.FieldValue.arrayRemove(currentUserId)
     });
   } catch (error) {
-    console.log(`Error adding friend ${targetUserId}:`, error)
+    console.error(`Error adding friend ${targetUserId}:`, error)
   }
 }
 
@@ -257,7 +280,7 @@ async function cancelFriendRequest(targetUserId) {
       requestsReceived: firebase.firestore.FieldValue.arrayRemove(currentUserId)
     });
   } catch (error) {
-    console.log(`Error adding friend ${targetUserId}:`, error)
+    console.error(`Error adding friend ${targetUserId}:`, error)
   }
 }
 
@@ -282,7 +305,7 @@ async function removeFriend(targetUserId) {
       friends: firebase.firestore.FieldValue.arrayRemove(currentUserId)
     });
   } catch (error) {
-    console.log(`Error removing friend ${targetUserId}:`, error);
+    console.error(`Error removing friend ${targetUserId}:`, error);
   }
 }
 
@@ -301,7 +324,7 @@ async function getFavoritedRoutes(favoriteRoutes) {
     }))
     return routeNames.join(", ");
   } catch (error) {
-    console.log(`error in getting favorite routes for ${currentUserId}`, error);
+    console.error(`Error in getting favorite routes for ${currentUserId}`, error);
     return "Error loading routes";
   }
 }
@@ -326,13 +349,14 @@ async function displayFriends() {
     return;
   }
 
-  users.forEach(user => {
+  for (const user of users) {
     const card = friendTemplate.content.cloneNode(true);
+    const message = await getLatestMessage(user.id);
 
-    styleFriends(user, card)
-
+    styleFriends(user, card, message)
+    
     contentContainer.appendChild(card);
-  })
+  }
 }
 
 /*
@@ -371,9 +395,6 @@ async function displayPendingUsers() {
   const receivedRequests = await getIncomingRequests(currentUserId);
   const sentRequests = await getOutgoingRequests(currentUserId);
 
-  console.log(receivedRequests);
-  console.log(sentRequests);
-
   if (receivedRequests.length === 0 && sentRequests.length === 0) {
     const noUsersContainer = document.getElementById("no-users-template").content.cloneNode(true);
     noUsersContainer.querySelector("h3").textContent = "No Pending Requests";
@@ -398,11 +419,12 @@ async function displayPendingUsers() {
   })
 }
 
-function styleFriends(user, card) {
+function styleFriends(user, card, message) {
   const profile = card.querySelector(".user-profile");
   card.querySelector(".user-name").textContent = user.name;
-  card.querySelector(".user-message").textContent = "Placeholder For Message";
-
+  if (message) {
+  card.querySelector(".user-message").textContent = message.text;
+  }
   if (user.profilePhotoBase64) {
     profile.src = user.profilePhotoBase64;
   }
@@ -441,7 +463,7 @@ function styleFriends(user, card) {
 function styleNonFriends(user, card) {
   const profile = card.querySelector(".user-profile");
   card.querySelector(".user-name").textContent = user.name;
-  card.querySelector(".user-bio").textContent = "Placeholder";
+  card.querySelector(".user-message").innerHTML = "Send a friend request to begin messaging!";
 
   if (user.profilePhotoBase64) {
     profile.src = user.profilePhotoBase64;
@@ -471,10 +493,9 @@ function styleNonFriends(user, card) {
 }
 
 function styleSent(user, card) {
-  console.log(user);
   const profile = card.querySelector(".user-profile");
   card.querySelector(".user-name").textContent = user.name;
-  card.querySelector(".user-bio").textContent = "Placeholder";
+  card.querySelector(".user-message").innerHTML = "Wait for the person to add you back!";
 
   if (user.profilePhotoBase64) {
     profile.src = user.profilePhotoBase64;
@@ -504,10 +525,9 @@ function styleSent(user, card) {
 }
 
 function styleReceived(user, card) {
-  console.log(user);
   const profile = card.querySelector(".user-profile");
   card.querySelector(".user-name").textContent = user.name;
-  card.querySelector(".user-bio").textContent = "Placeholder";
+  card.querySelector(".user-message").innerHTML = "Add or reject a new friend!";
 
   if (user.profilePhotoBase64) {
     profile.src = user.profilePhotoBase64;
@@ -551,8 +571,6 @@ function styleReceived(user, card) {
 /*
   POTENTIAL UPDATES: 
   - Make the icons more responsive to user interactions
-  - Possibly integrate edit into friends
-  - Show profile on the right of the navbar to align with other designs
   - Fix up placeholder, for friends showcase recent message or placeholder message text,
   for new users show placeholder text "a lasting friendship is only a click away", or show
   what routes they have in common. 
