@@ -100,7 +100,12 @@ async function saveUserInfo(event) {
 
     try {
         await currentUserRef.update(updatedUserInfo);
-        alert("Your information updated successfully.");
+        Swal.fire({
+            icon: "success",
+            title: "Your work has been saved",
+            showConfirmButton: false,
+            timer: 1500
+          });
     } catch (error) {
         console.error(`Error updating user information for ${currentUserId}`, error);
         alert("Failed to update your information.");
@@ -113,13 +118,40 @@ async function saveUserInfo(event) {
    after logging out, redirects to index.html 
 */
 function logout() {
-    firebase.auth().signOut().then(() => {
-        console.log("logging out user");
-        window.location.href = "index.html";
-        alert("Log out successfully.");
-      }).catch((error) => {
-        console.log("error in logging out.");
-      });
+    const currentUserRef = db.collection("users").doc(currentUserId);
+
+    currentUserRef.get().then(userDoc => {
+        let userName = "Buddy"; // Default name
+        if (userDoc.exists) {
+            userName = userDoc.data().name;
+        }
+        // Display the logout message after fetching the user name
+        Swal.fire({
+            title: "See you next time",
+            text: userName,
+        }).then(() => {
+            firebase.auth().signOut().then(() => {
+                // Redirect to the index page
+                window.location.href = "index.html";
+            }).catch((error) => {
+                console.error("Error in logging out:", error);
+            });
+        });
+    }).catch(error => {
+        console.error("Error fetching user data:", error);
+        // Handle error gracefully, e.g., proceed with sign-out even if user name is not fetched
+        Swal.fire({
+            title: "Error",
+            text: "Could not fetch user information",
+            icon: "error",
+        }).then(() => {
+            firebase.auth().signOut().then(() => {
+                window.location.href = "index.html";
+            }).catch((error) => {
+                console.error("Error in logging out:", error);
+            });
+        });
+    });
 }
 
 

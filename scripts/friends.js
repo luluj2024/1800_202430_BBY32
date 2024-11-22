@@ -1,5 +1,6 @@
 let currentUserId;
 
+
 firebase.auth().onAuthStateChanged((user) => {
   if (user) {
     sessionStorage.clear();
@@ -14,6 +15,7 @@ firebase.auth().onAuthStateChanged((user) => {
     document.getElementById("btn-suggested").addEventListener("click", displayNonFriends)
 
     document.getElementById("btn-pending").addEventListener("click", displayPendingUsers)
+
 
   } else {
     console.log("No User Logged In");
@@ -410,6 +412,18 @@ function styleFriends(user, card) {
     profile.src = user.profilePhotoBase64;
   }
 
+  profile.addEventListener("click", () => {
+    Swal.fire({
+      title: user.name,
+      text: user.birthday,
+      text: user.description,
+      imageUrl: profile.src,
+      imageWidth: 200,
+      imageHeight: 200,
+      imageAlt: "Custom image"
+    });
+  })
+
   const buttonContainer = card.querySelector(".buttons-container");
   const button = card.querySelector(".btn-friends")
   const button2 = button.cloneNode(true);
@@ -436,7 +450,19 @@ function styleNonFriends(user, card) {
 
   if (user.profilePhotoBase64) {
     profile.src = user.profilePhotoBase64;
-  }
+  } 
+
+  profile.addEventListener("click", () => {
+    Swal.fire({
+      title: user.name,
+      text: user.birthday,
+      text: user.description,
+      imageUrl: profile.src,
+      imageWidth: 200,
+      imageHeight: 200,
+      imageAlt: "Custom image"
+    });
+  })
 
   const button = card.querySelector(".btn-friends")
   button.textContent = "person_add";
@@ -458,6 +484,18 @@ function styleSent(user, card) {
     profile.src = user.profilePhotoBase64;
   }
 
+  profile.addEventListener("click", () => {
+    Swal.fire({
+      title: user.name,
+      text: user.birthday,
+      text: user.description,
+      imageUrl: profile.src,
+      imageWidth: 200,
+      imageHeight: 200,
+      imageAlt: "Custom image"
+    });
+  })
+
   const buttonContainer = card.querySelector(".buttons-container");
   const button = buttonContainer.querySelector(".btn-friends");
   button.textContent = "remove";
@@ -477,6 +515,18 @@ function styleReceived(user, card) {
   if (user.profilePhotoBase64) {
     profile.src = user.profilePhotoBase64;
   }
+
+  profile.addEventListener("click", () => {
+    Swal.fire({
+      title: user.name,
+      text: user.birthday,
+      text: user.description,
+      imageUrl: profile.src,
+      imageWidth: 200,
+      imageHeight: 200,
+      imageAlt: "Custom image"
+    });
+  })
 
   const buttonContainer = card.querySelector(".buttons-container");
   const button = buttonContainer.querySelector(".btn-friends");

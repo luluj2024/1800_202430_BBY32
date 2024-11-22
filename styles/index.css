@@ -159,7 +159,7 @@ nav svg {
 
 .details-container {
   width: 100%;
-  max-width: 540px;
+  /* max-width: 540px; */
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -250,6 +250,51 @@ nav svg {
   z-index: 51;
 }
 
+#site-footer {
+  background: linear-gradient(to left bottom, var(--color-1), var(--color-2));
+  color: #ffffff;
+  padding: 20px 10px;
+  text-align: center;
+}
+
+.footer-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.footer-social h3 {
+  font-size: 1.2em;
+  margin-bottom: 10px;
+}
+
+.footer-social .social-icons a {
+  margin: 0 10px;
+  display: inline-block;
+}
+
+.footer-social .social-icons i {
+  width: 24px;
+  height: 24px;
+  filter: brightness(0) invert(1); 
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.footer-social .social-icons a:hover img {
+  transform: scale(1.2); 
+  opacity: 0.8;
+}
+
+.footer-bottom {
+  margin-top: 10px;
+  font-size: 0.8em;
+  border-top: 1px solid #ffffff;
+  padding-top: 10px;
+}
+
+
 @media only screen and (max-width: 991px) {
   nav .home-link {
     margin: 0;
@@ -305,8 +350,12 @@ nav svg {
   }
 
   .feature {
-    width: 80%;
+    width: 95%;
     margin-bottom: 20px;
+  }
+
+  .details-container {
+    display: none;
   }
 }
 
@@ -356,4 +405,6 @@ nav svg {
     display: flex;
     flex-direction: column;
   }
+
+
 }
