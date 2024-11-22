@@ -118,7 +118,9 @@ async function getIncomingRequests(userId) {
     const incomingRequestIds = await userDoc.data().requestsReceived;
 
     // Map array of user data of incoming friend requests
-    const incomingRequestUsers = incomingRequestIds.map(userId => getUserData(userId));
+    const incomingRequestUsers = await Promise.all(
+      incomingRequestIds.map(userId => getUserData(userId))
+    );
 
     return incomingRequestUsers;
   } catch (error) {
@@ -143,7 +145,9 @@ async function getOutgoingRequests(userId) {
     const outgoingRequestIds = await userDoc.data().requestsSent;
 
     // Map array of user data of sent friend requests
-    const outgoingRequestUsers = outgoingRequestIds.map(userId => getUserData(userId));
+    const outgoingRequestUsers = await Promise.all(
+      outgoingRequestIds.map(userId => getUserData(userId))
+    );
 
     return outgoingRequestUsers;
   } catch (error) {
@@ -364,8 +368,8 @@ async function displayPendingUsers() {
   const contentContainer = document.getElementById("content-container");
   contentContainer.innerHTML = "";
 
-  const receivedRequests = await getReceivedRequests(currentUserId);
-  const sentRequests = await getSentRequests(currentUserId);
+  const receivedRequests = await getIncomingRequests(currentUserId);
+  const sentRequests = await getOutgoingRequests(currentUserId);
 
   console.log(receivedRequests);
   console.log(sentRequests);
@@ -377,26 +381,18 @@ async function displayPendingUsers() {
     return;
   }
 
-
-
-  receivedRequests.forEach(async (userId) => {
-    const userData = await getUserData(userId);
-
+  receivedRequests.forEach((user) => {
     const card = userTemplate.content.cloneNode(true);
 
-    styleReceived(userData, card);
+    styleReceived(user, card);
 
     contentContainer.appendChild(card);
   })
 
-
-
-  sentRequests.forEach(async (userId) => {
-    const userData = await getUserData(userId);
-
+  sentRequests.forEach(user => {
     const card = userTemplate.content.cloneNode(true);
 
-    styleSent(userData, card);
+    styleSent(user, card);
 
     contentContainer.appendChild(card);
   })
@@ -475,6 +471,7 @@ function styleNonFriends(user, card) {
 }
 
 function styleSent(user, card) {
+  console.log(user);
   const profile = card.querySelector(".user-profile");
   card.querySelector(".user-name").textContent = user.name;
   card.querySelector(".user-bio").textContent = "Placeholder";
@@ -507,6 +504,7 @@ function styleSent(user, card) {
 }
 
 function styleReceived(user, card) {
+  console.log(user);
   const profile = card.querySelector(".user-profile");
   card.querySelector(".user-name").textContent = user.name;
   card.querySelector(".user-bio").textContent = "Placeholder";
