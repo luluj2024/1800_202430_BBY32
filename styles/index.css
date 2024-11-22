@@ -163,7 +163,7 @@ nav svg {
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  padding: 4rem 16px;
+  padding: 4rem 16px 0 16px;
   border-top: 2px solid black;
 }
 
@@ -355,7 +355,8 @@ nav svg {
   }
 
   .details-container {
-    display: none;
+    display: flex;
+    flex-direction: column;
   }
 }
 
