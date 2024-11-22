@@ -3,6 +3,7 @@ let currentUserId;
 firebase.auth().onAuthStateChanged((user) => {
   if (user) {
     sessionStorage.clear();
+
     currentUserId = user.uid;
 
     initialize();
@@ -29,138 +30,97 @@ async function initialize() {
   if (user.profilePhotoBase64) {
     profileIcon.src = user.profilePhotoBase64;
   }
-// testing
-//   const receivedRequests = await getReceivedRequests(currentUserId);
-//   const sentRequests = await getSentRequests(currentUserId);
-
-//   if (receivedRequests.length === 0 && sentRequests.length === 0) {
-//       document.getElementById("pending-notification").style.display = "none";
-//   }
-
-//   const users = await getUsersWithoutFriend(currentUserId);
-//   console.log("user length", users.length);
-
-//   if (users.length === 0) {
-//     document.getElementById("suggested-notification").style.display = "none";
-//   }
-
 }
 
 /*
-  Returns an array of user data objects who have the target user id in their 
-  "friends" array field
+  Returns array of user data objects with userId in their "friends" field
 
-  @param {string} targetUserId - Id of user whose friends you want to find
+  @param {string} userId - Id of user whose friends you want to find
 
-  @returns {array} - An array of user data objects or an empty array if no 
-  users found or an error occurs
+  @returns {array} - Array of user data objects or an empty array if an error 
+  occurs
 */
-async function getUsersWithFriend(targetUserId) {
+async function getUsersWithFriend(userId) {
   try {
-    // Query for users whose "friends" array contains the targetUserId
+    // Query for users with "friends" fields containing userId 
     const querySnapshot = await db.collection("users")
-      .where("friends", "array-contains", targetUserId)
+      .where("friends", "array-contains", userId)
       .get();
 
-    // Return empty array if query returns no documents
-    if (querySnapshot.empty) {
-      return [];
-    }
-
-    // Map new array of user document data 
+    // Map new array of user data 
     const users = querySnapshot.docs.map(doc => doc.data());
 
     return users;
   } catch (error) {
-    console.error(`Error retrieving users with friend ${targetUserId}:`, error);
+    console.error(`Error retrieving users with friend ${userId}:`, error);
     return [];
   }
 }
 
 /*
-  Returns an array of user data objects of users whose "friends" array field 
-  does not contain the targetUserId
+  Returns array of user data objects with "friends" field not containg userId
 
-  @param {string} targetUserId - Id of user that should be used to exclude
-  users from the return
+  @param {string} userId - Id of user used to exclude users in return
 
-  @returns {array} - An array of user data objects or an empty array if no
-  users found or an error occurs
+  @returns {array} - Array of user data objects or an empty array if an error 
+  occurs
 */
-async function getUsersWithoutFriend(targetUserId) {
+async function getUsersWithoutFriend(userId) {
   try {
     const querySnapshot = await db.collection("users").get();
 
-    // Returns empty array if query returns no documents
-    if (querySnapshot.empty) {
-      return [];
-    }
-
-    // Filter out the target user themself and their friends
     const users = querySnapshot.docs
       .map(doc => doc.data())
       .filter(user =>
-        !user.friends.includes(targetUserId) &&
-        user.id !== targetUserId &&
-        !user.requestsReceived.includes(targetUserId) &&
-        !user.requestsSent.includes(targetUserId)
+        user.id !== userId &&
+        !user.friends.includes(userId) && // Filter out if already friends
+        !user.requestsReceived.includes(userId) && // Filter if friend request sent
+        !user.requestsSent.includes(userId) // Filter if friend request received
       );
 
     return users;
   } catch (error) {
-    console.error(`Error retrieving users without friend ${targetUserId}:`, error);
+    console.error(`Error retrieving users without friend ${userId}:`, error);
     return [];
   }
 }
 
 /*
-  Returns user data object of target user id
+  Returns user data of userId
 
-  @param {string} targetUserId - Id of target user
-  @returns {object} - An object containing all fields of the target user
+  @param {string} userId - Id of user whose data you want
+  @returns {object} - Object containing user data or null if an error occurs
 */
-async function getUserData(targetUserId) {
+async function getUserData(userId) {
   try {
-    const docRef = await db.collection("users").doc(targetUserId).get();
+    const userDoc = await db.collection("users").doc(userId).get();
 
-    // Returns null if retrieved document doesn't exist
-    if (docRef.empty) {
-      return null;
-    }
-
-    return docRef.data();
+    return userDoc.data();
   } catch (error) {
-    console.error(`Error returning user data ${targetUserId}`, error);
+    console.error(`Error returning user data ${userId}`, error);
     return null;
   }
 }
 
-async function getReceivedRequests(userId) {
+/*
+  Returns array of user data objects of users who have sent a friend request 
+  to current user
+
+  @param {string} userId - Id of user to check incoming requests for
+  @returns {array} - Array of user data objects or an empty array if an error 
+  occurs
+*/
+async function getIncomingRequests(userId) {
   try {
-    const docRef = await db.collection("users").doc(userId).get();
+    const userDoc = await db.collection("users").doc(userId).get();
 
-    // Returns null if retrieved document doesn't exist
-    if (docRef.empty) {
-      return [];
-    }
+    // Retrieve user ids of incoming friend requests 
+    const incomingRequestIds = await userDoc.data().requestsReceived;
 
-    return docRef.data().requestsReceived;
-  } catch (error) {
-    console.error(`Error returning user data ${userId}`, error);
-    return [];
-  }
-}
+    // Map array of user data of incoming friend requests
+    const incomingRequestUsers = incomingRequestIds.map(userId => getUserData(userId));
 
-async function getSentRequests(userId) {
-  try {
-    const docRef = await db.collection("users").doc(userId).get();
-
-    // Returns null if retrieved document doesn't exist
-    if (docRef.empty) {
-      return [];
-    }
-
-    return docRef.data().requestsSent;
+    return incomingRequestUsers;
   } catch (error) {
     console.error(`Error returning user data ${userId}`, error);
     return [];
@@ -168,24 +128,59 @@ async function getSentRequests(userId) {
 }
 
 /*
-  Adds target and current user to each others "friends" array field
+  Returns array of user data objects of users who have received a friend 
+  request from current user
+
+  @param {string} userId - Id of user to check sent requests for
+  @returns {array} - Array of user data objects or an empty array if an error 
+  occurs
+*/
+async function getOutgoingRequests(userId) {
+  try {
+    const userDoc = await db.collection("users").doc(userId).get();
+
+    // Retrieve user ids of sent friend requests 
+    const outgoingRequestIds = await userDoc.data().requestsSent;
+
+    // Map array of user data of sent friend requests
+    const outgoingRequestUsers = outgoingRequestIds.map(userId => getUserData(userId));
+
+    return outgoingRequestUsers;
+  } catch (error) {
+    console.error(`Error returning user data ${userId}`, error);
+    return [];
+  }
+}
+
+/*
+  Update firebase fields defined updates of user id 
+  @param {string} userId - Id of user who needs database updating
+  @param {object} updates - field and action to be taken to update
+*/
+async function updateFirebase(userId, updates) {
+  try {
+    const userRef = db.collection("users").doc(userId);
+    await userRef.update(updates);
+  } catch (error) {
+    console.error(`Error updating user ${userId} fields:`, error);
+  }
+}
+
+/*
+  Adds current user to "requestsReceived" array field of target user id and adds
+  target user id to current user "requestsSent" array field
   
-  @param {string} targetUserId - Id of user who current user wishes to add 
-  as a friend
+  @param {string} userId - Id of user to send a friend request to
 */
 async function sendFriendRequest(targetUserId) {
-  // Get user document references
-  const currentUserRef = db.collection("users").doc(currentUserId);
-  const targetUserRef = db.collection("users").doc(targetUserId);
-
   try {
-    // Add targetUserId to the current users friends array
-    await currentUserRef.update({
+    // Adding target user id to current users "requestsSent" field
+    updateFirebase(currentUserId, {
       requestsSent: firebase.firestore.FieldValue.arrayUnion(targetUserId)
     });
 
-    // Remove currentUserId from the target users friends array
-    await targetUserRef.update({
+    // Add current user id to target users "requestsReceived" field 
+    updateFirebase(targetUserId, {
       requestsReceived: firebase.firestore.FieldValue.arrayUnion(currentUserId)
     });
   } catch (error) {
@@ -193,20 +188,23 @@ async function sendFriendRequest(targetUserId) {
   }
 }
 
-async function acceptFriendRequest(targetUserId) {
-  // Get user document references
-  const currentUserRef = db.collection("users").doc(currentUserId);
-  const targetUserRef = db.collection("users").doc(targetUserId);
+/*
+  Add current and target user to each others "friends" array field and remove
+  themselves from their "requestsSent" and "requestsReceived" array fields
 
+  @param {string} targetUserId - Id of user who current user wishes to accept
+  friend request from
+*/
+async function acceptFriendRequest(targetUserId) {
   try {
     // Add targetUserId to the current users friends array
-    await currentUserRef.update({
+    updateFirebase(currentUserId, {
       requestsReceived: firebase.firestore.FieldValue.arrayRemove(targetUserId),
       friends: firebase.firestore.FieldValue.arrayUnion(targetUserId)
     });
 
     // Remove currentUserId from the target users friends array
-    await targetUserRef.update({
+    updateFirebase(targetUserId, {
       requestsSent: firebase.firestore.FieldValue.arrayRemove(currentUserId),
       friends: firebase.firestore.FieldValue.arrayUnion(currentUserId)
     });
@@ -215,19 +213,22 @@ async function acceptFriendRequest(targetUserId) {
   }
 }
 
-async function rejectFriendRequest(targetUserId) {
-  // Get user document references
-  const currentUserRef = db.collection("users").doc(currentUserId);
-  const targetUserRef = db.collection("users").doc(targetUserId);
+/*
+  Remove target user id from current users "requestsReceived" array field and 
+  remove current user id from the target users "requestsSent" array field
 
+  @param {string} targetUserId - Id of user who current user wishes to reject
+  friend request from
+*/
+async function rejectFriendRequest(targetUserId) {
   try {
-    // Add targetUserId to the current users friends array
-    await currentUserRef.update({
+    // Remove target user id from current users "requestsReceived" field
+    updateFirebase(currentUserId, {
       requestsReceived: firebase.firestore.FieldValue.arrayRemove(targetUserId)
     });
 
-    // Remove currentUserId from the target users friends array
-    await targetUserRef.update({
+    // Remove current user id from target users "requestsSent" field
+    updateFirebase(targetUserId, {
       requestsSent: firebase.firestore.FieldValue.arrayRemove(currentUserId)
     });
   } catch (error) {
@@ -235,44 +236,44 @@ async function rejectFriendRequest(targetUserId) {
   }
 }
 
-async function cancelFriendRequest(userId) {
-  // Get user document references
-  const currentUserRef = db.collection("users").doc(currentUserId);
-  const targetUserRef = db.collection("users").doc(userId);
+/*
+  Remove target user id from current users "requestsSent" array field and
+  remove current user id from target users "requestReceived" array field
 
+  @param {string} targetUserId - Id of user who current user wishes to recind
+  their friend request
+*/
+async function cancelFriendRequest(targetUserId) {
   try {
-    // Add targetUserId to the current users friends array
-    await currentUserRef.update({
-      requestsSent: firebase.firestore.FieldValue.arrayRemove(userId)
+    updateFirebase(currentUserId, {
+      requestsSent: firebase.firestore.FieldValue.arrayRemove(targetUserId)
     });
 
-    // Remove currentUserId from the target users friends array
-    await targetUserRef.update({
+    updateFirebase(targetUserId, {
       requestsReceived: firebase.firestore.FieldValue.arrayRemove(currentUserId)
     });
   } catch (error) {
-    console.log(`Error adding friend ${userId}:`, error)
+    console.log(`Error adding friend ${targetUserId}:`, error)
   }
 }
 
 /*
-  Removes target and current user from each others "friends" array field
+  Removes current and target user from each others "friends" array field
 
-  @param {string} targetUserId - Id of user who current user wishes to remove
-  as a friend
+  @param {string} targetUserId - Id of user which the current user wishes to 
+  remove as a friend
 */
 async function removeFriend(targetUserId) {
-  // Get user document references
   let currentUserRef = db.collection("users").doc(currentUserId);
   let targetUserRef = db.collection("users").doc(targetUserId);
 
   try {
-    // Remove targetUserId from the current user's friends array
+    // Remove target user id from current users "friends" array field
     await currentUserRef.update({
       friends: firebase.firestore.FieldValue.arrayRemove(targetUserId)
     });
 
-    // Remove currentUserId from the target user's friends array
+    // Remove current user id from target users "friends" array
     await targetUserRef.update({
       friends: firebase.firestore.FieldValue.arrayRemove(currentUserId)
     });
@@ -376,7 +377,7 @@ async function displayPendingUsers() {
     return;
   }
 
-  
+
 
   receivedRequests.forEach(async (userId) => {
     const userData = await getUserData(userId);
