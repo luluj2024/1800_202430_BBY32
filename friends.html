@@ -43,6 +43,7 @@
       <button id="btn-friends" class="nav-btn-friends">Friends</button>
       <button id="btn-pending" class="nav-btn-friends">
         Pending
+        <!-- <div class="pending-notification">35</div> -->
         <!-- <span class="material-symbols-outlined" id="pending-notification">
           notifications_unread
         </span> -->
@@ -86,14 +87,22 @@
     </div>
   </template>
 
+  <!-- Friends search bar -->
+  <input class="form-control me-2" type="text" placeholder="Search Friends" aria-label="Search" id="searchbarFriends"
+        oninput="processSearchFriends()" onkeydown="return (event.keyCode!=13);" style="display: none">
+
+    <!-- Pending friends search bar -->
+  <input class="form-control me-2" type="text" placeholder="Search Pending" aria-label="Search" id="searchbarPending"
+    oninput="processSearchPending()" onkeydown="return (event.keyCode!=13);" style="display: none">
+
+  <!-- Suggested friends search bar -->
+  <input class="form-control me-2" type="text" placeholder="Search Suggested" aria-label="Search" id="searchbarSuggested"
+        oninput="processSearchSuggested()" onkeydown="return (event.keyCode!=13);" style="display: none">
+
   <div id="content-container">
   </div>
 
   <div id="navbar-template"></div>
-
-  <!---------------------------------------------->
-  <!-- Your own JavaScript functions go here    -->
-  <!---------------------------------------------->
 
   <!-- Link to scripts of your own -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

@@ -1,6 +1,5 @@
 let currentUserId;
 
-
 firebase.auth().onAuthStateChanged((user) => {
   if (user) {
     sessionStorage.clear();
@@ -15,7 +14,6 @@ firebase.auth().onAuthStateChanged((user) => {
     document.getElementById("btn-suggested").addEventListener("click", displayNonFriends)
 
     document.getElementById("btn-pending").addEventListener("click", displayPendingUsers)
-
 
   } else {
     console.log("No User Logged In");
@@ -450,7 +448,7 @@ function styleNonFriends(user, card) {
 
   if (user.profilePhotoBase64) {
     profile.src = user.profilePhotoBase64;
-  } 
+  }
 
   profile.addEventListener("click", () => {
     Swal.fire({

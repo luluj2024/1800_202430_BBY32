@@ -77,9 +77,41 @@ body {
 
 /* Main card info */
 .card-body {
-    position: relative;
+    /* position: absolute; */
+    width: 100%;
     grid-area: body;
     padding-left: 15%;
+}
+
+/* Main button on the card */
+#cardbtn {
+    position: absolute;
+    top: 40px;
+    right: 5px;
+    border: none;
+    background-color: var(--card-color);
+}
+
+/* Commute button on the card */
+#commutebtn {
+    position: absolute;
+    top: 90px;
+    right: 5px;
+    border: none;
+    background-color: var(--card-color);
+}
+
+/* Remove button for the card */
+#removebtn {
+    position: absolute;
+    border-radius: 50%;
+    border: none;
+    float: right;
+    top: -20px;
+    right: -18px;
+    font-size: 34px;
+    color: var(--card-color);
+    background: var(--primary-gradient);
 }
 
 .card-title {
@@ -88,15 +120,6 @@ body {
 
 .card-text {
     line-height: 40px;
-}
-
-/* Buttons on the card */
-#cardbtn {
-    position: relative;
-    grid-area: buttons;
-    float: right;
-    border: none;
-    background-color: var(--card-color);
 }
 
 /* No route pop up text */
@@ -120,7 +143,7 @@ body {
 }
 
 /* Adjustments for Small Screens */
-@media only screen and (max-width: 460px) {
+@media only screen and (max-width: 520px) {
     .bus-info {
       width: 100%;
       margin: 0 auto;
@@ -130,5 +153,18 @@ body {
         width: 100%;
         margin-left: 0;
         margin-right: 0;
+    }
+    .card-text {
+        line-height: 20px;
+        font-size: 18px;
+        width: 80%;
+    }
+    .card-title {
+        font-size: 22px;
+        width: 80%;
+    }
+    #commutebtn,
+    #cardbtn {
+        font-size: 40px;
     }
   }

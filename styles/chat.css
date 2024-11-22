@@ -51,6 +51,7 @@ body {
 
 .messages-container {
   grid-area: display;
+  height: 100%;
   overflow-y: scroll;
 }
 
@@ -94,6 +95,8 @@ body {
   background-color: lightslategray;
   padding: 1rem;
   border-radius: 16px 16px 16px 0px;
+  max-width: 300px;
+  overflow-wrap: break-word;
 }
 
 .r-content * {
@@ -103,6 +106,8 @@ body {
 
 .r-content > .text {
   background-color: lightpink;
+  max-width: 300px;
+  overflow-wrap: break-word;
   padding: 1rem;
   border-radius: 16px 16px 0px 16px;
 }
@@ -139,4 +144,18 @@ body {
 
 .l-content {
   justify-self: start;
+}
+
+.loading {
+  animation: myMove 5s infinite;
+  font-size: 48px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@keyframes myMove {
+  80% {transform: rotate(360deg);}
 }
