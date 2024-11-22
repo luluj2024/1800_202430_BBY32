@@ -51,6 +51,7 @@ body {
 
 .messages-container {
   grid-area: display;
+  height: 100%;
   overflow-y: scroll;
 }
 

@@ -182,6 +182,7 @@ function userMessageListener(container) {
   db.collection("messages")
     .where("users", "array-contains", currentUserId)
     .orderBy("timestamp")
+    .limitToLast(25)
     .onSnapshot(async (snapshot) => {
       const messageBuffer = []; // Temporary buffer for storing styled messages
 
@@ -205,6 +206,8 @@ function userMessageListener(container) {
       messageBuffer.forEach(({ styledMessage }) => {
         container.appendChild(styledMessage);
       });
+
+      container.scrollTo(0, container.scrollHeight);
     });
 }
 
@@ -235,6 +238,8 @@ function routeMessagesListener(container) {
       messageBuffer.forEach(({ styledMessage }) => {
         container.appendChild(styledMessage);
       });
+
+      container.scrollTo(0, container.scrollHeight);
     });
 }
 
