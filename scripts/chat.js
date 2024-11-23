@@ -184,25 +184,18 @@ function userMessageListener(container) {
     .orderBy("timestamp")
     .limitToLast(25)
     .onSnapshot(async (snapshot) => {
-      const messageBuffer = []; // Temporary buffer for storing styled messages
+      const messagePromises = snapshot.docs.map(doc => createMessage(doc.data(), false));
 
-      for (const doc of snapshot.docs) {
-        const messageData = doc.data();
+      // Wait for all messages to be processed concurrently
+      const styledMessages = await Promise.all(messagePromises);
 
-        if (messageData.users.includes(targetUserId)) {
-          const styledMessage = await createMessage(messageData, false);
-          messageBuffer.push({
-            styledMessage,
-          });
-        }
-      }
-
-      // Clear and render all messages in the correct order
-      container.innerHTML = "";
-      messageBuffer.forEach(({ styledMessage }) => {
+      // Clear container and append all messages
+      container.innerHTML = ""; // Clear previous messages
+      styledMessages.forEach(styledMessage => {
         container.appendChild(styledMessage);
       });
 
+      // Auto-scroll to the bottom of the container
       container.scrollTo(0, container.scrollHeight);
     });
 }
@@ -214,23 +207,18 @@ function routeMessagesListener(container) {
     .orderBy("timestamp")
     .limitToLast(25)
     .onSnapshot(async (snapshot) => {
-      const messageBuffer = []; // Temporary buffer for storing styled messages
+      const messagePromises = snapshot.docs.map(doc => createMessage(doc.data(), true));
 
-      for (const doc of snapshot.docs) {
-        const messageData = doc.data();
+      // Wait for all messages to be processed concurrently
+      const styledMessages = await Promise.all(messagePromises);
 
-        const styledMessage = await createMessage(messageData, true);
-        messageBuffer.push({
-          styledMessage
-        })
-      }
-
-      // Clear and render all messages in the correct order
-      container.innerHTML = "";
-      messageBuffer.forEach(({ styledMessage }) => {
+      // Clear container and append all messages
+      container.innerHTML = ""; // Clear previous messages
+      styledMessages.forEach(styledMessage => {
         container.appendChild(styledMessage);
       });
 
+      // Auto-scroll to the bottom of the container
       container.scrollTo(0, container.scrollHeight);
     });
 }
