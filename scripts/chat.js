@@ -193,13 +193,9 @@ function userMessageListener(container) {
           const styledMessage = await createMessage(messageData, false);
           messageBuffer.push({
             styledMessage,
-            timestamp: messageData.timestamp, // Include timestamp for sorting
           });
         }
       }
-
-      // Sort messages by timestamp
-      messageBuffer.sort((a, b) => a.timestamp.seconds - b.timestamp.seconds);
 
       // Clear and render all messages in the correct order
       container.innerHTML = "";
@@ -225,13 +221,9 @@ function routeMessagesListener(container) {
 
         const styledMessage = await createMessage(messageData, true);
         messageBuffer.push({
-          styledMessage,
-          timestamp: messageData.timestamp, // Include timestamp for sorting
+          styledMessage
         })
       }
-
-      // Sort messages by timestamp
-      messageBuffer.sort((a, b) => a.timestamp.seconds - b.timestamp.seconds);
 
       // Clear and render all messages in the correct order
       container.innerHTML = "";
