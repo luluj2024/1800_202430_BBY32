@@ -57,7 +57,16 @@ Content of the project folder:
 It has the following subfolders and files:
 ├── .git                     # Folder for git repo
 ├── images                   # Folder for images
-    /blah.jpg                # Acknowledge source
+    facebook.jpg             # Stock Facebook logo
+    forum.png                # Stock forum image
+    mapTemp.web              # Generic map marker symbol
+    newsIcon                 # Generic news symbol
+    no-users-found.gif       # Online meme gif from a show
+    profile.png              # Generic stock profile picture
+    transit.png              # Stock image of commuters
+    ├── Icons                # Main app logos 
+    logo-removebg-preview.png# Logo without background colour
+    logo.png                 # Main logo
 ├── scripts                  # Folder for scripts
     authentication.js        # Authenticates users
     chat.js                  # Chatting system scripts
@@ -71,7 +80,13 @@ It has the following subfolders and files:
     setting.js               # Settings/profile page scripts
     skeleton.js              # Skeleton loader for navbar
 ├── styles                   # Folder for styles
-    /blah.css                # 
+    chat.css                 # Styling for chats
+    friend.css               # Styling for friends page
+    index.css                # Styling for index page
+    main.css                 # Styling for dashboard
+    navbar.css               # Styling for navbar
+    profile.css              # Styling for profile/settings page
+    routes.css               # Styling for routes page
 
 
 
