@@ -22,40 +22,20 @@ firebase.auth().onAuthStateChanged((user) => {
 });
 
 function getTime(timestamp) {
-  // Convert Firestore Timestamp to milliseconds
-  let milliseconds = timestamp.seconds * 1000;
-  let date = new Date(milliseconds);
+  let messageDate = timestamp.toDate();
+  let currentDate = new Date();
 
-  // Get the current date and midnight reference
-  let now = new Date();
-  let todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  let differenceInDays = Math.floor((date - todayMidnight) / (24 * 60 * 60 * 1000));
+  // Calculate the time/days difference 
+  const timeDifference = Math.abs(currentDate - messageDate);
+  const daysDifference = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
 
-  // Format date components
-  const formatDate = (date) => {
-    let year = date.getFullYear();
-    let month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
-    let day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  };
-
-  const formatTime = (date) => {
-    let hours = date.getHours();
-    let minutes = String(date.getMinutes()).padStart(2, '0');
-    let seconds = String(date.getSeconds()).padStart(2, '0');
-    let period = hours >= 12 ? 'PM' : 'AM';
-    hours = hours % 12 || 12; // Convert 0 to 12 for midnight
-    return `${hours}:${minutes}:${seconds} ${period}`;
-  };
-
-  // Return appropriate result based on difference
-  if (differenceInDays === 0) {
-    return formatTime(date); // Same day
-  } else if (differenceInDays === -1) {
-    return "Yesterday"; // Previous day
+  if (daysDifference === 0) {
+    return messageDate.toLocaleTimeString();
+  } else if (daysDifference === 1) {
+    return "Yesterday";
   } else {
-    return formatDate(date); 
-  } 
+    return messageDate.toLocaleDateString();
+  }
 }
 
 async function initialize() {
@@ -72,7 +52,7 @@ async function initialize() {
 
   const routeRef = await db.collection("Routes").doc(targetRouteId).get()
   const routeData = await routeRef.data();
-  document.querySelector(".chat-title").textContent =  `Bus ${routeData.bus}: ${routeData.name}`;
+  document.querySelector(".chat-title").textContent = `Bus ${routeData.bus}: ${routeData.name}`;
   document.querySelector("#back-btn").addEventListener("click", () => {
     window.location.href = "main.html";
   })
@@ -261,7 +241,7 @@ async function createMessage(message, isGroup = false) {
   messageTemplate.querySelector(".time").textContent = getTime(message.timestamp);
   messageTemplate.querySelector(".title").textContent = sender.name;
   messageTemplate.querySelector(".text").textContent = message.text;
-  
+
 
   return messageTemplate;
 }
