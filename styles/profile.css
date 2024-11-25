@@ -5,6 +5,11 @@
     font-family: "Roboto", 'Gill Sans', Arial, sans-serif;
 }
 
+:root {
+  --box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --transition-time: 0.05s;
+}
+
 body {
   background-color: lightblue;
 }
@@ -29,6 +34,7 @@ button[type="submit"]{
 .profile-info{
     margin-top: 1%;
     margin-left: 3%;
+    
 }
 
 .profile-info img{
@@ -36,7 +42,14 @@ button[type="submit"]{
     height: auto;
     margin-right: 50px;
     border-radius: 50%;
-}
+    box-shadow: var(--box-shadow);
+    transition: border var(--transition-time);
+  }
+  
+  .profile-info img:hover,
+  .profile-info img:active {
+    border: 4px solid black;
+  }
 
 .form-container {
     margin: 0 auto;
@@ -46,6 +59,7 @@ button[type="submit"]{
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
     margin-top: 20px;
+    box-shadow: var(--box-shadow);
   }
 
 .form-group {
@@ -66,6 +80,7 @@ button[type="submit"]{
   border: 1px solid #ddd;
   border-radius: 5px;
   box-sizing: border-box;
+  box-shadow: var(--box-shadow);
 }
 
 
@@ -88,6 +103,8 @@ button[type="submit"]{
   width: 100%;
   height: 150px;
   border: 1px solid #ddd;
+  box-shadow: var(--box-shadow);
+
 }
 
 #upload-button, #save-button, #clear-button {
@@ -98,6 +115,7 @@ button[type="submit"]{
   border-radius: 8px;
   background-color: #2596BE;
   color: white; 
+  box-shadow: var(--box-shadow);
 }
 
 #clear-button {
@@ -119,6 +137,7 @@ button[type="submit"]{
   align-items: center;
   margin-top: 20px;
   margin-bottom: 100px;
+  
 }
 
 .fixed-bottom{
