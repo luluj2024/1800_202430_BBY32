@@ -112,14 +112,15 @@ function outputCards(container, busTemplate, routeId) {
     card.querySelector(".card-time").textContent = busTime;
     //Checks how many people have favoritied 
     let favCount = data.favorites.length;
+    let cardFav = card.querySelector(".card-fav").textContent;
     if (favCount == 0 || favCount == undefined) {
-        card.querySelector(".card-fav").textContent = "Be the first person on this route!";
+        cardFav = "Be the first person on this route!";
     }
     else if (favCount == 1) {
-        card.querySelector(".card-fav").textContent = favCount + " person favorited this route!";
+        cardFav = favCount + " person favorited this route!";
     }
     else {
-        card.querySelector(".card-fav").textContent = favCount + " people favorited this route!";
+        cardFav = favCount + " people favorited this route!";
     }
 
     //allows user to favorite specific routes

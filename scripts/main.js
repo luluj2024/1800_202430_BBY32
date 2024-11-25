@@ -12,6 +12,7 @@ firebase.auth().onAuthStateChanged((user) => {
     }
 })
 
+    
 //Displays all routes in users favorites
 function displayAllRoutes() {
     let busTemplate = document.getElementById("bus-template");
@@ -135,14 +136,15 @@ function outputCards(container, busTemplate, routeId) {
     card.querySelector(".card-time").textContent = busTime;
     //Displays how many commuters are actively on this route
     let commuters = data.commuters.length;
+    let cardCommuters = card.querySelector(".card-commute").textContent;
     if (commuters == 0 || commuters == undefined) {
-        card.querySelector(".card-commute").textContent = "Be the first person on this route!";
+        cardCommuters = "Be the first person on this route!";
     }
     else if (commuters == 1) {
-        card.querySelector(".card-commute").textContent = commuters + " person is on this route!";
+        cardCommuters = commuters + " person is on this route!";
     }
     else {
-        card.querySelector(".card-commute").textContent = commuters + " people are on this route!";
+        cardCommuters = commuters + " people are on this route!";
     }
 
     //Unfavorite route button
@@ -154,6 +156,16 @@ function outputCards(container, busTemplate, routeId) {
         sessionStorage.setItem("targetRouteId", routeId.id);
         window.location.assign("chat.html");
     })
+
+    //Route Commuting button
+    combtn = card.querySelector("#commutebtn");
+    if (sessionStorage.getItem("commuting") == routeId) {
+        combtn.innerHTML = "toggle_on";
+    }
+    cmobtn.addEventListener("click", event => { 
+        
+
+    });
 
     container.appendChild(card);
 }
@@ -184,4 +196,10 @@ async function unfavoriteRoute(route) {
         favorites: firebase.firestore.FieldValue.arrayRemove(currentUserId)
     })
     displaySimilarRoutes();
+}
+
+function toggleCommute() {
+    db.collection("users").doc(currentUserId).get().then(user => {
+
+    });
 }

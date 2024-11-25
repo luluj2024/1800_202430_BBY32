@@ -119,7 +119,7 @@ async function saveUserInfo(event) {
 */
 function logout() {
     const currentUserRef = db.collection("users").doc(currentUserId);
-
+    sessionStorage.clear();
     currentUserRef.get().then(userDoc => {
         let userName = "Buddy"; // Default name
         if (userDoc.exists) {
