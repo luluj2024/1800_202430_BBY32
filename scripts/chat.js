@@ -246,7 +246,7 @@ async function createMessage(message, isGroup = false) {
 
   // Styling Template Content
   messageTemplate.querySelector(".time").textContent = getTime(message.timestamp);
-  messageTemplate.querySelector(".title").textContent = isGroup && isCurrentUser ? `${sender.name} (commuting)` : sender.name;
+  messageTemplate.querySelector(".title").textContent = sender.name;
   messageTemplate.querySelector(".text").textContent = message.text;
   if (sender.profilePhotoBase64) {
     messageTemplate.querySelector(".profile-icon").src = sender.profilePhotoBase64;
