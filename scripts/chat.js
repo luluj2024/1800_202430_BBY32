@@ -162,7 +162,7 @@ function userMessageListener(container) {
   db.collection("messages")
     .where("users", "array-contains", currentUserId)
     .orderBy("timestamp")
-    .limitToLast(25)
+    .limitToLast(50)
     .onSnapshot(async (snapshot) => {
       const messagePromises = snapshot.docs.map(doc => {
         const data = doc.data();
@@ -190,7 +190,7 @@ function userMessageListener(container) {
 function routeMessagesListener(container) {
   db.collection("Routes").doc(targetRouteId).collection("messages")
     .orderBy("timestamp")
-    .limitToLast(25)
+    .limitToLast(50)
     .onSnapshot(async (snapshot) => {
       const messagePromises = snapshot.docs.map(doc => createMessage(doc.data(), true));
 
@@ -246,6 +246,11 @@ async function createMessage(message, isGroup = false) {
   messageTemplate.querySelector(".time").textContent = getTime(message.timestamp);
   messageTemplate.querySelector(".title").textContent = sender.name;
   messageTemplate.querySelector(".text").textContent = message.text;
+  if (sender.profilePhotoBase64) {
+    messageTemplate.querySelector(".profile-icon").src = sender.profilePhotoBase64;
+  }
+
+  console.log(sender.id);
 
   return messageTemplate;
 }
