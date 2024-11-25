@@ -82,11 +82,11 @@
 
   <!-- Friends search bar -->
   <input class="form-control me-2" type="text" placeholder="Search Friends" aria-label="Search" id="searchbarFriends"
-        oninput="processSearchFriends()" onkeydown="return (event.keyCode!=13);" style="display: none">
-        
+        oninput="processSearchFriends()" onkeydown="return (event.keyCode!=13);" style="display: none" maxlength="40">
+
   <!-- Suggested friends search bar -->
   <input class="form-control me-2" type="text" placeholder="Search Suggested" aria-label="Search" id="searchbarSuggested"
-        oninput="processSearchSuggested()" onkeydown="return (event.keyCode!=13);" style="display: none">
+        oninput="processSearchSuggested()" onkeydown="return (event.keyCode!=13);" style="display: none" maxlength="40">
 
   <div id="content-container">
   </div>
