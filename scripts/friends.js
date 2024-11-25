@@ -16,6 +16,8 @@ firebase.auth().onAuthStateChanged((user) => {
 
     document.getElementById("btn-pending").addEventListener("click", displayPendingUsers)
 
+    document.getElementById("searchbarFriends").value = "";
+    document.getElementById("searchbarSuggested").value = "";
   } else {
     console.log("No User Logged In");
     window.location.href = "index.html";
@@ -336,8 +338,6 @@ async function getFavoritedRoutes(favoriteRoutes) {
 async function displayFriends() {
   let searchbar = document.getElementById("searchbarFriends");
   searchbar.style = "";
-  document.getElementById("searchbarPending").style = "display: none;";
-  document.getElementById("searchbarPending").value = "";
   document.getElementById("searchbarSuggested").style = "display: none;";
   document.getElementById("searchbarSuggested").value = "";
   const friendTemplate = document.getElementById("user-template");
@@ -374,8 +374,6 @@ async function displayFriends() {
 async function displayNonFriends() {
   let searchbar = document.getElementById("searchbarSuggested");
   searchbar.style = "";
-  document.getElementById("searchbarPending").style = "display: none;";
-  document.getElementById("searchbarPending").value = "";
   document.getElementById("searchbarFriends").style = "display: none;";
   document.getElementById("searchbarFriends").value = "";
   const userTemplate = document.getElementById("user-template");
@@ -404,6 +402,10 @@ async function displayNonFriends() {
 }
 
 async function displayPendingUsers() {
+  document.getElementById("searchbarFriends").style = "display: none;";
+  document.getElementById("searchbarFriends").value = "";
+  document.getElementById("searchbarSuggested").style = "display: none;";
+  document.getElementById("searchbarSuggested").value = "";
   const userTemplate = document.getElementById("user-template");
   const contentContainer = document.getElementById("content-container");
   contentContainer.innerHTML = "";
@@ -612,8 +614,6 @@ function debounce(func, timeout = 300) {
 //delays searchbar inputs to prevent duplication and excessive database calls
 const processSearchFriends = debounce(() => displayFriends());
 const processSearchSuggested = debounce(() => displayNonFriends());
-const processSearchPending = debounce(() => displayPendingUsers());
-
 /*
   POTENTIAL UPDATES: 
   - Make the icons more responsive to user interactions
