@@ -164,7 +164,11 @@ function userMessageListener(container) {
     .orderBy("timestamp")
     .limitToLast(25)
     .onSnapshot(async (snapshot) => {
-      const messagePromises = snapshot.docs.map(doc => createMessage(doc.data(), false));
+      const messagePromises = snapshot.docs.map(doc => {
+        if (doc.data().users.includes(targetUserId)) {
+          return createMessage(doc.data(), false)
+        }
+      });
 
       // Wait for all messages to be processed concurrently
       const styledMessages = await Promise.all(messagePromises);
