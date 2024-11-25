@@ -247,6 +247,5 @@ async function createMessage(message, isGroup = false) {
   messageTemplate.querySelector(".title").textContent = sender.name;
   messageTemplate.querySelector(".text").textContent = message.text;
 
-
   return messageTemplate;
 }
