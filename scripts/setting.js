@@ -49,13 +49,13 @@ function insertFormInfoFromFirestore() {
     const formattedToday = today.toISOString().split('T')[0];
 
     // Display user's info. If it doesn't exist, uses "N/A" for phone number and bio,
-    // and uses today's date as the default birthday. 
     currentUserRef.get().then(userDoc => {
         if (userDoc.exists) { 
             const userData = userDoc.data();
             document.getElementById("full-name").value = userData.name || "";
             document.getElementById("email").value = userData.email || "";
             document.getElementById("phone").value = userData.phone || "N/A";
+            // Uses today's date as the default birthday. 
             document.getElementById("birthday").value = userData.birthday || formattedToday;
             document.getElementById("about-me").value = userData.description || "N/A";
 
@@ -114,8 +114,8 @@ async function saveUserInfo(event) {
 
 
 /* 
-   log-out function 
-   after logging out, redirects to index.html 
+   Log-out function.
+   After logging out, redirects to index.html 
 */
 function logout() {
     const currentUserRef = db.collection("users").doc(currentUserId);
@@ -139,7 +139,6 @@ function logout() {
         });
     }).catch(error => {
         console.error("Error fetching user data:", error);
-        // Handle error gracefully, e.g., proceed with sign-out even if user name is not fetched
         Swal.fire({
             title: "Error",
             text: "Could not fetch user information",
