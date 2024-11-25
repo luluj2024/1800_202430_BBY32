@@ -160,12 +160,12 @@ function outputCards(container, busTemplate, routeId) {
 
     //Route Commuting button
     combtn = card.querySelector("#commutebtn");
-    if (sessionStorage.getItem("commuting") == routeId) {
+    if (sessionStorage.getItem("commuting") == routeId.id) {
         combtn.innerHTML = "toggle_on";
+        combtn.style.color = "#2596BE";
     }
-    cmobtn.addEventListener("click", event => { 
-        
-
+    combtn.addEventListener("click", event => { 
+        toggleCommute(routeId.id);
     });
 
     container.appendChild(card);
@@ -199,8 +199,11 @@ async function unfavoriteRoute(route) {
     displaySimilarRoutes();
 }
 
-function toggleCommute() {
-    db.collection("users").doc(currentUserId).get().then(user => {
-
-    });
+function toggleCommute(route) {
+    if (sessionStorage.getItem("commuting") == route) {
+        sessionStorage.removeItem("commuting");
+    } else {
+        sessionStorage.setItem("commuting", route);
+    }
+    displayAllRoutes();
 }
