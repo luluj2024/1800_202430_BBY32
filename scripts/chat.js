@@ -165,13 +165,14 @@ function userMessageListener(container) {
     .limitToLast(25)
     .onSnapshot(async (snapshot) => {
       const messagePromises = snapshot.docs.map(doc => {
-        if (doc.data().users.includes(targetUserId)) {
-          return createMessage(doc.data(), false)
+        const data = doc.data();
+        if (data.users.includes(targetUserId)) {
+          return createMessage(data, false)
         }
       });
 
       // Wait for all messages to be processed concurrently
-      const styledMessages = await Promise.all(messagePromises);
+      const styledMessages = await Promise.all(messagePromises.filter(Boolean));
 
       // Clear container and append all messages
       container.innerHTML = ""; // Clear previous messages
