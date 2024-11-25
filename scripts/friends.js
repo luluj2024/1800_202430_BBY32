@@ -334,6 +334,12 @@ async function getFavoritedRoutes(favoriteRoutes) {
   begin messaging.
 */
 async function displayFriends() {
+  let searchbar = document.getElementById("searchbarFriends");
+  searchbar.style = "";
+  document.getElementById("searchbarPending").style = "display: none;";
+  document.getElementById("searchbarPending").value = "";
+  document.getElementById("searchbarSuggested").style = "display: none;";
+  document.getElementById("searchbarSuggested").value = "";
   const friendTemplate = document.getElementById("user-template");
   const contentContainer = document.getElementById("content-container");
   contentContainer.innerHTML = "";
@@ -350,12 +356,14 @@ async function displayFriends() {
   }
 
   for (const user of users) {
-    const card = friendTemplate.content.cloneNode(true);
-    const message = await getLatestMessage(user.id);
-
-    styleFriends(user, card, message)
-    
-    contentContainer.appendChild(card);
+    if (searchbar.value == "" || relatedFriends(searchbar.value, user.name)) {
+      const card = friendTemplate.content.cloneNode(true);
+      const message = await getLatestMessage(user.id);
+  
+      styleFriends(user, card, message)
+      
+      contentContainer.appendChild(card);
+    }
   }
 }
 
@@ -364,6 +372,12 @@ async function displayFriends() {
   Allows user to view profile info and add target users as friends.
 */
 async function displayNonFriends() {
+  let searchbar = document.getElementById("searchbarSuggested");
+  searchbar.style = "";
+  document.getElementById("searchbarPending").style = "display: none;";
+  document.getElementById("searchbarPending").value = "";
+  document.getElementById("searchbarFriends").style = "display: none;";
+  document.getElementById("searchbarFriends").value = "";
   const userTemplate = document.getElementById("user-template");
   const contentContainer = document.getElementById("content-container");
   contentContainer.innerHTML = "";
@@ -379,11 +393,13 @@ async function displayNonFriends() {
   }
 
   users.forEach(user => {
-    const card = userTemplate.content.cloneNode(true);
+    if (searchbar.value == "" || relatedFriends(searchbar.value, user.name)) { 
+      const card = userTemplate.content.cloneNode(true);
 
-    styleNonFriends(user, card);
-
-    contentContainer.appendChild(card);
+      styleNonFriends(user, card);
+  
+      contentContainer.appendChild(card);
+    }
   })
 }
 
@@ -567,6 +583,36 @@ function styleReceived(user, card) {
 }
 
 
+//Compares search input friends info
+function relatedFriends(search, result) {
+  let searchVal = search.toLowerCase();
+  result += '';
+  //Loops through the search and username values to see what matches and return it to user
+  for (let i = 0; i < searchVal.length; i++) {
+      //Verify it doesn't attempt to go out of length
+      if (i >= result.length) {
+          return false;
+      }
+      else if (searchVal[i] != result[i].toLowerCase()) {
+          return false;
+      }
+  }
+  return true;
+}
+
+// Function found at https://www.freecodecamp.org/news/javascript-debounce-example/ and used to prevent multiple function calls in searchbar
+function debounce(func, timeout = 300) {
+  let timer;
+  return (...args) => {
+      clearTimeout(timer);
+      //Creates a timer based of the timeout that calls the passed in function once its complete
+      timer = setTimeout(() => { func.apply(this, args); }, timeout);
+  };
+}
+//delays searchbar inputs to prevent duplication and excessive database calls
+const processSearchFriends = debounce(() => displayFriends());
+const processSearchSuggested = debounce(() => displayNonFriends());
+const processSearchPending = debounce(() => displayPendingUsers());
 
 /*
   POTENTIAL UPDATES: 
