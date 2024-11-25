@@ -10,6 +10,9 @@ function logout() {
   });
 }
 
+// Make sure the user is logged out.
+logout(); 
+
 // Function to show the signup container
 function showSignupContainer() {
   var signupContainer = document.getElementById('signup-container');
@@ -33,5 +36,6 @@ function showSignupContainer() {
 document.querySelectorAll('.signup-btn').forEach(function(button) {
   button.addEventListener('click', showSignupContainer);
 });
+
 
 
