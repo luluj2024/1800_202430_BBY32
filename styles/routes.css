@@ -4,6 +4,7 @@
 :root {
     --primary-gradient: linear-gradient(to right bottom, #00355f, #2596be);
     --card-color: #e3e3e3;
+    --transition-time: 0.5s;
 }
 
 html,
@@ -32,7 +33,15 @@ body {
     object-fit: cover;
     border-radius: 50%;
     border: 4px solid var(--card-color);
+    transition: border var(--transition-time);
 }
+
+/* Highlights profle picture */
+.profile-logo:hover,
+.profile-logo:active {
+    border: 4px solid black;
+}
+
 
 /* Card buttons */
 .material-symbols-outlined {
