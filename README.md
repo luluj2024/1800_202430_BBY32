@@ -58,7 +58,17 @@ It has the following subfolders and files:
 ├── images                   # Folder for images
     /blah.jpg                # Acknowledge source
 ├── scripts                  # Folder for scripts
-    /blah.js                 # 
+    authentication.js        # Authenticates users
+    chat.js                  # Chatting system scripts
+    firebaseAPI_BBY32.js     # Accesses the firebase API
+    friends.js               # Friending scripts
+    index.js                 # Scripts for index page
+    main.js                  # Scripts for main dashboard
+    navbar.js                # Navbar button scripts
+    searchbox.js             # Searchbox scripts
+    routes.js                # Route page scripts
+    setting.js               # Settings/profile page scripts
+    skeleton.js              # Skeleton loader for navbar
 ├── styles                   # Folder for styles
     /blah.css                # 
 
