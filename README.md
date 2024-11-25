@@ -1,11 +1,9 @@
 # Project Title
 
 ## 1. Project Description
-State your app in a nutshell, or one-sentence pitch. Give some elaboration on what the core features are.  
-This browser based web application to meet people who share the same transit routes to socialze with and befriend. 
+Commute Buddy is a social transportation application to help lonely long distance commuters alleviate their feelings of isolation by providing them options to connect and build trust with like-minded individuals before committing to meeting them.
 
 ## 2. Names of Contributors
-List team members and/or short bio's here... 
 * Conner Ponton
 * Arshdeep Mokha
 * Lulu Jiang
@@ -23,6 +21,9 @@ Here are the steps ...
 * Sign up 
 * Choose their personal routes
 * Join chats with people from their routes
+* Add friends from suggested lists and chat with them
+* Customize personal profile
+
 
 ## 5. Known Bugs and Limitations
 Here are some known bugs:
@@ -32,7 +33,7 @@ Here are some known bugs:
 
 ## 6. Features for Future
 What we'd like to build in the future:
-* ...
+* Search routes by searching on maps
 * ...
 * ...
 	
