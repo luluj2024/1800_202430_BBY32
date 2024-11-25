@@ -241,7 +241,7 @@ nav svg {
 .close-btn {
   position: absolute;
   margin-top: -10px;
-  top: 5px;
+  top: 20px;
   right: 20px;
   font-size: 70px;
   font-weight: bolder;
