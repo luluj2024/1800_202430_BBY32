@@ -63,18 +63,18 @@
 
   <header>
     <nav class="chat-navbar">
-      <button id="back-btn" class="material-symbols-outlined chat-btns">arrow_back_ios_new</button>
-      <h1 class="chat-title"></h1>
+      <button class="material-symbols-outlined chat-back-btn">arrow_back_ios_new</button>
+      <h1 class="chat-heading"></h1>
     </nav>
   </header>
 
   <div class="chat-container">
-    <div class="messages-container">
-      <span class="material-symbols-outlined loading">
-        sync
-      </span>
+    <div class="message-display">
+      <div class="loading-wrapper">
+        <span class="material-symbols-outlined loading">sync</span>
+      </div>
     </div>
-    <form class="messages-form">
+    <form class="message-form-container">
       <input class="input" type="text" placeholder="Type your message here...">
       <button class="btn-send" type="submit">Send</button>
     </form>

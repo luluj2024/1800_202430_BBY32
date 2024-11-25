@@ -41,9 +41,9 @@ function getTime(timestamp) {
 async function initialize() {
   if (targetUserId) {
     const userData = await getUserData(targetUserId);
-    document.querySelector(".chat-title").textContent = userData.name;
+    document.querySelector(".chat-heading").textContent = userData.name;
 
-    document.querySelector("#back-btn").addEventListener("click", () => {
+    document.querySelector(".chat-back-btn").addEventListener("click", () => {
       window.location.href = "friends.html";
     })
 
@@ -52,8 +52,8 @@ async function initialize() {
 
   const routeRef = await db.collection("Routes").doc(targetRouteId).get()
   const routeData = await routeRef.data();
-  document.querySelector(".chat-title").textContent = `Bus ${routeData.bus}: ${routeData.name}`;
-  document.querySelector("#back-btn").addEventListener("click", () => {
+  document.querySelector(".chat-heading").textContent = `Bus ${routeData.bus}: ${routeData.name}`;
+  document.querySelector(".chat-back-btn").addEventListener("click", () => {
     window.location.href = "main.html";
   })
 }
@@ -84,23 +84,23 @@ async function getUserData(userId) {
   Initiate rendering of messages between users or with favourited route
 */
 function displayMessages() {
-  const messagesContainer = document.querySelector(".messages-container");
+  // const messagesContainer = document.querySelector(".message-display");
 
-  if (targetUserId) {
-    userMessageListener(messagesContainer);
+  // if (targetUserId) {
+  //   userMessageListener(messagesContainer);
 
-    document.querySelector(".messages-form").addEventListener("submit", (event) => {
-      event.preventDefault();
-      sendUserMessage(targetUserId)
-    })
-  } else {
-    routeMessagesListener(messagesContainer);
+  //   document.querySelector(".message-form-container").addEventListener("submit", (event) => {
+  //     event.preventDefault();
+  //     sendUserMessage(targetUserId)
+  //   })
+  // } else {
+  //   routeMessagesListener(messagesContainer);
 
-    document.querySelector(".messages-form").addEventListener("submit", (event) => {
-      event.preventDefault();
-      sendGroupMessage(targetRouteId)
-    })
-  }
+  //   document.querySelector(".message-form-container").addEventListener("submit", (event) => {
+  //     event.preventDefault();
+  //     sendGroupMessage(targetRouteId)
+  //   })
+  // }
 }
 
 /*
