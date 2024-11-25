@@ -2,7 +2,8 @@ let currentUserId;
 
 firebase.auth().onAuthStateChanged((user) => {
   if (user) {
-    sessionStorage.clear();
+    sessionStorage.removeItem("targetUserId");
+    sessionStorage.removeItem("targetRouteId");
 
     currentUserId = user.uid;
 
@@ -174,7 +175,7 @@ async function getLatestMessage(userId) {
       .map(doc => doc.data())
       .filter(message => message.users.includes(userId));
 
-    return messages[messages.length-1];
+    return messages[messages.length - 1];
 
   } catch (error) {
     console.error(`Error getting latest message to ${userId}:`, error);
@@ -355,13 +356,20 @@ async function displayFriends() {
     return;
   }
 
+  if (users.length !== 0) {
+    const heading = document.createElement("h6");
+    heading.textContent = "Current Friends";
+    heading.style = "font-size: 1.5rem; max-width: 800px; margin: 0 auto;"
+    contentContainer.appendChild(heading);
+  }
+
   for (const user of users) {
     if (searchbar.value == "" || relatedFriends(searchbar.value, user.name)) {
       const card = friendTemplate.content.cloneNode(true);
       const message = await getLatestMessage(user.id);
-  
+
       styleFriends(user, card, message)
-      
+
       contentContainer.appendChild(card);
     }
   }
@@ -390,12 +398,19 @@ async function displayNonFriends() {
     return;
   }
 
+  if (users.length !== 0) {
+    const heading = document.createElement("h6");
+    heading.textContent = "All Users";
+    heading.style = "font-size: 1.5rem; max-width: 800px; margin: 0 auto;"
+    contentContainer.appendChild(heading);
+  }
+
   users.forEach(user => {
-    if (searchbar.value == "" || relatedFriends(searchbar.value, user.name)) { 
+    if (searchbar.value == "" || relatedFriends(searchbar.value, user.name)) {
       const card = userTemplate.content.cloneNode(true);
 
       styleNonFriends(user, card);
-  
+
       contentContainer.appendChild(card);
     }
   })
@@ -420,6 +435,13 @@ async function displayPendingUsers() {
     return;
   }
 
+  if (receivedRequests.length !== 0) {
+    const heading1 = document.createElement("h6");
+    heading1.textContent = "Requests Received";
+    heading1.style = "font-size: 1.5rem; max-width: 800px; margin: 0 auto;"
+    contentContainer.appendChild(heading1);
+  }
+
   receivedRequests.forEach((user) => {
     const card = userTemplate.content.cloneNode(true);
 
@@ -427,6 +449,13 @@ async function displayPendingUsers() {
 
     contentContainer.appendChild(card);
   })
+
+  if (sentRequests.length !== 0) {
+    const heading2 = document.createElement("h6");
+    heading2.textContent = "Requests Sent";
+    heading2.style = "font-size: 1.5rem; max-width: 800px; margin: 0 auto;"
+    contentContainer.appendChild(heading2);
+  }
 
   sentRequests.forEach(user => {
     const card = userTemplate.content.cloneNode(true);
@@ -441,7 +470,7 @@ function styleFriends(user, card, message) {
   const profile = card.querySelector(".user-profile");
   card.querySelector(".user-name").textContent = user.name;
   if (message) {
-  card.querySelector(".user-message").textContent = message.text;
+    card.querySelector(".user-message").textContent = message.text;
   }
   if (user.profilePhotoBase64) {
     profile.src = user.profilePhotoBase64;
@@ -591,13 +620,13 @@ function relatedFriends(search, result) {
   result += '';
   //Loops through the search and username values to see what matches and return it to user
   for (let i = 0; i < searchVal.length; i++) {
-      //Verify it doesn't attempt to go out of length
-      if (i >= result.length) {
-          return false;
-      }
-      else if (searchVal[i] != result[i].toLowerCase()) {
-          return false;
-      }
+    //Verify it doesn't attempt to go out of length
+    if (i >= result.length) {
+      return false;
+    }
+    else if (searchVal[i] != result[i].toLowerCase()) {
+      return false;
+    }
   }
   return true;
 }
@@ -606,9 +635,9 @@ function relatedFriends(search, result) {
 function debounce(func, timeout = 300) {
   let timer;
   return (...args) => {
-      clearTimeout(timer);
-      //Creates a timer based of the timeout that calls the passed in function once its complete
-      timer = setTimeout(() => { func.apply(this, args); }, timeout);
+    clearTimeout(timer);
+    //Creates a timer based of the timeout that calls the passed in function once its complete
+    timer = setTimeout(() => { func.apply(this, args); }, timeout);
   };
 }
 //delays searchbar inputs to prevent duplication and excessive database calls
