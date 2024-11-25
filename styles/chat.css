@@ -89,64 +89,64 @@ body {
   100% {transform: rotate(360deg);}
 }
 
-.l-message-container,
-.r-message-container {
-  max-width: 300px;
+.left-message,
+.right-message {
   margin-bottom: 16px;
   column-gap: 12px;
 }
 
-.l-message-container {
+.right-content *,
+.left-content * {
+  padding: 0;
+  margin: 0;
+}
+
+.left-message {
   display: grid;
   grid-template-columns: auto 1fr;
   grid-template-rows: auto 1fr auto;
   grid-template-areas:
-    "none content"
+    "none name"
     "profile content"
-    "none content";
+    "none time";
+  margin: 0 auto 0 0;
   justify-content: start;
-  align-items: center;
-  border-radius: 8px 8px 8px 0;
 }
 
-.l-content * {
-  padding: 0;
-  margin: 0;
-}
-
-.l-content > .text {
-  background-color: lightslategray;
-  padding: 1rem;
-  border-radius: 16px 16px 16px 0px;
-  max-width: 300px;
-  overflow-wrap: break-word;
-}
-
-.r-content * {
-  padding: 0;
-  margin: 0;
-}
-
-.r-content > .text {
-  background-color: lightpink;
-  max-width: 300px;
-  overflow-wrap: break-word;
-  padding: 1rem;
-  border-radius: 16px 16px 0px 16px;
-}
-
-.time {
-  font-size: 12px;
-}
-
-.r-message-container {
+.right-message {
   display: grid;
   grid-template-columns: 1fr auto;
+  grid-template-rows: auto 1fr auto;
   grid-template-areas:
-    "content profile";
-  margin: 0 0 16px auto;
+    "name none"
+    "content profile"
+    "time none";
+  margin: 0 0 0 auto;
   justify-content: end;
-  align-items: center;
+}
+
+.left-content {
+  justify-self: start;
+}
+
+.right-content {
+  justify-self: end;
+}
+
+.text {
+  padding: 1rem;
+  max-width: 280px;
+  overflow-wrap: break-word;
+}
+
+.left-content > .text {
+  background-color: lightslategray;
+  border-radius: 16px 16px 16px 0px;
+}
+
+.right-content > .text {
+  background-color: lightpink;
+  border-radius: 16px 16px 0px 16px;
 }
 
 .profile-container {
@@ -161,10 +161,6 @@ body {
   border-radius: 50%;
 }
 
-.r-content {
-  justify-self: end;
-}
-
-.l-content {
-  justify-self: start;
+.time {
+  font-size: 12px;
 }

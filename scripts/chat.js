@@ -84,23 +84,23 @@ async function getUserData(userId) {
   Initiate rendering of messages between users or with favourited route
 */
 function displayMessages() {
-  // const messagesContainer = document.querySelector(".message-display");
+  const messagesContainer = document.querySelector(".message-display");
 
-  // if (targetUserId) {
-  //   userMessageListener(messagesContainer);
+  if (targetUserId) {
+    userMessageListener(messagesContainer);
 
-  //   document.querySelector(".message-form-container").addEventListener("submit", (event) => {
-  //     event.preventDefault();
-  //     sendUserMessage(targetUserId)
-  //   })
-  // } else {
-  //   routeMessagesListener(messagesContainer);
+    document.querySelector(".message-form-container").addEventListener("submit", (event) => {
+      event.preventDefault();
+      sendUserMessage(targetUserId)
+    })
+  } else {
+    routeMessagesListener(messagesContainer);
 
-  //   document.querySelector(".message-form-container").addEventListener("submit", (event) => {
-  //     event.preventDefault();
-  //     sendGroupMessage(targetRouteId)
-  //   })
-  // }
+    document.querySelector(".message-form-container").addEventListener("submit", (event) => {
+      event.preventDefault();
+      sendGroupMessage(targetRouteId)
+    })
+  }
 }
 
 /*

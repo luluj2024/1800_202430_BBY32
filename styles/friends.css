@@ -141,6 +141,15 @@ body {
   border: 4px solid black;
 }
 
+.user-message {
+  word-break: break-word; /* Break words at arbitrary points */
+  overflow-wrap: break-word; /* Ensure words wrap to fit */
+  max-width: calc(100%); /* Leave space for profile and buttons */
+  white-space: normal; /* Allow text to wrap */
+  max-height: 4.5rem; /* Limit the maximum height */
+  overflow-y: auto; /* Add vertical scroll when content exceeds max height */
+}
+
 /* Button Container */
 .buttons-container {
   display: flex;
