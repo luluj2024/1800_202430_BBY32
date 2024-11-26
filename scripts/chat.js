@@ -246,6 +246,7 @@ async function createMessage(message, isGroup = false, svgIcon) {
         title.removeChild(span);
       }
     });
+    svgIcon.style = "margin-bottom: 2px;";
     title.appendChild(svgIcon);
   }
 

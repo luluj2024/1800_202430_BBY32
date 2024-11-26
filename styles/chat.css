@@ -165,6 +165,10 @@ body {
   overflow-wrap: break-word;
 }
 
+.left-content > .title {
+  align-items: center;
+}
+
 .left-content > .text {
   background-color: lightgreen;
   border-radius: 16px 16px 16px 0px;
@@ -190,4 +194,8 @@ body {
 
 .time {
   font-size: 12px;
+}
+
+.commuting-span {
+ font-size: 0.8rem;
 }
