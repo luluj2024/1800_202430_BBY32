@@ -27,12 +27,15 @@ body {
   display: grid;
   grid-template-columns: auto 1fr;
   grid-template-areas: "back-button heading";
+  padding: 0 2rem;
   align-items: center;
 }
 
 .chat-back-btn, .chat-heading {
   font-size: 1.5rem;
   color: var(--text-color);
+  padding: 0;
+  margin: 0;
 }
 
 .chat-back-btn {

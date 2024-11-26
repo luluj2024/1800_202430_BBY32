@@ -229,7 +229,7 @@ async function createMessage(message, isGroup = false, svgIcon) {
   
   title.textContent = sender.name;
   if (sender.commuting === targetRouteId) {
-    svgIcon.addEventListener("mouseover", () => {
+    svgIcon.addEventListener("click", () => {
       // Check if the span doesn't already exist
       if (!title.querySelector(".commuting-span")) {
         const span = document.createElement("span");
