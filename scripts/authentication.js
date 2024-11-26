@@ -12,6 +12,7 @@ var uiConfig = {
           name: user.displayName,                    
           email: user.email,                         
           favorite_routes: [],
+          commuting: "",
           friends: [],
           requestsSent: [],
           requestsReceived: []        

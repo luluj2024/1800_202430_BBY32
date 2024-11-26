@@ -187,9 +187,7 @@ function userMessageListener(container) {
     });
 }
 
-
-
-function routeMessagesListener(container) {
+function routeMessagesListener(container, commuters) {
   db.collection("Routes").doc(targetRouteId).collection("messages")
     .orderBy("timestamp")
     .limitToLast(50)
@@ -209,25 +207,6 @@ function routeMessagesListener(container) {
       container.scrollTo(0, container.scrollHeight);
     });
 }
-
-// function listenForRouteMessages(targetRouteId, messagesContainer) {
-//   db.collection("Routes").doc(targetRouteId)
-//     .collection("messages")
-//     .orderBy("timestamp")
-//     .onSnapshot(snapshot => {
-//       messagesContainer.innerHTML = "";
-
-//       snapshot.forEach(doc => {
-//         const message = doc.data();
-
-//         createMessage(message, true).then(messageElement => {
-//           if (messageElement) {
-//             messagesContainer.appendChild(messageElement);
-//           }
-//         });
-//       });
-//     })
-// }
 
 /*
   Creates a message to append to container.
@@ -255,4 +234,8 @@ async function createMessage(message, isGroup = false) {
   console.log(sender.id);
 
   return messageTemplate;
+}
+
+async function getCommuters(routeId) {
+  const routeDoc = await db.collection("Routes")
 }

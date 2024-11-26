@@ -21,6 +21,9 @@ async function displayAllRoutes() {
   document.getElementById("status").innerHTML = '';
   container.innerHTML = '';
 
+  const userDoc = await db.collection("users").doc(currentUserId).get();
+  const userData = userDoc.data();
+
   const routeSnapshot = await db.collection("Routes")
     .where("favorites", "array-contains", currentUserId)
     .get();
@@ -33,7 +36,7 @@ async function displayAllRoutes() {
   }
 
   routeSnapshot.forEach(route => {
-    outputCards(container, busTemplate, route);
+    outputCards(container, busTemplate, route, userData);
   })
 }
 
@@ -118,7 +121,7 @@ function relatedRoutes(search, result, result2) {
 }
 
 //Adds valid bus cards to bus route list
-function outputCards(container, busTemplate, route) {
+function outputCards(container, busTemplate, route, userData) {
   let card = busTemplate.content.cloneNode(true);
 
   const routeData = route.data();
@@ -145,13 +148,13 @@ function outputCards(container, busTemplate, route) {
   //Route Commuting button
   commutingButton = card.querySelector("#commutebtn");
 
-  if (routeData.commuters.includes(currentUserId)) {
+  if (userData.commuting === route.id) {
     commutingButton.innerHTML = "toggle_on";
     commutingButton.style.color = "#2596BE";
   }
 
   commutingButton.addEventListener("click", () => {
-    toggleCommute(route.id, routeData);
+    toggleCommute(route.id, routeData, userData);
   });
 
   container.appendChild(card);
@@ -159,11 +162,11 @@ function outputCards(container, busTemplate, route) {
 
 function renderCommuters(card, commuters) {
   const cardCommute = card.querySelector(".card-commute");
-  
+
   if (commuters.length === 0) {
     cardCommute.textContent = "Be the first person on this route!"
   } else {
-     cardCommute.textContent = `${commuters.length} people on this route!`
+    cardCommute.textContent = `${commuters.length} people on this route!`
   }
 }
 
@@ -195,15 +198,29 @@ async function unfavoriteRoute(route) {
   displaySimilarRoutes();
 }
 
-async function toggleCommute(routeId, routeData) {
+async function toggleCommute(routeId, routeData, userData) {
+  const userRef = db.collection("users").doc(currentUserId);
   const routeRef = db.collection("Routes").doc(routeId);
-  if (routeData.commuters.includes(currentUserId)) {
+
+  if (userData.commuting === routeId) {
     await routeRef.update({
       commuters: firebase.firestore.FieldValue.arrayRemove(currentUserId)
     })
+    await userRef.update({
+      commuting: ""
+    })
   } else {
+    if (userData.commuting) {
+      const previousRouteRef = db.collection("Routes").doc(userData.commuting);
+      await previousRouteRef.update({
+        commuters: firebase.firestore.FieldValue.arrayRemove(currentUserId)
+      });
+    }
     await routeRef.update({
-      commuters: firebase.firestore.FieldValue.arrayUnion(currentUserId)
+      commuters: firebase.firestore.FieldValue.arrayUnion(currentUserId),
+    })
+    await userRef.update({
+      commuting: routeId
     })
   }
   displayAllRoutes();
