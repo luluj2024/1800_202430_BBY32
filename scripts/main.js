@@ -24,9 +24,11 @@ async function displayAllRoutes() {
   const routeSnapshot = await db.collection("Routes")
     .where("favorites", "array-contains", currentUserId)
     .get();
-  
+
   if (routeSnapshot.empty) {
-    document.getElementById("status").innerHTML = "<h3>Welcome to commute buddy, go to the routes tab to find some routes to favorite!</h3><h3> You will be able to see them here and be able to access your routes groupchats!</h3>";
+    document.getElementById("status").innerHTML =
+      `<h3>Welcome to commute buddy, go to the routes tab to find some routes to favorite!</h3>
+    <h3> You will be able to see them here and be able to access your routes groupchats!</h3>`;
     return;
   }
 
@@ -117,52 +119,52 @@ function relatedRoutes(search, result, result2) {
 
 //Adds valid bus cards to bus route list
 function outputCards(container, busTemplate, route) {
-  let data = route.data();
   let card = busTemplate.content.cloneNode(true);
-  let busTitle = "Bus " + data.bus + ": " + data.name;
-  //Displays bus times and whether its 24/7
-  if (data.start == data.end) {
-    busTime = "Bus runs 24/7";
-  }
-  else {
-    busTime = "Start: " + data.start + " End: " + data.end;
-  }
+
+  const routeData = route.data();
+
+  const busTitle = `Bus ${routeData.bus}: ${routeData.name}`;
+  const busTime = (routeData.start === routeData.end)
+    ? "Bus Runs 24/7"
+    : `Start: ${routeData.start} End: ${routeData.end}`;
+
   card.querySelector(".card-title").textContent = busTitle;
   card.querySelector(".card-time").textContent = busTime;
-  //Displays how many commuters are actively on this route
-  let commuters = data.commuters.length;
-  let cardCommuters = card.querySelector(".card-commute").textContent;
-  if (commuters == 0 || commuters == undefined) {
-    cardCommuters = "Be the first person on this route!";
-  }
-  else if (commuters == 1) {
-    cardCommuters = commuters + " person is on this route!";
-  }
-  else {
-    cardCommuters = commuters + " people are on this route!";
-  }
 
-  //Unfavorite route button
-  card.querySelector("#removebtn").addEventListener("click", event => { unfavoriteRoute(route.id) });
+  renderCommuters(card, routeData.commuters)
 
-  //Route groupchat button
-  card.querySelector("#cardbtn").addEventListener("click", (event) => {
-    console.log("Chat Button Clicked");
+  card.querySelector("#removebtn").addEventListener("click", () => {
+    unfavoriteRoute(route.id)
+  })
+
+  card.querySelector("#cardbtn").addEventListener("click", () => {
     sessionStorage.setItem("targetRouteId", route.id);
     window.location.assign("chat.html");
   })
 
   //Route Commuting button
-  combtn = card.querySelector("#commutebtn");
-  if (sessionStorage.getItem("commuting") == route.id) {
-    combtn.innerHTML = "toggle_on";
-    combtn.style.color = "#2596BE";
+  commutingButton = card.querySelector("#commutebtn");
+
+  if (routeData.commuters.includes(currentUserId)) {
+    commutingButton.innerHTML = "toggle_on";
+    commutingButton.style.color = "#2596BE";
   }
-  combtn.addEventListener("click", event => {
-    toggleCommute(route.id);
+
+  commutingButton.addEventListener("click", () => {
+    toggleCommute(route.id, routeData);
   });
 
   container.appendChild(card);
+}
+
+function renderCommuters(card, commuters) {
+  const cardCommute = card.querySelector(".card-commute");
+  
+  if (commuters.length === 0) {
+    cardCommute.textContent = "Be the first person on this route!"
+  } else {
+     cardCommute.textContent = `${commuters.length} people on this route!`
+  }
 }
 
 
@@ -193,11 +195,16 @@ async function unfavoriteRoute(route) {
   displaySimilarRoutes();
 }
 
-function toggleCommute(route) {
-  if (sessionStorage.getItem("commuting") == route) {
-    sessionStorage.removeItem("commuting");
+async function toggleCommute(routeId, routeData) {
+  const routeRef = db.collection("Routes").doc(routeId);
+  if (routeData.commuters.includes(currentUserId)) {
+    await routeRef.update({
+      commuters: firebase.firestore.FieldValue.arrayRemove(currentUserId)
+    })
   } else {
-    sessionStorage.setItem("commuting", route);
+    await routeRef.update({
+      commuters: firebase.firestore.FieldValue.arrayUnion(currentUserId)
+    })
   }
   displayAllRoutes();
 }
