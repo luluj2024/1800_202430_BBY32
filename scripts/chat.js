@@ -251,9 +251,21 @@ async function createMessage(message, isGroup = false, svgIcon) {
   }
 
   messageTemplate.querySelector(".text").textContent = message.text;
+  const profile = messageTemplate.querySelector(".profile-icon")
   if (sender.profilePhotoBase64) {
-    messageTemplate.querySelector(".profile-icon").src = sender.profilePhotoBase64;
+    profile.src = sender.profilePhotoBase64;
   }
+  profile.addEventListener("click", () => {
+    Swal.fire({
+      title: sender.name,
+      text: sender.birthday,
+      text: sender.description,
+      imageUrl: profile.src,
+      imageWidth: 200,
+      imageHeight: 200,
+      imageAlt: "Custom image"
+    });
+  })
 
 
   console.log(sender.id);
