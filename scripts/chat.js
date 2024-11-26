@@ -192,7 +192,7 @@ function routeMessagesListener(container, commuters) {
     .orderBy("timestamp")
     .limitToLast(50)
     .onSnapshot(async (snapshot) => {
-      const messagePromises = snapshot.docs.map(doc => createMessage(doc.data(), true));
+      const messagePromises = snapshot.docs.map(doc => createMessage(doc.data(), true, createCommutingSVG()));
 
       // Wait for all messages to be processed concurrently
       const styledMessages = await Promise.all(messagePromises);
@@ -214,7 +214,7 @@ function routeMessagesListener(container, commuters) {
   @param {boolean} isGroup: Used to determine whether a message was sent into a
   group or to another user
 */
-async function createMessage(message, isGroup = false) {
+async function createMessage(message, isGroup = false, svgIcon) {
   const senderId = isGroup ? message.sender : message.users[0];
   const sender = await getUserData(senderId);
   const isCurrentUser = sender.id === currentUserId;
@@ -225,9 +225,30 @@ async function createMessage(message, isGroup = false) {
 
   // Styling Template Content
   messageTemplate.querySelector(".time").textContent = getTime(message.timestamp);
-  messageTemplate.querySelector(".title").textContent = sender.commuting === targetRouteId 
-    ? `${sender.name} (commuting)`
-    : sender.name;
+  const title = messageTemplate.querySelector(".title")
+  
+  title.textContent = sender.name;
+  if (sender.commuting === targetRouteId) {
+    svgIcon.addEventListener("mouseover", () => {
+      // Check if the span doesn't already exist
+      if (!title.querySelector(".commuting-span")) {
+        const span = document.createElement("span");
+        span.textContent = "(commuting)";
+        span.className = "commuting-span"; // Assign a class for easy reference
+        title.appendChild(span);
+      }
+    });
+
+    svgIcon.addEventListener("mouseout", () => {
+      // Remove the span when mouse leaves
+      const span = title.querySelector(".commuting-span");
+      if (span) {
+        title.removeChild(span);
+      }
+    });
+    title.appendChild(svgIcon);
+  }
+
   messageTemplate.querySelector(".text").textContent = message.text;
   if (sender.profilePhotoBase64) {
     messageTemplate.querySelector(".profile-icon").src = sender.profilePhotoBase64;
@@ -241,4 +262,21 @@ async function createMessage(message, isGroup = false) {
 
 async function getCommuters(routeId) {
   const routeDoc = await db.collection("Routes")
+}
+
+function createCommutingSVG () {
+  const svgIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svgIcon.setAttribute("width", "1rem");
+  svgIcon.setAttribute("height", "1rem");
+  svgIcon.setAttribute("viewBox", "0 0 24 24");
+  svgIcon.setAttribute("fill", "none");
+  svgIcon.innerHTML = `
+    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+    <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+    <g id="SVGRepo_iconCarrier">
+      <path d="M5 6V15.8C5 16.9201 5 17.4802 5.21799 17.908C5.40973 18.2843 5.71569 18.5903 6.09202 18.782C6.51984 19 7.07989 19 8.2 19H15.8C16.9201 19 17.4802 19 17.908 18.782C18.2843 18.5903 18.5903 18.2843 18.782 17.908C19 17.4802 19 16.9201 19 15.8V6M5 6C5 6 5 3 12 3C19 3 19 6 19 6M5 6H19M5 13H19M17 21V19M7 21V19M8 16H8.01M16 16H16.01"
+        stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+    </g>
+  `;
+  return svgIcon;
 }
