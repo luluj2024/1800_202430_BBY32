@@ -226,7 +226,7 @@ async function createMessage(message, isGroup = false, svgIcon) {
   // Styling Template Content
   messageTemplate.querySelector(".time").textContent = getTime(message.timestamp);
   const title = messageTemplate.querySelector(".title")
-  
+
   title.textContent = sender.name;
   if (sender.commuting === targetRouteId) {
     svgIcon.addEventListener("click", () => {
@@ -236,16 +236,14 @@ async function createMessage(message, isGroup = false, svgIcon) {
         span.textContent = "(commuting)";
         span.className = "commuting-span"; // Assign a class for easy reference
         title.appendChild(span);
+      } else {
+        const span = title.querySelector(".commuting-span");
+        if (span) {
+          title.removeChild(span);
+        }
       }
     });
-
-    svgIcon.addEventListener("mouseout", () => {
-      // Remove the span when mouse leaves
-      const span = title.querySelector(".commuting-span");
-      if (span) {
-        title.removeChild(span);
-      }
-    });
+    
     svgIcon.style = "margin-bottom: 2px;";
     title.appendChild(svgIcon);
   }
@@ -277,7 +275,7 @@ async function getCommuters(routeId) {
   const routeDoc = await db.collection("Routes")
 }
 
-function createCommutingSVG () {
+function createCommutingSVG() {
   const svgIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   svgIcon.setAttribute("width", "1rem");
   svgIcon.setAttribute("height", "1rem");
