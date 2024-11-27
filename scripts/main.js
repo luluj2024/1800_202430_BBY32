@@ -76,7 +76,7 @@ function displaySimilarRoutes() {
             if (favCheck) {
               if (relatedRoutes(searchVal, routeId.data().bus, routeId.data().name)) {
                 count += 1;
-                outputCards(container, busTemplate, routeId);
+                outputCards(container, busTemplate, routeId, user);
               }
             }
           })
