@@ -164,7 +164,7 @@ function userMessageListener(container) {
   db.collection("messages")
     .where("users", "array-contains", currentUserId)
     .orderBy("timestamp")
-    .limitToLast(50)
+    .limitToLast(200)
     .onSnapshot(async (snapshot) => {
       const messagePromises = snapshot.docs.map(doc => {
         const data = doc.data();
@@ -190,7 +190,7 @@ function userMessageListener(container) {
 function routeMessagesListener(container, commuters) {
   db.collection("Routes").doc(targetRouteId).collection("messages")
     .orderBy("timestamp")
-    .limitToLast(50)
+    .limitToLast(200)
     .onSnapshot(async (snapshot) => {
       const messagePromises = snapshot.docs.map(doc => createMessage(doc.data(), true, createCommutingSVG()));
 

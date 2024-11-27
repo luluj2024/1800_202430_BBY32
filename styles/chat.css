@@ -88,6 +88,7 @@ body {
 
 .input {
   padding: 0.5rem 2rem;
+  padding-right: 120px;
   border-radius: 50px;
   border: 2px solid black;
 }
@@ -96,6 +97,10 @@ body {
 .input:focus {
   border: 2px solid black;
   outline: none; 
+}
+
+.input::-webkit-scrollbar {
+  display: none; /* Hide the scrollbar */
 }
 
 .loading-wrapper {
@@ -198,4 +203,11 @@ body {
 
 .commuting-span {
  font-size: 0.8rem;
+}
+
+/* Adjustments for Small Screens */
+@media only screen and (min-width: 800px) {
+  .input {
+    padding-right: 120px;
+  }
 }
