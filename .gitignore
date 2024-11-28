@@ -3,3 +3,10 @@
 node_modules/
 .vscode/
 /scripts/firebaseAPI_BBY32.js
+.firebase
+
+.firebaserc
+404.html
+firebase.json
+firestore.indexes.json
+firestore.rules
