@@ -13,7 +13,7 @@ List technologies (with version numbers), API's, icons, fonts, images, media or 
 * HTML, CSS, JavaScript
 * Bootstrap 5.0 (Frontend library)
 * Firebase 8.0 (BAAS - Backend as a Service)
-* ...
+* SweetAlert (Popups)
 
 ## 4. Complete setup/installion/usage
 State what a user needs to do when they come to your project.  How do others start using your code or application?
@@ -24,18 +24,18 @@ Here are the steps ...
 * Add friends from suggested lists and chat with them
 * Customize personal profile
 
-
 ## 5. Known Bugs and Limitations
 Here are some known bugs:
 * Firebase calls can be slow leading to duplicated routes when using the searchbar, this is rare and depends on wifi connection
-* ...
-* ...
+* User names can be infinitely long, messes with display
 
 ## 6. Features for Future
 What we'd like to build in the future:
 * Search routes by searching on maps
-* ...
-* ...
+* Remove reloading of entire page when user favourites, 
+  toggles commuting status, and adding friends
+* More profile customization options
+* A smoother user experience 
 	
 ## 7. Contents of Folder
 Content of the project folder:
@@ -88,6 +88,15 @@ It has the following subfolders and files:
     profile.css              # Styling for profile/settings page
     routes.css               # Styling for routes page
 
+Firebase hosting files: 
+├── .firebase
+	/hosting..cache
+├── .firebaserc
+├── 404.html
+├── firebase.json
+├── firestore.indexes.json
+├── firestore.rules
+├── storage.rules
 
 
 ```
